@@ -12,8 +12,11 @@ void solution(const float* A, const float* B, float* C, size_t N, size_t K);
 
 enum class KernelKind {
   Basic,
+  BasicConst,
   Tiled,
+  TiledConst,
   BlockStrideStub,
+  BlockStrideConst,
 };
 
 static KernelKind g_kernel_kind = KernelKind::Basic;
@@ -33,6 +36,27 @@ struct LaunchConfig {
 
 static LaunchConfig g_launch_config{256, 32};
 
+constexpr size_t kMaxConstantFilterSize = 8192;
+__constant__ float g_const_b[kMaxConstantFilterSize];
+
+static bool kernel_uses_constant_filter(KernelKind kind) {
+  switch (kind) {
+    case KernelKind::BasicConst:
+    case KernelKind::TiledConst:
+    case KernelKind::BlockStrideConst:
+      return true;
+    default:
+      return false;
+  }
+}
+
+static bool kernel_supports_filter(KernelKind kind, size_t K) {
+  if (!kernel_uses_constant_filter(kind)) {
+    return true;
+  }
+  return K <= kMaxConstantFilterSize;
+}
+
 static bool parse_kernel_arg(const std::string& arg) {
   const std::string prefix = "--kernel=";
   if (arg.rfind(prefix, 0) != 0) {
@@ -43,17 +67,31 @@ static bool parse_kernel_arg(const std::string& arg) {
     g_kernel_kind = KernelKind::Basic;
     return true;
   }
+  if (value == "basic-const") {
+    g_kernel_kind = KernelKind::BasicConst;
+    return true;
+  }
   if (value == "tiled") {
     g_kernel_kind = KernelKind::Tiled;
+    return true;
+  }
+  if (value == "tiled-const") {
+    g_kernel_kind = KernelKind::TiledConst;
     return true;
   }
   if (value == "block-stride-stub") {
     g_kernel_kind = KernelKind::BlockStrideStub;
     return true;
   }
+  if (value == "block-stride-const") {
+    g_kernel_kind = KernelKind::BlockStrideConst;
+    return true;
+  }
   std::cerr << "Unknown kernel: " << value
-            << " (use --kernel=basic, --kernel=tiled, or"
-            << " --kernel=block-stride-stub)\n";
+            << " (use --kernel=basic, --kernel=basic-const,"
+            << " --kernel=tiled, --kernel=tiled-const,"
+            << " --kernel=block-stride-stub,"
+            << " --kernel=block-stride-const)\n";
   return false;
 }
 
@@ -266,8 +304,11 @@ static int run_tests(bool skip_cpu_verify) {
     const char* name;
   } kernels[] = {
       {KernelKind::Basic, "basic"},
+      {KernelKind::BasicConst, "basic_c"},
       {KernelKind::Tiled, "tiled"},
+      {KernelKind::TiledConst, "tiled_c"},
       {KernelKind::BlockStrideStub, "bstride"},
+      {KernelKind::BlockStrideConst, "bstride_c"},
   };
   const std::vector<TestCase> tests = {
       {"small_1", {1.0f, 2.0f, 3.0f, 4.0f}, {1.0f, 2.0f, 1.0f},
@@ -303,6 +344,8 @@ static int run_tests(bool skip_cpu_verify) {
       res.kernel = k.name;
       res.N = tc.A.size();
       res.K = tc.B.size();
+      res.block_x = g_launch_config.block_x;
+      res.grid_x = g_launch_config.grid_x;
       res.cpu = cpu_status;
       res.gpu = gpu_ok ? "PASS" : "FAIL";
       res.total_ms = g_last_timing.total_ms;
@@ -358,6 +401,20 @@ static int run_tests(bool skip_cpu_verify) {
       const auto ref = cpu_conv_same(A, B);
       cpu_status = "REF";
       for (const auto& k : kernels) {
+        if (!kernel_supports_filter(k.kind, K)) {
+          TestResult res;
+          res.group = group;
+          res.name = name;
+          res.kernel = k.name;
+          res.N = N;
+          res.K = K;
+          res.block_x = g_launch_config.block_x;
+          res.grid_x = g_launch_config.grid_x;
+          res.cpu = cpu_status;
+          res.gpu = "SKIP";
+          results.push_back(res);
+          continue;
+        }
         g_kernel_kind = k.kind;
         std::vector<float> gpu_out(N, 0.0f);
         solution(A.data(), B.data(), gpu_out.data(), N, K);
@@ -381,6 +438,20 @@ static int run_tests(bool skip_cpu_verify) {
       return;
     }
     for (const auto& k : kernels) {
+      if (!kernel_supports_filter(k.kind, K)) {
+        TestResult res;
+        res.group = group;
+        res.name = name;
+        res.kernel = k.name;
+        res.N = N;
+        res.K = K;
+        res.block_x = g_launch_config.block_x;
+        res.grid_x = g_launch_config.grid_x;
+        res.cpu = cpu_status;
+        res.gpu = "SKIP";
+        results.push_back(res);
+        continue;
+      }
       g_kernel_kind = k.kind;
       std::vector<float> gpu_out(N, 0.0f);
       solution(A.data(), B.data(), gpu_out.data(), N, K);
@@ -420,6 +491,20 @@ static int run_tests(bool skip_cpu_verify) {
       for (int grid_x : scale_grid_sizes) {
         g_launch_config = {block_x, grid_x};
         for (const auto& k : kernels) {
+          if (!kernel_supports_filter(k.kind, K)) {
+            TestResult res;
+            res.group = "scale";
+            res.name = name;
+            res.kernel = k.name;
+            res.N = N;
+            res.K = K;
+            res.block_x = g_launch_config.block_x;
+            res.grid_x = g_launch_config.grid_x;
+            res.cpu = cpu_status;
+            res.gpu = "SKIP";
+            results.push_back(res);
+            continue;
+          }
           g_kernel_kind = k.kind;
           std::vector<float> gpu_out(N, 0.0f);
           solution(A.data(), B.data(), gpu_out.data(), N, K);
@@ -494,6 +579,29 @@ __global__ void device_1d_conv_basic(
   }
 }
 
+__global__ void device_1d_conv_basic_const(
+  const float *gm_a,
+  float *gm_c,
+  size_t K,
+  size_t N)
+{
+  int glx = (blockDim.x * blockIdx.x) + threadIdx.x;
+  int grid_stride_x = (gridDim.x * blockDim.x);
+  int r = (K - 1) / 2;
+
+  for (int gx = glx; gx < N; gx += grid_stride_x)
+  {
+    float sum = 0.0f;
+    for (int h = 0; h < K; ++h)
+    {
+      int a_idx = gx + h - r;
+      if (0 <= a_idx && a_idx < N)
+        sum += gm_a[a_idx] * g_const_b[h];
+    }
+    gm_c[gx] = sum;
+  }
+}
+
 __global__ void device_1d_conv_tiled(
   const float *gm_a,
   const float *gm_b,
@@ -555,6 +663,56 @@ __global__ void device_1d_conv_tiled(
   }
 }
 
+__global__ void device_1d_conv_tiled_const(
+  const float *gm_a,
+  float *gm_c,
+  size_t K,
+  size_t N)
+{
+
+  const int R = (K - 1) / 2;
+  extern __shared__ float sm_a[];
+  int total_blocks_x = (N + blockDim.x - 1) / blockDim.x;
+
+  for (int bx = blockIdx.x; bx < total_blocks_x; bx += gridDim.x)
+  {
+    int gx = (bx * blockDim.x) + threadIdx.x;
+
+    if (threadIdx.x == 0 )
+    {
+      for (int i = 0; i < R; ++i)
+      {
+        int load_idx = gx + i - R;
+        sm_a[i] = (0 <= load_idx && load_idx < N) ? gm_a[load_idx] : 0.0f;
+      }
+    }
+
+    sm_a[threadIdx.x + R] = (gx < N) ? gm_a[gx] : 0.0f;
+
+    if (threadIdx.x == blockDim.x - 1)
+    {
+      for (int i = 0; i < R; ++i)
+      {
+        int load_idx = gx + 1 + i;
+        sm_a[blockDim.x + R + i] = (load_idx < N)  ? gm_a[load_idx] : 0.0f;
+      }
+    }
+
+    __syncthreads();
+
+    if (gx < N)
+    {
+      float sum = 0.0f;
+
+      for ( int h = 0; h < K; ++h)
+        sum += sm_a[threadIdx.x + h] * g_const_b[h];
+
+      gm_c[gx] = sum;
+    }
+    __syncthreads();
+  }
+}
+
 __global__ void device_1d_conv_tiled_block_stride(
   const float *gm_a,
   const float *gm_b,
@@ -598,6 +756,39 @@ __global__ void device_1d_conv_tiled_block_stride(
   }
 }
 
+__global__ void device_1d_conv_tiled_block_stride_const(
+  const float *gm_a,
+  float *gm_c,
+  size_t K,
+  size_t N)
+{
+  const int R = (K - 1) / 2;
+  extern __shared__ float sm_a[];
+  const int total_blocks_x = (N + blockDim.x - 1) / blockDim.x;
+  const int total_elements = blockDim.x + (R * 2);
+
+  for (int bx = blockIdx.x; bx < total_blocks_x; bx += gridDim.x)
+  {
+    for (int lx = threadIdx.x; lx < total_elements; lx += blockDim.x)
+    {
+      int gx = (bx * blockDim.x) + lx;
+      int load_idx = gx - R;
+      sm_a[lx] = (0 <= load_idx && load_idx < N) ? gm_a[load_idx] : 0.0f;
+    }
+
+    __syncthreads();
+
+    float rsum = 0.0f;
+    for (int h = 0; h < K; ++h)
+      rsum += sm_a[threadIdx.x + h] * g_const_b[h];
+
+    int glx = (bx * blockDim.x) + threadIdx.x;
+    if (glx < N)
+      gm_c[glx] = rsum;
+
+    __syncthreads();
+  }
+}
 
 // 1D convolution with zero padding and a centered kernel (cross-correlation).
 //
@@ -635,14 +826,26 @@ void solution(const float* A, const float* B, float* C, size_t N, size_t K) {
 
   const size_t r = (K > 0) ? (K - 1) / 2 : 0;
   const size_t outN = N;
+  const bool use_constant_filter = kernel_uses_constant_filter(g_kernel_kind);
+  if (use_constant_filter && K > kMaxConstantFilterSize) {
+    std::cerr << "Filter size " << K
+              << " exceeds constant-memory comparison limit "
+              << kMaxConstantFilterSize << '\n';
+    return;
+  }
+
   float* d_A = nullptr;
   float* d_B = nullptr;
   float* d_C = nullptr;
   CUDA_CHECK(cudaMalloc(&d_A, N * sizeof(float)));
-  CUDA_CHECK(cudaMalloc(&d_B, K * sizeof(float)));
   CUDA_CHECK(cudaMalloc(&d_C, outN * sizeof(float)));
   CUDA_CHECK(cudaMemcpy(d_A, A, N * sizeof(float),cudaMemcpyHostToDevice));
-  CUDA_CHECK(cudaMemcpy(d_B, B, K * sizeof(float), cudaMemcpyHostToDevice));
+  if (use_constant_filter) {
+    CUDA_CHECK(cudaMemcpyToSymbol(g_const_b, B, K * sizeof(float)));
+  } else {
+    CUDA_CHECK(cudaMalloc(&d_B, K * sizeof(float)));
+    CUDA_CHECK(cudaMemcpy(d_B, B, K * sizeof(float), cudaMemcpyHostToDevice));
+  }
   CUDA_CHECK(cudaMemset(d_C, 0, outN * sizeof(float)));
 
   dim3 block_shape(g_launch_config.block_x, 1);
@@ -653,10 +856,19 @@ void solution(const float* A, const float* B, float* C, size_t N, size_t K) {
     case KernelKind::Basic:
       device_1d_conv_basic<<<grid_shape, block_shape>>>(d_A, d_B, d_C, K, N);
       break;
+    case KernelKind::BasicConst:
+      device_1d_conv_basic_const<<<grid_shape, block_shape>>>(d_A, d_C, K, N);
+      break;
     case KernelKind::Tiled:
     {
       size_t smem_bytes = (block_shape.x + (r * 2)) * sizeof(float);
       device_1d_conv_tiled<<<grid_shape, block_shape, smem_bytes>>>(d_A, d_B, d_C, K, N);
+      break;
+    }
+    case KernelKind::TiledConst:
+    {
+      size_t smem_bytes = (block_shape.x + (r * 2)) * sizeof(float);
+      device_1d_conv_tiled_const<<<grid_shape, block_shape, smem_bytes>>>(d_A, d_C, K, N);
       break;
     }
     case KernelKind::BlockStrideStub:
@@ -664,6 +876,13 @@ void solution(const float* A, const float* B, float* C, size_t N, size_t K) {
       size_t smem_bytes = (block_shape.x + (r * 2)) * sizeof(float);
       device_1d_conv_tiled_block_stride<<<grid_shape, block_shape, smem_bytes>>>(
         d_A, d_B, d_C, K, N);
+      break;
+    }
+    case KernelKind::BlockStrideConst:
+    {
+      size_t smem_bytes = (block_shape.x + (r * 2)) * sizeof(float);
+      device_1d_conv_tiled_block_stride_const<<<grid_shape, block_shape, smem_bytes>>>(
+        d_A, d_C, K, N);
       break;
     }
   }

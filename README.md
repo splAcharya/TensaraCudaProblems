@@ -6,6 +6,10 @@ correctness, compare alternative implementations, sweep launch configurations,
 and document what performs well locally before pushing toward Tensara
 leaderboards.
 
+> Note: This repository was developed with assistance from Codex agent
+> ChatGPT 5.4. It generated the test suite and authored all repository code
+> outside the kernel implementations and their underlying logic.
+
 ## Tensara
 
 Tensara describes itself as a platform for GPU programming challenges: write
@@ -64,3 +68,15 @@ Short summary:
   for the `K=8191` scaling cases.
 - Full benchmark dump, scaling heatmaps, and best-launch notes:
   [P1_1D_CONVOLUTIONS_RESULTS.md](/mnt/d/gitrepo/TensaraCudaProblems/P1_1D_CONVOLUTIONS_RESULTS.md)
+
+### `P3_RELU.cu`
+
+Local ReLU harness for the Tensara problem:
+
+- Matches the Tensara signature
+  `extern "C" void solution(const float* input, float* output, size_t n, size_t m)`
+- Treats the input/output as row-major `m x n` matrices and applies
+  `C[i][j] = max(0, A[i][j])`
+- Includes a CPU reference and a baseline GPU kernel implementation
+- Default runs focus on small and medium correctness cases with CPU checking
+- `--skip-cpu` enables the heavier large/shape/scaling benchmark sweep
