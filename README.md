@@ -1,86 +1,86 @@
 # TensaraCudaProblems
 
-Local CUDA workbench for solving and benchmarking Tensara problems before
-submitting to the platform. The goal of this repo is to iterate on kernel
-correctness, compare alternative implementations, sweep launch configurations,
-and document what performs well locally before pushing toward Tensara
-leaderboards.
+Local CUDA workbench for developing, testing, and benchmarking Tensara-style GPU
+kernel solutions before submitting them to the platform.
 
-> Note: This repository was developed with assistance from Codex agent
-> ChatGPT 5.4. It generated the test suite and authored all repository code
-> outside the kernel implementations and their underlying logic.
+The repo is intentionally organized around a simple loop:
 
-## Tensara
+- implement one or more CUDA kernels for a problem
+- expose a Tensara-compatible `extern "C" solution(...)` entry point
+- verify correctness against small expected cases and generated CPU references
+- benchmark representative input sizes and launch configurations
+- summarize the useful findings in a per-problem results file
 
-Tensara describes itself as a platform for GPU programming challenges: write
-efficient GPU kernels, benchmark them, and compare against other developers on
-standardized hardware. Its homepage centers the loop:
+## Scope
 
-- optimize
-- benchmark
-- repeat
+This is not a general CUDA library. Each problem file is a self-contained local
+harness for one Tensara problem. The harness code exists to make iteration fast:
+it can launch different kernel variants behind the same exported `solution`
+routine, run CPU-backed verification, and collect local timing data.
 
-The site emphasizes:
+Current problem files:
 
-- real hardware benchmarking
-- per-problem leaderboards
-- competitive GPU optimization workflows
-- community discussion and iteration
+- `P1_1D_CONVOLUTIONS.cu`: 1D same-padding convolution / cross-correlation.
+- `P3_RELU.cu`: elementwise ReLU over a row-major matrix.
 
-Problem catalog context from the public problems page:
+Detailed correctness and benchmark notes live next to each problem:
 
-- The public problems page currently shows `84` problems.
-- The catalog spans practical GPU tasks such as convolution, pooling,
-  reduction, normalization, activation functions, matrix multiplication,
-  graphics, cryptography, sorting, and quantization.
-- `1D Convolution` appears in the public catalog as an easy convolution task.
+- [P1_1D_CONVOLUTIONS_RESULTS.md](/mnt/d/gitrepo/TensaraCudaProblems/P1_1D_CONVOLUTIONS_RESULTS.md)
+- [P3_RESULT_RESULTS.md](/mnt/d/gitrepo/TensaraCudaProblems/P3_RESULT_RESULTS.md)
 
-What this repo is trying to do:
+## Harness Pattern
 
-- build local CUDA solutions for Tensara-style problems
-- test correctness against CPU references
-- compare multiple kernel strategies for the same problem
-- profile launch-shape choices such as block size and grid size
-- keep concise notes on which approaches are worth submitting
+Each problem follows the same broad structure:
 
-## Problems
+- CPU reference implementation for correctness checks.
+- One or more CUDA kernel implementations.
+- A Tensara-facing `extern "C"` launcher that receives device pointers.
+- A local host-side runner that handles allocation, copies, timing, and checks.
+- A default correctness-oriented run.
+- A heavier `--skip-cpu` benchmark run for larger sizes and launch sweeps.
 
-### `P1_1D_CONVOLUTIONS.cu`
+The exported `solution(...)` function should stay close to what Tensara expects:
+it should launch device work using the provided device pointers, not own the full
+host allocation or verification flow. Local-only testing belongs in the harness
+around it.
 
-Implements 1D same-padding convolution / cross-correlation with three kernels:
+## Result Files
 
-- `basic`: direct global-memory implementation
-- `tiled`: shared-memory tiled version with halo loads
-- `bstride`: shared-memory tiled version with block-stride loading
+Raw run logs are kept as `.txt` files:
 
-Short summary:
+- `*_with_cpu.txt`: CPU-backed correctness-oriented runs.
+- `*_skip_cpu.txt`: larger benchmark-oriented runs where expensive CPU checks are
+  skipped.
 
-- GPU: NVIDIA GeForce RTX 3050 Laptop GPU, 4 GB VRAM
-- Default launch used by the main benchmark rows: `block_x=256`, `grid_x=32`
-- All kernels pass correctness checks on the current small, large, tile, and
-  `K=8191` web-style cases.
-- `tiled` is correct, but it is usually slower than `basic` or `bstride` for
-  larger filters.
-- For this problem on the local RTX 3050, `bstride` is the best shared-memory
-  design so far.
-- `basic` remains very competitive, especially at large `K`.
-- Larger blocks (`256` or `512`) with moderate-to-high grid counts perform best
-  for the `K=8191` scaling cases.
-- Default runs focus on small, medium, and selected large correctness cases with CPU checking.
-- Odd-size cases are included to exercise boundary and non-multiple launch behavior.
-- `--skip-cpu` enables the heavier large/tile/web/odd/scaling benchmark sweep.
-- Full benchmark dump, scaling heatmaps, and best-launch notes:
-  [P1_1D_CONVOLUTIONS_RESULTS.md](/mnt/d/gitrepo/TensaraCudaProblems/P1_1D_CONVOLUTIONS_RESULTS.md)
+The result tables use these status labels:
 
-### `P3_RELU.cu`
+- `cpu=PASS`: CPU output matched a hard-coded expected answer.
+- `cpu=REF`: CPU output was generated and used as the GPU verification reference.
+- `cpu=SKIP`: CPU reference generation was skipped.
+- `gpu=PASS`: GPU output matched the expected output or CPU reference.
+- `gpu=SKIP`: GPU verification was skipped.
 
-Local ReLU harness for the Tensara problem:
+The markdown result files summarize the raw logs instead of duplicating every
+row. They are the place to record which variants are correct, which launch
+shapes are promising, and which benchmark rows look noisy or suspicious.
 
-- Matches the Tensara signature
-  `extern "C" void solution(const float* input, float* output, size_t n, size_t m)`
-- Treats the input/output as row-major `m x n` matrices and applies
-  `C[i][j] = max(0, A[i][j])`
-- Includes a CPU reference and a baseline GPU kernel implementation
-- Default runs focus on small, medium, and selected large correctness cases with CPU checking
-- Odd-shape cases are included to exercise tail paths such as `float4` remainder handling
-- `--skip-cpu` enables the heavier Tensara-size/shape/tail/scaling benchmark sweep
+## Local Benchmarking Notes
+
+Local timings are useful for iteration, but they are not a substitute for
+Tensara leaderboard measurements. Treat them as directional data:
+
+- compare kernel variants under the same harness and input set
+- check odd sizes and tail cases, especially for vectorized kernels
+- rerun suspicious rows before drawing conclusions
+- prefer correctness evidence from CPU-backed runs before trusting benchmark-only
+  results
+
+The current local benchmark environment used for the saved result files is an
+NVIDIA GeForce RTX 3050 Laptop GPU.
+
+## Development Notes
+
+The repository has been developed with Codex assistance for harness structure,
+test generation, benchmark organization, and documentation. Kernel strategy and
+implementation details should still be reviewed against the CUDA code and the
+raw result logs before submission.
