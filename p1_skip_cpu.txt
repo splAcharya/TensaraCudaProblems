@@ -1,0 +1,485 @@
+group   name        kernel    N         K       block_x grid_x  cpu   gpu   total_ms    kernel_ms   
+----------------------------------------------------------------------------------------------------
+small   small_1     basic     4         3       256     32      SKIP  PASS  7.640       7.024       
+small   small_1     basic_c   4         3       256     32      SKIP  PASS  0.524       0.055       
+small   small_1     tiled     4         3       256     32      SKIP  PASS  0.426       0.060       
+small   small_1     tiled_c   4         3       256     32      SKIP  PASS  0.423       0.068       
+small   small_1     bstride   4         3       256     32      SKIP  PASS  0.446       0.086       
+small   small_1     bstride_c 4         3       256     32      SKIP  PASS  0.463       0.063       
+small   small_2     basic     3         3       256     32      SKIP  PASS  0.398       0.006       
+small   small_2     basic_c   3         3       256     32      SKIP  PASS  0.343       0.006       
+small   small_2     tiled     3         3       256     32      SKIP  PASS  0.332       0.006       
+small   small_2     tiled_c   3         3       256     32      SKIP  PASS  0.391       0.007       
+small   small_2     bstride   3         3       256     32      SKIP  PASS  0.404       0.007       
+small   small_2     bstride_c 3         3       256     32      SKIP  PASS  0.433       0.008       
+small   small_3     basic     3         3       256     32      SKIP  PASS  0.718       0.048       
+small   small_3     basic_c   3         3       256     32      SKIP  PASS  0.453       0.006       
+small   small_3     tiled     3         3       256     32      SKIP  PASS  0.692       0.092       
+small   small_3     tiled_c   3         3       256     32      SKIP  PASS  0.428       0.007       
+small   small_3     bstride   3         3       256     32      SKIP  PASS  0.416       0.008       
+small   small_3     bstride_c 3         3       256     32      SKIP  PASS  0.529       0.008       
+medium  medium_1    basic     4096      31      256     32      SKIP  SKIP  0.411       0.006       
+medium  medium_1    basic_c   4096      31      256     32      SKIP  SKIP  0.389       0.008       
+medium  medium_1    tiled     4096      31      256     32      SKIP  SKIP  0.394       0.007       
+medium  medium_1    tiled_c   4096      31      256     32      SKIP  SKIP  0.347       0.006       
+medium  medium_1    bstride   4096      31      256     32      SKIP  SKIP  0.341       0.006       
+medium  medium_1    bstride_c 4096      31      256     32      SKIP  SKIP  0.346       0.005       
+medium  medium_2    basic     4097      63      256     32      SKIP  SKIP  0.359       0.007       
+medium  medium_2    basic_c   4097      63      256     32      SKIP  SKIP  0.355       0.007       
+medium  medium_2    tiled     4097      63      256     32      SKIP  SKIP  0.372       0.008       
+medium  medium_2    tiled_c   4097      63      256     32      SKIP  SKIP  0.418       0.008       
+medium  medium_2    bstride   4097      63      256     32      SKIP  SKIP  0.375       0.008       
+medium  medium_2    bstride_c 4097      63      256     32      SKIP  SKIP  0.459       0.007       
+medium  medium_3    basic     8193      95      256     32      SKIP  SKIP  0.396       0.011       
+medium  medium_3    basic_c   8193      95      256     32      SKIP  SKIP  0.363       0.011       
+medium  medium_3    tiled     8193      95      256     32      SKIP  SKIP  0.376       0.013       
+medium  medium_3    tiled_c   8193      95      256     32      SKIP  SKIP  0.363       0.012       
+medium  medium_3    bstride   8193      95      256     32      SKIP  SKIP  0.342       0.011       
+medium  medium_3    bstride_c 8193      95      256     32      SKIP  SKIP  0.396       0.009       
+medium  medium_4    basic     16384     127     256     32      SKIP  SKIP  0.459       0.017       
+medium  medium_4    basic_c   16384     127     256     32      SKIP  SKIP  0.516       0.018       
+medium  medium_4    tiled     16384     127     256     32      SKIP  SKIP  0.604       0.026       
+medium  medium_4    tiled_c   16384     127     256     32      SKIP  SKIP  0.437       0.015       
+medium  medium_4    bstride   16384     127     256     32      SKIP  SKIP  0.810       0.070       
+medium  medium_4    bstride_c 16384     127     256     32      SKIP  SKIP  0.637       0.012       
+large   large_1     basic     32769     127     256     32      SKIP  SKIP  1.386       0.060       
+large   large_1     basic_c   32769     127     256     32      SKIP  SKIP  0.792       0.035       
+large   large_1     tiled     32769     127     256     32      SKIP  SKIP  0.517       0.040       
+large   large_1     tiled_c   32769     127     256     32      SKIP  SKIP  0.525       0.027       
+large   large_1     bstride   32769     127     256     32      SKIP  SKIP  0.582       0.036       
+large   large_1     bstride_c 32769     127     256     32      SKIP  SKIP  0.635       0.030       
+large   large_2     basic     65537     191     256     32      SKIP  SKIP  0.588       0.080       
+large   large_2     basic_c   65537     191     256     32      SKIP  SKIP  0.638       0.072       
+large   large_2     tiled     65537     191     256     32      SKIP  SKIP  0.595       0.100       
+large   large_2     tiled_c   65537     191     256     32      SKIP  SKIP  0.530       0.067       
+large   large_2     bstride   65537     191     256     32      SKIP  SKIP  0.546       0.081       
+large   large_2     bstride_c 65537     191     256     32      SKIP  SKIP  0.496       0.046       
+large   large_1     basic     32768     31      256     32      SKIP  SKIP  0.424       0.012       
+large   large_1     basic_c   32768     31      256     32      SKIP  SKIP  0.424       0.011       
+large   large_1     tiled     32768     31      256     32      SKIP  SKIP  0.400       0.016       
+large   large_1     tiled_c   32768     31      256     32      SKIP  SKIP  0.423       0.012       
+large   large_1     bstride   32768     31      256     32      SKIP  SKIP  0.391       0.015       
+large   large_1     bstride_c 32768     31      256     32      SKIP  SKIP  0.506       0.010       
+large   large_2     basic     65536     63      256     32      SKIP  SKIP  0.540       0.033       
+large   large_2     basic_c   65536     63      256     32      SKIP  SKIP  0.585       0.032       
+large   large_2     tiled     65536     63      256     32      SKIP  SKIP  0.769       0.040       
+large   large_2     tiled_c   65536     63      256     32      SKIP  SKIP  0.602       0.028       
+large   large_2     bstride   65536     63      256     32      SKIP  SKIP  0.562       0.034       
+large   large_2     bstride_c 65536     63      256     32      SKIP  SKIP  0.729       0.023       
+large   large_3     basic     131072    95      256     32      SKIP  SKIP  0.772       0.082       
+large   large_3     basic_c   131072    95      256     32      SKIP  SKIP  0.870       0.074       
+large   large_3     tiled     131072    95      256     32      SKIP  SKIP  1.124       0.167       
+large   large_3     tiled_c   131072    95      256     32      SKIP  SKIP  0.636       0.069       
+large   large_3     bstride   131072    95      256     32      SKIP  SKIP  0.815       0.091       
+large   large_3     bstride_c 131072    95      256     32      SKIP  SKIP  0.741       0.049       
+large   large_4     basic     262144    127     256     32      SKIP  SKIP  1.226       0.204       
+large   large_4     basic_c   262144    127     256     32      SKIP  SKIP  0.914       0.183       
+large   large_4     tiled     262144    127     256     32      SKIP  SKIP  1.139       0.264       
+large   large_4     tiled_c   262144    127     256     32      SKIP  SKIP  0.852       0.185       
+large   large_4     bstride   262144    127     256     32      SKIP  SKIP  1.048       0.205       
+large   large_4     bstride_c 262144    127     256     32      SKIP  SKIP  0.734       0.115       
+large   large_5     basic     524288    191     256     32      SKIP  SKIP  2.973       0.598       
+large   large_5     basic_c   524288    191     256     32      SKIP  SKIP  2.109       0.546       
+large   large_5     tiled     524288    191     256     32      SKIP  SKIP  2.286       0.753       
+large   large_5     tiled_c   524288    191     256     32      SKIP  SKIP  1.662       0.503       
+large   large_5     bstride   524288    191     256     32      SKIP  SKIP  1.994       0.595       
+large   large_5     bstride_c 524288    191     256     32      SKIP  SKIP  1.401       0.321       
+tile    tile_1      basic     262144    127     256     32      SKIP  SKIP  1.086       0.202       
+tile    tile_1      basic_c   262144    127     256     32      SKIP  SKIP  0.839       0.183       
+tile    tile_1      tiled     262144    127     256     32      SKIP  SKIP  1.173       0.265       
+tile    tile_1      tiled_c   262144    127     256     32      SKIP  SKIP  0.820       0.172       
+tile    tile_1      bstride   262144    127     256     32      SKIP  SKIP  1.113       0.204       
+tile    tile_1      bstride_c 262144    127     256     32      SKIP  SKIP  0.794       0.117       
+tile    tile_2      basic     524288    191     256     32      SKIP  SKIP  2.614       0.609       
+tile    tile_2      basic_c   524288    191     256     32      SKIP  SKIP  1.933       0.552       
+tile    tile_2      tiled     524288    191     256     32      SKIP  SKIP  2.222       0.751       
+tile    tile_2      tiled_c   524288    191     256     32      SKIP  SKIP  1.610       0.501       
+tile    tile_2      bstride   524288    191     256     32      SKIP  SKIP  1.938       0.594       
+tile    tile_2      bstride_c 524288    191     256     32      SKIP  SKIP  1.474       0.329       
+tile    tile_3      basic     1048576   255     256     32      SKIP  SKIP  3.917       1.556       
+tile    tile_3      basic_c   1048576   255     256     32      SKIP  SKIP  3.614       1.432       
+tile    tile_3      tiled     1048576   255     256     32      SKIP  SKIP  3.840       1.955       
+tile    tile_3      tiled_c   1048576   255     256     32      SKIP  SKIP  2.932       1.316       
+tile    tile_3      bstride   1048576   255     256     32      SKIP  SKIP  3.375       1.534       
+tile    tile_3      bstride_c 1048576   255     256     32      SKIP  SKIP  2.501       0.819       
+tile    tile_4      basic     1048576   383     256     32      SKIP  SKIP  4.423       2.354       
+tile    tile_4      basic_c   1048576   383     256     32      SKIP  SKIP  3.784       2.182       
+tile    tile_4      tiled     1048576   383     256     32      SKIP  SKIP  4.795       2.934       
+tile    tile_4      tiled_c   1048576   383     256     32      SKIP  SKIP  3.620       1.929       
+tile    tile_4      bstride   1048576   383     256     32      SKIP  SKIP  4.126       2.282       
+tile    tile_4      bstride_c 1048576   383     256     32      SKIP  SKIP  3.720       1.240       
+tile    tile_5      basic     2097152   511     256     32      SKIP  SKIP  10.898      6.277       
+tile    tile_5      basic_c   2097152   511     256     32      SKIP  SKIP  9.407       5.890       
+tile    tile_5      tiled     2097152   511     256     32      SKIP  SKIP  12.350      8.410       
+tile    tile_5      tiled_c   2097152   511     256     32      SKIP  SKIP  8.157       5.030       
+tile    tile_5      bstride   2097152   511     256     32      SKIP  SKIP  10.288      6.001       
+tile    tile_5      bstride_c 2097152   511     256     32      SKIP  SKIP  8.462       3.145       
+web     web_1       basic     32768     8191    256     32      SKIP  SKIP  2.161       1.504       
+web     web_1       basic_c   32768     8191    256     32      SKIP  SKIP  2.092       1.408       
+web     web_1       tiled     32768     8191    256     32      SKIP  SKIP  2.331       1.901       
+web     web_1       tiled_c   32768     8191    256     32      SKIP  SKIP  1.583       1.151       
+web     web_1       bstride   32768     8191    256     32      SKIP  SKIP  1.867       1.449       
+web     web_1       bstride_c 32768     8191    256     32      SKIP  SKIP  1.196       0.734       
+web     web_2       basic     65536     8191    256     32      SKIP  SKIP  3.639       3.167       
+web     web_2       basic_c   65536     8191    256     32      SKIP  SKIP  3.455       2.806       
+web     web_2       tiled     65536     8191    256     32      SKIP  SKIP  4.481       3.832       
+web     web_2       tiled_c   65536     8191    256     32      SKIP  SKIP  3.269       2.339       
+web     web_2       bstride   65536     8191    256     32      SKIP  SKIP  3.783       2.889       
+web     web_2       bstride_c 65536     8191    256     32      SKIP  SKIP  1.996       1.459       
+odd     odd_1       basic     4097      31      256     32      SKIP  SKIP  0.357       0.008       
+odd     odd_1       basic_c   4097      31      256     32      SKIP  SKIP  0.335       0.005       
+odd     odd_1       tiled     4097      31      256     32      SKIP  SKIP  0.324       0.007       
+odd     odd_1       tiled_c   4097      31      256     32      SKIP  SKIP  0.373       0.006       
+odd     odd_1       bstride   4097      31      256     32      SKIP  SKIP  0.827       0.014       
+odd     odd_1       bstride_c 4097      31      256     32      SKIP  SKIP  0.639       0.006       
+odd     odd_2       basic     32769     127     256     32      SKIP  SKIP  0.542       0.031       
+odd     odd_2       basic_c   32769     127     256     32      SKIP  SKIP  0.451       0.028       
+odd     odd_2       tiled     32769     127     256     32      SKIP  SKIP  0.386       0.038       
+odd     odd_2       tiled_c   32769     127     256     32      SKIP  SKIP  0.398       0.028       
+odd     odd_2       bstride   32769     127     256     32      SKIP  SKIP  0.394       0.033       
+odd     odd_2       bstride_c 32769     127     256     32      SKIP  SKIP  0.479       0.041       
+odd     odd_3       basic     262147    383     256     32      SKIP  SKIP  1.554       0.601       
+odd     odd_3       basic_c   262147    383     256     32      SKIP  SKIP  1.498       0.547       
+odd     odd_3       tiled     262147    383     256     32      SKIP  SKIP  1.569       0.744       
+odd     odd_3       tiled_c   262147    383     256     32      SKIP  SKIP  1.397       0.479       
+odd     odd_3       bstride   262147    383     256     32      SKIP  SKIP  1.461       0.571       
+odd     odd_3       bstride_c 262147    383     256     32      SKIP  SKIP  1.157       0.298       
+scale   web_1       basic     32768     8191    32      8       SKIP  SKIP  17.698      17.214      
+scale   web_1       basic_c   32768     8191    32      8       SKIP  SKIP  21.933      21.430      
+scale   web_1       tiled     32768     8191    32      8       SKIP  SKIP  43.691      42.273      
+scale   web_1       tiled_c   32768     8191    32      8       SKIP  SKIP  26.319      25.277      
+scale   web_1       bstride   32768     8191    32      8       SKIP  SKIP  16.409      15.493      
+scale   web_1       bstride_c 32768     8191    32      8       SKIP  SKIP  10.276      9.491       
+scale   web_1       basic     32768     8191    32      16      SKIP  SKIP  7.296       6.620       
+scale   web_1       basic_c   32768     8191    32      16      SKIP  SKIP  9.593       8.149       
+scale   web_1       tiled     32768     8191    32      16      SKIP  SKIP  17.807      16.476      
+scale   web_1       tiled_c   32768     8191    32      16      SKIP  SKIP  13.511      12.653      
+scale   web_1       bstride   32768     8191    32      16      SKIP  SKIP  8.668       7.754       
+scale   web_1       bstride_c 32768     8191    32      16      SKIP  SKIP  5.488       4.770       
+scale   web_1       basic     32768     8191    32      32      SKIP  SKIP  4.574       3.472       
+scale   web_1       basic_c   32768     8191    32      32      SKIP  SKIP  5.123       4.168       
+scale   web_1       tiled     32768     8191    32      32      SKIP  SKIP  8.806       8.188       
+scale   web_1       tiled_c   32768     8191    32      32      SKIP  SKIP  6.702       6.243       
+scale   web_1       bstride   32768     8191    32      32      SKIP  SKIP  4.351       3.843       
+scale   web_1       bstride_c 32768     8191    32      32      SKIP  SKIP  2.892       2.375       
+scale   web_1       basic     32768     8191    32      64      SKIP  SKIP  2.700       1.828       
+scale   web_1       basic_c   32768     8191    32      64      SKIP  SKIP  2.837       2.188       
+scale   web_1       tiled     32768     8191    32      64      SKIP  SKIP  8.364       7.831       
+scale   web_1       tiled_c   32768     8191    32      64      SKIP  SKIP  6.654       6.060       
+scale   web_1       bstride   32768     8191    32      64      SKIP  SKIP  4.825       3.905       
+scale   web_1       bstride_c 32768     8191    32      64      SKIP  SKIP  3.135       2.317       
+scale   web_1       basic     32768     8191    64      8       SKIP  SKIP  7.234       6.628       
+scale   web_1       basic_c   32768     8191    64      8       SKIP  SKIP  8.766       8.120       
+scale   web_1       tiled     32768     8191    64      8       SKIP  SKIP  13.841      12.631      
+scale   web_1       tiled_c   32768     8191    64      8       SKIP  SKIP  10.487      8.902       
+scale   web_1       bstride   32768     8191    64      8       SKIP  SKIP  7.683       6.770       
+scale   web_1       bstride_c 32768     8191    64      8       SKIP  SKIP  5.019       3.729       
+scale   web_1       basic     32768     8191    64      16      SKIP  SKIP  4.034       3.478       
+scale   web_1       basic_c   32768     8191    64      16      SKIP  SKIP  4.635       4.185       
+scale   web_1       tiled     32768     8191    64      16      SKIP  SKIP  6.832       6.303       
+scale   web_1       tiled_c   32768     8191    64      16      SKIP  SKIP  4.983       4.392       
+scale   web_1       bstride   32768     8191    64      16      SKIP  SKIP  3.863       3.332       
+scale   web_1       bstride_c 32768     8191    64      16      SKIP  SKIP  2.302       1.866       
+scale   web_1       basic     32768     8191    64      32      SKIP  SKIP  2.341       1.889       
+scale   web_1       basic_c   32768     8191    64      32      SKIP  SKIP  2.744       2.207       
+scale   web_1       tiled     32768     8191    64      32      SKIP  SKIP  4.113       3.131       
+scale   web_1       tiled_c   32768     8191    64      32      SKIP  SKIP  2.864       2.256       
+scale   web_1       bstride   32768     8191    64      32      SKIP  SKIP  2.291       1.879       
+scale   web_1       bstride_c 32768     8191    64      32      SKIP  SKIP  1.496       1.058       
+scale   web_1       basic     32768     8191    64      64      SKIP  SKIP  1.746       1.286       
+scale   web_1       basic_c   32768     8191    64      64      SKIP  SKIP  1.742       1.359       
+scale   web_1       tiled     32768     8191    64      64      SKIP  SKIP  3.736       3.185       
+scale   web_1       tiled_c   32768     8191    64      64      SKIP  SKIP  2.674       2.257       
+scale   web_1       bstride   32768     8191    64      64      SKIP  SKIP  2.257       1.878       
+scale   web_1       bstride_c 32768     8191    64      64      SKIP  SKIP  1.363       0.949       
+scale   web_1       basic     32768     8191    128     8       SKIP  SKIP  4.146       3.604       
+scale   web_1       basic_c   32768     8191    128     8       SKIP  SKIP  4.789       4.336       
+scale   web_1       tiled     32768     8191    128     8       SKIP  SKIP  6.997       6.595       
+scale   web_1       tiled_c   32768     8191    128     8       SKIP  SKIP  4.845       4.408       
+scale   web_1       bstride   32768     8191    128     8       SKIP  SKIP  4.215       3.645       
+scale   web_1       bstride_c 32768     8191    128     8       SKIP  SKIP  2.385       1.965       
+scale   web_1       basic     32768     8191    128     16      SKIP  SKIP  2.372       1.968       
+scale   web_1       basic_c   32768     8191    128     16      SKIP  SKIP  2.702       2.292       
+scale   web_1       tiled     32768     8191    128     16      SKIP  SKIP  3.707       3.298       
+scale   web_1       tiled_c   32768     8191    128     16      SKIP  SKIP  2.651       2.199       
+scale   web_1       bstride   32768     8191    128     16      SKIP  SKIP  2.257       1.800       
+scale   web_1       bstride_c 32768     8191    128     16      SKIP  SKIP  1.616       0.997       
+scale   web_1       basic     32768     8191    128     32      SKIP  SKIP  1.740       1.302       
+scale   web_1       basic_c   32768     8191    128     32      SKIP  SKIP  1.872       1.361       
+scale   web_1       tiled     32768     8191    128     32      SKIP  SKIP  2.392       1.871       
+scale   web_1       tiled_c   32768     8191    128     32      SKIP  SKIP  1.861       1.320       
+scale   web_1       bstride   32768     8191    128     32      SKIP  SKIP  1.732       1.195       
+scale   web_1       bstride_c 32768     8191    128     32      SKIP  SKIP  1.183       0.632       
+scale   web_1       basic     32768     8191    128     64      SKIP  SKIP  1.663       1.182       
+scale   web_1       basic_c   32768     8191    128     64      SKIP  SKIP  1.581       1.052       
+scale   web_1       tiled     32768     8191    128     64      SKIP  SKIP  2.258       1.850       
+scale   web_1       tiled_c   32768     8191    128     64      SKIP  SKIP  1.799       1.273       
+scale   web_1       bstride   32768     8191    128     64      SKIP  SKIP  1.694       1.176       
+scale   web_1       bstride_c 32768     8191    128     64      SKIP  SKIP  1.145       0.646       
+scale   web_1       basic     32768     8191    256     8       SKIP  SKIP  2.812       2.418       
+scale   web_1       basic_c   32768     8191    256     8       SKIP  SKIP  3.290       2.705       
+scale   web_1       tiled     32768     8191    256     8       SKIP  SKIP  4.333       3.734       
+scale   web_1       tiled_c   32768     8191    256     8       SKIP  SKIP  2.842       2.394       
+scale   web_1       bstride   32768     8191    256     8       SKIP  SKIP  2.777       2.206       
+scale   web_1       bstride_c 32768     8191    256     8       SKIP  SKIP  1.718       1.192       
+scale   web_1       basic     32768     8191    256     16      SKIP  SKIP  1.878       1.395       
+scale   web_1       basic_c   32768     8191    256     16      SKIP  SKIP  2.003       1.578       
+scale   web_1       tiled     32768     8191    256     16      SKIP  SKIP  2.312       1.875       
+scale   web_1       tiled_c   32768     8191    256     16      SKIP  SKIP  1.901       1.350       
+scale   web_1       bstride   32768     8191    256     16      SKIP  SKIP  1.654       1.107       
+scale   web_1       bstride_c 32768     8191    256     16      SKIP  SKIP  1.170       0.623       
+scale   web_1       basic     32768     8191    256     32      SKIP  SKIP  1.734       1.176       
+scale   web_1       basic_c   32768     8191    256     32      SKIP  SKIP  1.606       1.093       
+scale   web_1       tiled     32768     8191    256     32      SKIP  SKIP  1.804       1.422       
+scale   web_1       tiled_c   32768     8191    256     32      SKIP  SKIP  1.278       0.859       
+scale   web_1       bstride   32768     8191    256     32      SKIP  SKIP  1.562       1.102       
+scale   web_1       bstride_c 32768     8191    256     32      SKIP  SKIP  0.927       0.550       
+scale   web_1       basic     32768     8191    256     64      SKIP  SKIP  1.493       1.085       
+scale   web_1       basic_c   32768     8191    256     64      SKIP  SKIP  1.442       0.990       
+scale   web_1       tiled     32768     8191    256     64      SKIP  SKIP  1.893       1.434       
+scale   web_1       tiled_c   32768     8191    256     64      SKIP  SKIP  1.319       0.891       
+scale   web_1       bstride   32768     8191    256     64      SKIP  SKIP  1.689       1.140       
+scale   web_1       bstride_c 32768     8191    256     64      SKIP  SKIP  1.191       0.589       
+scale   web_1       basic     32768     8191    512     8       SKIP  SKIP  2.551       2.126       
+scale   web_1       basic_c   32768     8191    512     8       SKIP  SKIP  2.590       1.986       
+scale   web_1       tiled     32768     8191    512     8       SKIP  SKIP  3.485       2.916       
+scale   web_1       tiled_c   32768     8191    512     8       SKIP  SKIP  2.329       1.800       
+scale   web_1       bstride   32768     8191    512     8       SKIP  SKIP  2.595       2.151       
+scale   web_1       bstride_c 32768     8191    512     8       SKIP  SKIP  1.587       1.094       
+scale   web_1       basic     32768     8191    512     16      SKIP  SKIP  1.518       1.070       
+scale   web_1       basic_c   32768     8191    512     16      SKIP  SKIP  2.151       1.040       
+scale   web_1       tiled     32768     8191    512     16      SKIP  SKIP  2.040       1.513       
+scale   web_1       tiled_c   32768     8191    512     16      SKIP  SKIP  1.476       0.929       
+scale   web_1       bstride   32768     8191    512     16      SKIP  SKIP  1.611       1.080       
+scale   web_1       bstride_c 32768     8191    512     16      SKIP  SKIP  1.075       0.584       
+scale   web_1       basic     32768     8191    512     32      SKIP  SKIP  1.703       1.068       
+scale   web_1       basic_c   32768     8191    512     32      SKIP  SKIP  1.520       1.024       
+scale   web_1       tiled     32768     8191    512     32      SKIP  SKIP  1.863       1.325       
+scale   web_1       tiled_c   32768     8191    512     32      SKIP  SKIP  1.316       0.790       
+scale   web_1       bstride   32768     8191    512     32      SKIP  SKIP  1.630       1.112       
+scale   web_1       bstride_c 32768     8191    512     32      SKIP  SKIP  1.083       0.579       
+scale   web_1       basic     32768     8191    512     64      SKIP  SKIP  1.596       1.105       
+scale   web_1       basic_c   32768     8191    512     64      SKIP  SKIP  1.430       0.936       
+scale   web_1       tiled     32768     8191    512     64      SKIP  SKIP  1.786       1.277       
+scale   web_1       tiled_c   32768     8191    512     64      SKIP  SKIP  1.248       0.751       
+scale   web_1       bstride   32768     8191    512     64      SKIP  SKIP  1.596       1.070       
+scale   web_1       bstride_c 32768     8191    512     64      SKIP  SKIP  1.221       0.587       
+scale   web_2       basic     65536     8191    32      8       SKIP  SKIP  26.585      25.823      
+scale   web_2       basic_c   65536     8191    32      8       SKIP  SKIP  33.291      32.279      
+scale   web_2       tiled     65536     8191    32      8       SKIP  SKIP  67.311      66.321      
+scale   web_2       tiled_c   65536     8191    32      8       SKIP  SKIP  52.850      51.382      
+scale   web_2       bstride   65536     8191    32      8       SKIP  SKIP  32.373      31.161      
+scale   web_2       bstride_c 65536     8191    32      8       SKIP  SKIP  20.719      19.407      
+scale   web_2       basic     65536     8191    32      16      SKIP  SKIP  13.981      13.208      
+scale   web_2       basic_c   65536     8191    32      16      SKIP  SKIP  16.959      16.378      
+scale   web_2       tiled     65536     8191    32      16      SKIP  SKIP  34.213      33.223      
+scale   web_2       tiled_c   65536     8191    32      16      SKIP  SKIP  27.326      25.654      
+scale   web_2       bstride   65536     8191    32      16      SKIP  SKIP  16.623      15.666      
+scale   web_2       bstride_c 65536     8191    32      16      SKIP  SKIP  10.683      9.616       
+scale   web_2       basic     65536     8191    32      32      SKIP  SKIP  8.225       6.898       
+scale   web_2       basic_c   65536     8191    32      32      SKIP  SKIP  9.365       8.440       
+scale   web_2       tiled     65536     8191    32      32      SKIP  SKIP  17.495      16.553      
+scale   web_2       tiled_c   65536     8191    32      32      SKIP  SKIP  13.589      12.686      
+scale   web_2       bstride   65536     8191    32      32      SKIP  SKIP  8.434       7.729       
+scale   web_2       bstride_c 65536     8191    32      32      SKIP  SKIP  5.584       4.840       
+scale   web_2       basic     65536     8191    32      64      SKIP  SKIP  4.221       3.629       
+scale   web_2       basic_c   65536     8191    32      64      SKIP  SKIP  4.807       4.338       
+scale   web_2       tiled     65536     8191    32      64      SKIP  SKIP  16.197      15.714      
+scale   web_2       tiled_c   65536     8191    32      64      SKIP  SKIP  13.344      12.175      
+scale   web_2       bstride   65536     8191    32      64      SKIP  SKIP  9.001       7.850       
+scale   web_2       bstride_c 65536     8191    32      64      SKIP  SKIP  5.800       4.694       
+scale   web_2       basic     65536     8191    64      8       SKIP  SKIP  14.283      13.293      
+scale   web_2       basic_c   65536     8191    64      8       SKIP  SKIP  17.221      16.298      
+scale   web_2       tiled     65536     8191    64      8       SKIP  SKIP  26.436      25.506      
+scale   web_2       tiled_c   65536     8191    64      8       SKIP  SKIP  18.857      18.009      
+scale   web_2       bstride   65536     8191    64      8       SKIP  SKIP  14.628      13.362      
+scale   web_2       bstride_c 65536     8191    64      8       SKIP  SKIP  8.555       7.548       
+scale   web_2       basic     65536     8191    64      16      SKIP  SKIP  7.654       6.927       
+scale   web_2       basic_c   65536     8191    64      16      SKIP  SKIP  9.653       8.422       
+scale   web_2       tiled     65536     8191    64      16      SKIP  SKIP  13.740      12.699      
+scale   web_2       tiled_c   65536     8191    64      16      SKIP  SKIP  9.847       8.890       
+scale   web_2       bstride   65536     8191    64      16      SKIP  SKIP  7.504       6.702       
+scale   web_2       bstride_c 65536     8191    64      16      SKIP  SKIP  4.405       3.807       
+scale   web_2       basic     65536     8191    64      32      SKIP  SKIP  4.483       3.765       
+scale   web_2       basic_c   65536     8191    64      32      SKIP  SKIP  5.021       4.433       
+scale   web_2       tiled     65536     8191    64      32      SKIP  SKIP  7.174       6.322       
+scale   web_2       tiled_c   65536     8191    64      32      SKIP  SKIP  5.546       4.577       
+scale   web_2       bstride   65536     8191    64      32      SKIP  SKIP  4.912       3.762       
+scale   web_2       bstride_c 65536     8191    64      32      SKIP  SKIP  3.537       2.135       
+scale   web_2       basic     65536     8191    64      64      SKIP  SKIP  3.951       2.567       
+scale   web_2       basic_c   65536     8191    64      64      SKIP  SKIP  3.829       2.742       
+scale   web_2       tiled     65536     8191    64      64      SKIP  SKIP  7.078       6.375       
+scale   web_2       tiled_c   65536     8191    64      64      SKIP  SKIP  5.213       4.575       
+scale   web_2       bstride   65536     8191    64      64      SKIP  SKIP  4.406       3.839       
+scale   web_2       bstride_c 65536     8191    64      64      SKIP  SKIP  2.798       1.963       
+scale   web_2       basic     65536     8191    128     8       SKIP  SKIP  7.620       7.081       
+scale   web_2       basic_c   65536     8191    128     8       SKIP  SKIP  9.767       8.705       
+scale   web_2       tiled     65536     8191    128     8       SKIP  SKIP  14.257      13.372      
+scale   web_2       tiled_c   65536     8191    128     8       SKIP  SKIP  10.131      8.915       
+scale   web_2       bstride   65536     8191    128     8       SKIP  SKIP  8.220       7.193       
+scale   web_2       bstride_c 65536     8191    128     8       SKIP  SKIP  4.794       3.929       
+scale   web_2       basic     65536     8191    128     16      SKIP  SKIP  4.788       3.891       
+scale   web_2       basic_c   65536     8191    128     16      SKIP  SKIP  5.405       4.602       
+scale   web_2       tiled     65536     8191    128     16      SKIP  SKIP  7.442       6.632       
+scale   web_2       tiled_c   65536     8191    128     16      SKIP  SKIP  5.332       4.443       
+scale   web_2       bstride   65536     8191    128     16      SKIP  SKIP  4.319       3.643       
+scale   web_2       bstride_c 65536     8191    128     16      SKIP  SKIP  2.656       1.952       
+scale   web_2       basic     65536     8191    128     32      SKIP  SKIP  3.219       2.623       
+scale   web_2       basic_c   65536     8191    128     32      SKIP  SKIP  3.550       2.728       
+scale   web_2       tiled     65536     8191    128     32      SKIP  SKIP  4.472       3.821       
+scale   web_2       tiled_c   65536     8191    128     32      SKIP  SKIP  3.421       2.744       
+scale   web_2       bstride   65536     8191    128     32      SKIP  SKIP  2.919       2.391       
+scale   web_2       bstride_c 65536     8191    128     32      SKIP  SKIP  1.939       1.221       
+scale   web_2       basic     65536     8191    128     64      SKIP  SKIP  3.329       2.449       
+scale   web_2       basic_c   65536     8191    128     64      SKIP  SKIP  2.625       2.046       
+scale   web_2       tiled     65536     8191    128     64      SKIP  SKIP  4.335       3.809       
+scale   web_2       tiled_c   65536     8191    128     64      SKIP  SKIP  3.018       2.589       
+scale   web_2       bstride   65536     8191    128     64      SKIP  SKIP  2.942       2.392       
+scale   web_2       bstride_c 65536     8191    128     64      SKIP  SKIP  1.751       1.247       
+scale   web_2       basic     65536     8191    256     8       SKIP  SKIP  5.375       4.846       
+scale   web_2       basic_c   65536     8191    256     8       SKIP  SKIP  6.013       5.401       
+scale   web_2       tiled     65536     8191    256     8       SKIP  SKIP  8.122       7.556       
+scale   web_2       tiled_c   65536     8191    256     8       SKIP  SKIP  5.277       4.830       
+scale   web_2       bstride   65536     8191    256     8       SKIP  SKIP  4.941       4.410       
+scale   web_2       bstride_c 65536     8191    256     8       SKIP  SKIP  2.905       2.315       
+scale   web_2       basic     65536     8191    256     16      SKIP  SKIP  3.488       2.790       
+scale   web_2       basic_c   65536     8191    256     16      SKIP  SKIP  4.108       3.121       
+scale   web_2       tiled     65536     8191    256     16      SKIP  SKIP  4.555       3.801       
+scale   web_2       tiled_c   65536     8191    256     16      SKIP  SKIP  3.633       2.593       
+scale   web_2       bstride   65536     8191    256     16      SKIP  SKIP  2.836       2.209       
+scale   web_2       bstride_c 65536     8191    256     16      SKIP  SKIP  1.820       1.178       
+scale   web_2       basic     65536     8191    256     32      SKIP  SKIP  2.982       2.414       
+scale   web_2       basic_c   65536     8191    256     32      SKIP  SKIP  2.724       2.098       
+scale   web_2       tiled     65536     8191    256     32      SKIP  SKIP  3.558       2.903       
+scale   web_2       tiled_c   65536     8191    256     32      SKIP  SKIP  2.354       1.795       
+scale   web_2       bstride   65536     8191    256     32      SKIP  SKIP  2.760       2.212       
+scale   web_2       bstride_c 65536     8191    256     32      SKIP  SKIP  1.683       1.132       
+scale   web_2       basic     65536     8191    256     64      SKIP  SKIP  2.812       2.238       
+scale   web_2       basic_c   65536     8191    256     64      SKIP  SKIP  2.690       2.157       
+scale   web_2       tiled     65536     8191    256     64      SKIP  SKIP  3.359       2.863       
+scale   web_2       tiled_c   65536     8191    256     64      SKIP  SKIP  2.733       1.704       
+scale   web_2       bstride   65536     8191    256     64      SKIP  SKIP  2.697       2.152       
+scale   web_2       bstride_c 65536     8191    256     64      SKIP  SKIP  1.602       1.090       
+scale   web_2       basic     65536     8191    512     8       SKIP  SKIP  4.822       4.293       
+scale   web_2       basic_c   65536     8191    512     8       SKIP  SKIP  4.448       3.940       
+scale   web_2       tiled     65536     8191    512     8       SKIP  SKIP  6.395       5.838       
+scale   web_2       tiled_c   65536     8191    512     8       SKIP  SKIP  4.316       3.633       
+scale   web_2       bstride   65536     8191    512     8       SKIP  SKIP  4.859       4.299       
+scale   web_2       bstride_c 65536     8191    512     8       SKIP  SKIP  2.837       2.199       
+scale   web_2       basic     65536     8191    512     16      SKIP  SKIP  2.659       2.171       
+scale   web_2       basic_c   65536     8191    512     16      SKIP  SKIP  2.662       2.120       
+scale   web_2       tiled     65536     8191    512     16      SKIP  SKIP  3.473       2.948       
+scale   web_2       tiled_c   65536     8191    512     16      SKIP  SKIP  2.769       1.844       
+scale   web_2       bstride   65536     8191    512     16      SKIP  SKIP  25.845      2.170       
+scale   web_2       bstride_c 65536     8191    512     16      SKIP  SKIP  1.699       1.105       
+scale   web_2       basic     65536     8191    512     32      SKIP  SKIP  2.690       2.160       
+scale   web_2       basic_c   65536     8191    512     32      SKIP  SKIP  2.698       2.139       
+scale   web_2       tiled     65536     8191    512     32      SKIP  SKIP  3.412       2.604       
+scale   web_2       tiled_c   65536     8191    512     32      SKIP  SKIP  2.167       1.511       
+scale   web_2       bstride   65536     8191    512     32      SKIP  SKIP  2.793       2.174       
+scale   web_2       bstride_c 65536     8191    512     32      SKIP  SKIP  1.773       1.085       
+scale   web_2       basic     65536     8191    512     64      SKIP  SKIP  2.625       2.158       
+scale   web_2       basic_c   65536     8191    512     64      SKIP  SKIP  2.468       1.984       
+scale   web_2       tiled     65536     8191    512     64      SKIP  SKIP  3.299       2.546       
+scale   web_2       tiled_c   65536     8191    512     64      SKIP  SKIP  3.039       1.459       
+scale   web_2       bstride   65536     8191    512     64      SKIP  SKIP  2.850       2.169       
+scale   web_2       bstride_c 65536     8191    512     64      SKIP  SKIP  1.621       1.081       
+
+Scaling Heatmaps (kernel_ms, lower is better)
+============================================================
+
+web_1 / basic  best=(512,32) 1.068 ms
+block\grid8         16        32        64        
+32        17.214    6.620     3.472     1.828     
+64        6.628     3.478     1.889     1.286     
+128       3.604     1.968     1.302     1.182     
+256       2.418     1.395     1.176     1.085     
+512       2.126     1.070     1.068     1.105     
+
+web_1 / basic_c  best=(512,64) 0.936 ms
+block\grid8         16        32        64        
+32        21.430    8.149     4.168     2.188     
+64        8.120     4.185     2.207     1.359     
+128       4.336     2.292     1.361     1.052     
+256       2.705     1.578     1.093     0.990     
+512       1.986     1.040     1.024     0.936     
+
+web_1 / tiled  best=(512,64) 1.277 ms
+block\grid8         16        32        64        
+32        42.273    16.476    8.188     7.831     
+64        12.631    6.303     3.131     3.185     
+128       6.595     3.298     1.871     1.850     
+256       3.734     1.875     1.422     1.434     
+512       2.916     1.513     1.325     1.277     
+
+web_1 / tiled_c  best=(512,64) 0.751 ms
+block\grid8         16        32        64        
+32        25.277    12.653    6.243     6.060     
+64        8.902     4.392     2.256     2.257     
+128       4.408     2.199     1.320     1.273     
+256       2.394     1.350     0.859     0.891     
+512       1.800     0.929     0.790     0.751     
+
+web_1 / bstride  best=(512,64) 1.070 ms
+block\grid8         16        32        64        
+32        15.493    7.754     3.843     3.905     
+64        6.770     3.332     1.879     1.878     
+128       3.645     1.800     1.195     1.176     
+256       2.206     1.107     1.102     1.140     
+512       2.151     1.080     1.112     1.070     
+
+web_1 / bstride_c  best=(256,32) 0.550 ms
+block\grid8         16        32        64        
+32        9.491     4.770     2.375     2.317     
+64        3.729     1.866     1.058     0.949     
+128       1.965     0.997     0.632     0.646     
+256       1.192     0.623     0.550     0.589     
+512       1.094     0.584     0.579     0.587     
+
+web_2 / basic  best=(512,64) 2.158 ms
+block\grid8         16        32        64        
+32        25.823    13.208    6.898     3.629     
+64        13.293    6.927     3.765     2.567     
+128       7.081     3.891     2.623     2.449     
+256       4.846     2.790     2.414     2.238     
+512       4.293     2.171     2.160     2.158     
+
+web_2 / basic_c  best=(512,64) 1.984 ms
+block\grid8         16        32        64        
+32        32.279    16.378    8.440     4.338     
+64        16.298    8.422     4.433     2.742     
+128       8.705     4.602     2.728     2.046     
+256       5.401     3.121     2.098     2.157     
+512       3.940     2.120     2.139     1.984     
+
+web_2 / tiled  best=(512,64) 2.546 ms
+block\grid8         16        32        64        
+32        66.321    33.223    16.553    15.714    
+64        25.506    12.699    6.322     6.375     
+128       13.372    6.632     3.821     3.809     
+256       7.556     3.801     2.903     2.863     
+512       5.838     2.948     2.604     2.546     
+
+web_2 / tiled_c  best=(512,64) 1.459 ms
+block\grid8         16        32        64        
+32        51.382    25.654    12.686    12.175    
+64        18.009    8.890     4.577     4.575     
+128       8.915     4.443     2.744     2.589     
+256       4.830     2.593     1.795     1.704     
+512       3.633     1.844     1.511     1.459     
+
+web_2 / bstride  best=(256,64) 2.152 ms
+block\grid8         16        32        64        
+32        31.161    15.666    7.729     7.850     
+64        13.362    6.702     3.762     3.839     
+128       7.193     3.643     2.391     2.392     
+256       4.410     2.209     2.212     2.152     
+512       4.299     2.170     2.174     2.169     
+
+web_2 / bstride_c  best=(512,64) 1.081 ms
+block\grid8         16        32        64        
+32        19.407    9.616     4.840     4.694     
+64        7.548     3.807     2.135     1.963     
+128       3.929     1.952     1.221     1.247     
+256       2.315     1.178     1.132     1.090     
+512       2.199     1.105     1.085     1.081     

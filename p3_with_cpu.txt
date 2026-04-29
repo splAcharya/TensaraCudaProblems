@@ -1,0 +1,20 @@
+group   name          kernel        rows      cols      block_x grid_x  cpu   gpu   total_ms    kernel_ms   
+------------------------------------------------------------------------------------------------------------
+small   small_1       basic         2         4         256     64      PASS  PASS  3.630       2.605       
+small   small_2       basic         3         3         256     64      PASS  PASS  0.548       0.005       
+small   small_3       basic         1         8         256     64      PASS  PASS  0.329       0.008       
+medium  medium_1      basic         64        64        256     64      REF   PASS  0.345       0.006       
+medium  medium_2      basic         255       257       256     64      REF   PASS  0.463       0.006       
+medium  medium_3      basic         513       1025      256     64      REF   PASS  1.427       0.071       
+medium  medium_4      basic         1024      1024      256     64      REF   PASS  3.041       0.055       
+large   large_1       basic         1023      2049      256     64      REF   PASS  4.013       0.103       
+large   large_2       basic         1537      2049      256     64      REF   PASS  5.613       0.154       
+small   small_1       float4        2         4         256     64      PASS  PASS  1.171       0.090       
+small   small_2       float4        3         3         256     64      PASS  PASS  0.751       0.007       
+small   small_3       float4        1         8         256     64      PASS  PASS  0.464       0.008       
+medium  medium_1      float4        64        64        256     64      REF   PASS  0.368       0.041       
+medium  medium_2      float4        255       257       256     64      REF   PASS  0.464       0.005       
+medium  medium_3      float4        513       1025      256     64      REF   PASS  1.332       0.028       
+medium  medium_4      float4        1024      1024      256     64      REF   PASS  3.247       0.052       
+large   large_1       float4        1023      2049      256     64      REF   PASS  4.124       0.100       
+large   large_2       float4        1537      2049      256     64      REF   PASS  5.629       0.147       

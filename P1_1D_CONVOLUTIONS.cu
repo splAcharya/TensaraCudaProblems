@@ -8,7 +8,11 @@
 #include <vector>
 #include <unistd.h>
 
-void solution(const float* A, const float* B, float* C, size_t N, size_t K);
+// Tensara-style signature:
+// - A, B, C are device pointers
+// - A has size N, B has size K, and C has size N
+extern "C" void solution(const float* A, const float* B, float* C, size_t N,
+                         size_t K);
 
 enum class KernelKind {
   Basic,
@@ -296,6 +300,78 @@ static void print_scale_heatmaps(const std::vector<TestResult>& results) {
   }
 }
 
+static void run_solution_host(const std::vector<float>& A,
+                              const std::vector<float>& B,
+                              std::vector<float>& C) {
+  cudaEvent_t total_start = nullptr;
+  cudaEvent_t total_stop = nullptr;
+  cudaEvent_t kernel_start = nullptr;
+  cudaEvent_t kernel_stop = nullptr;
+  CUDA_CHECK(cudaEventCreate(&total_start));
+  CUDA_CHECK(cudaEventCreate(&total_stop));
+  CUDA_CHECK(cudaEventCreate(&kernel_start));
+  CUDA_CHECK(cudaEventCreate(&kernel_stop));
+
+  const size_t N = A.size();
+  const size_t K = B.size();
+  const size_t outN = N;
+  const bool use_constant_filter = kernel_uses_constant_filter(g_kernel_kind);
+  if (use_constant_filter && K > kMaxConstantFilterSize) {
+    std::cerr << "Filter size " << K
+              << " exceeds constant-memory comparison limit "
+              << kMaxConstantFilterSize << '\n';
+    return;
+  }
+
+  float* d_A = nullptr;
+  float* d_B = nullptr;
+  float* d_C = nullptr;
+
+  CUDA_CHECK(cudaEventRecord(total_start));
+  CUDA_CHECK(cudaMalloc(&d_A, N * sizeof(float)));
+  CUDA_CHECK(cudaMalloc(&d_C, outN * sizeof(float)));
+  CUDA_CHECK(
+      cudaMemcpy(d_A, A.data(), N * sizeof(float), cudaMemcpyHostToDevice));
+  if (use_constant_filter) {
+    CUDA_CHECK(cudaMemcpyToSymbol(g_const_b, B.data(), K * sizeof(float)));
+  } else {
+    CUDA_CHECK(cudaMalloc(&d_B, K * sizeof(float)));
+    CUDA_CHECK(
+        cudaMemcpy(d_B, B.data(), K * sizeof(float), cudaMemcpyHostToDevice));
+  }
+  CUDA_CHECK(cudaMemset(d_C, 0, outN * sizeof(float)));
+
+  CUDA_CHECK(cudaEventRecord(kernel_start));
+  solution(d_A, d_B, d_C, N, K);
+  CUDA_CHECK(cudaEventRecord(kernel_stop));
+  CUDA_CHECK(cudaEventSynchronize(kernel_stop));
+
+  CUDA_CHECK(
+      cudaMemcpy(C.data(), d_C, outN * sizeof(float), cudaMemcpyDeviceToHost));
+  CUDA_CHECK(cudaEventRecord(total_stop));
+  CUDA_CHECK(cudaEventSynchronize(total_stop));
+
+  float total_ms = 0.0f;
+  float kernel_ms = 0.0f;
+  CUDA_CHECK(cudaEventElapsedTime(&total_ms, total_start, total_stop));
+  CUDA_CHECK(cudaEventElapsedTime(&kernel_ms, kernel_start, kernel_stop));
+  g_last_timing.total_ms = total_ms;
+  g_last_timing.kernel_ms = kernel_ms;
+  if (g_print_timing) {
+    std::cerr << "total_ms=" << total_ms << " kernel_ms=" << kernel_ms << '\n';
+  }
+
+  CUDA_CHECK(cudaEventDestroy(total_start));
+  CUDA_CHECK(cudaEventDestroy(total_stop));
+  CUDA_CHECK(cudaEventDestroy(kernel_start));
+  CUDA_CHECK(cudaEventDestroy(kernel_stop));
+  CUDA_CHECK(cudaFree(d_A));
+  if (d_B != nullptr) {
+    CUDA_CHECK(cudaFree(d_B));
+  }
+  CUDA_CHECK(cudaFree(d_C));
+}
+
 static int run_tests(bool skip_cpu_verify) {
   g_print_timing = false;
   const LaunchConfig default_launch = g_launch_config;
@@ -318,6 +394,24 @@ static int run_tests(bool skip_cpu_verify) {
       {"small_3", {10.0f, 20.0f, 30.0f}, {1.0f, 2.0f, 1.0f},
        {40.0f, 80.0f, 80.0f}},
   };
+  const struct {
+    const char* name;
+    size_t N;
+    size_t K;
+  } medium_tests[] = {
+      {"medium_1", 4096, 31},
+      {"medium_2", 4097, 63},
+      {"medium_3", 8193, 95},
+      {"medium_4", 16384, 127},
+  };
+  const struct {
+    const char* name;
+    size_t N;
+    size_t K;
+  } large_verify_tests[] = {
+      {"large_1", 32769, 127},
+      {"large_2", 65537, 191},
+  };
   bool all_ok = true;
   std::vector<TestResult> results;
 
@@ -333,8 +427,7 @@ static int run_tests(bool skip_cpu_verify) {
     for (const auto& k : kernels) {
       g_kernel_kind = k.kind;
       std::vector<float> gpu_out(tc.A.size(), 0.0f);
-      solution(tc.A.data(), tc.B.data(), gpu_out.data(), tc.A.size(),
-               tc.B.size());
+      run_solution_host(tc.A, tc.B, gpu_out);
       const bool gpu_ok =
           verify_close(gpu_out, tc.expected, 1e-4f, 1e-4f, tc.name, false);
       all_ok &= gpu_ok;
@@ -383,6 +476,15 @@ static int run_tests(bool skip_cpu_verify) {
       {"web_1", 1u << 15, 8191},
       {"web_2", 1u << 16, 8191},
   };
+  const struct {
+    const char* name;
+    size_t N;
+    size_t K;
+  } odd_tests[] = {
+      {"odd_1", 4097, 31},
+      {"odd_2", 32769, 127},
+      {"odd_3", 262147, 383},
+  };
   const int scale_block_sizes[] = {32, 64, 128, 256, 512};
   const int scale_grid_sizes[] = {8, 16, 32, 64};
   auto run_sized = [&](const char* group, const char* name, size_t N,
@@ -417,7 +519,7 @@ static int run_tests(bool skip_cpu_verify) {
         }
         g_kernel_kind = k.kind;
         std::vector<float> gpu_out(N, 0.0f);
-        solution(A.data(), B.data(), gpu_out.data(), N, K);
+        run_solution_host(A, B, gpu_out);
         const bool gpu_ok =
             verify_close(gpu_out, ref, 1e-3f, 1e-3f, name, false);
         all_ok &= gpu_ok;
@@ -454,7 +556,7 @@ static int run_tests(bool skip_cpu_verify) {
       }
       g_kernel_kind = k.kind;
       std::vector<float> gpu_out(N, 0.0f);
-      solution(A.data(), B.data(), gpu_out.data(), N, K);
+      run_solution_host(A, B, gpu_out);
       TestResult res;
       res.group = group;
       res.name = name;
@@ -507,7 +609,7 @@ static int run_tests(bool skip_cpu_verify) {
           }
           g_kernel_kind = k.kind;
           std::vector<float> gpu_out(N, 0.0f);
-          solution(A.data(), B.data(), gpu_out.data(), N, K);
+          run_solution_host(A, B, gpu_out);
 
           TestResult res;
           res.group = "scale";
@@ -535,17 +637,28 @@ static int run_tests(bool skip_cpu_verify) {
       }
     }
   };
-  for (const auto& lt : large_tests) {
+  for (const auto& mt : medium_tests) {
+    run_sized("medium", mt.name, mt.N, mt.K);
+  }
+  for (const auto& lt : large_verify_tests) {
     run_sized("large", lt.name, lt.N, lt.K);
   }
-  for (const auto& lt : tile_tests) {
-    run_sized("tile", lt.name, lt.N, lt.K);
-  }
-  for (const auto& wt : web_tests) {
-    run_sized("web", wt.name, wt.N, wt.K);
-  }
-  for (const auto& wt : web_tests) {
-    run_scaling(wt.name, wt.N, wt.K);
+  if (skip_cpu_verify) {
+    for (const auto& lt : large_tests) {
+      run_sized("large", lt.name, lt.N, lt.K);
+    }
+    for (const auto& lt : tile_tests) {
+      run_sized("tile", lt.name, lt.N, lt.K);
+    }
+    for (const auto& wt : web_tests) {
+      run_sized("web", wt.name, wt.N, wt.K);
+    }
+    for (const auto& ot : odd_tests) {
+      run_sized("odd", ot.name, ot.N, ot.K);
+    }
+    for (const auto& wt : web_tests) {
+      run_scaling(wt.name, wt.N, wt.K);
+    }
   }
   g_launch_config = default_launch;
   print_results_table(results);
@@ -812,105 +925,50 @@ __global__ void device_1d_conv_tiled_block_stride_const(
 // - Matches PyTorch torch.nn.functional.conv1d(..., padding=K//2)
 //   (cross-correlation, kernel is not flipped)
 // - Adapted from KernelBench
-void solution(const float* A, const float* B, float* C, size_t N, size_t K) {
-  cudaEvent_t total_start = nullptr;
-  cudaEvent_t total_stop = nullptr;
-  cudaEvent_t kernel_start = nullptr;
-  cudaEvent_t kernel_stop = nullptr;
-  CUDA_CHECK(cudaEventCreate(&total_start));
-  CUDA_CHECK(cudaEventCreate(&total_stop));
-  CUDA_CHECK(cudaEventCreate(&kernel_start));
-  CUDA_CHECK(cudaEventCreate(&kernel_stop));
-
-  CUDA_CHECK(cudaEventRecord(total_start));
-
+extern "C" void solution(const float* A, const float* B, float* C, size_t N,
+                         size_t K) {
   const size_t r = (K > 0) ? (K - 1) / 2 : 0;
-  const size_t outN = N;
-  const bool use_constant_filter = kernel_uses_constant_filter(g_kernel_kind);
-  if (use_constant_filter && K > kMaxConstantFilterSize) {
-    std::cerr << "Filter size " << K
-              << " exceeds constant-memory comparison limit "
-              << kMaxConstantFilterSize << '\n';
-    return;
-  }
-
-  float* d_A = nullptr;
-  float* d_B = nullptr;
-  float* d_C = nullptr;
-  CUDA_CHECK(cudaMalloc(&d_A, N * sizeof(float)));
-  CUDA_CHECK(cudaMalloc(&d_C, outN * sizeof(float)));
-  CUDA_CHECK(cudaMemcpy(d_A, A, N * sizeof(float),cudaMemcpyHostToDevice));
-  if (use_constant_filter) {
-    CUDA_CHECK(cudaMemcpyToSymbol(g_const_b, B, K * sizeof(float)));
-  } else {
-    CUDA_CHECK(cudaMalloc(&d_B, K * sizeof(float)));
-    CUDA_CHECK(cudaMemcpy(d_B, B, K * sizeof(float), cudaMemcpyHostToDevice));
-  }
-  CUDA_CHECK(cudaMemset(d_C, 0, outN * sizeof(float)));
-
   dim3 block_shape(g_launch_config.block_x, 1);
   dim3 grid_shape(g_launch_config.grid_x, 1);
-
-  CUDA_CHECK(cudaEventRecord(kernel_start));
   switch (g_kernel_kind) {
     case KernelKind::Basic:
-      device_1d_conv_basic<<<grid_shape, block_shape>>>(d_A, d_B, d_C, K, N);
+      device_1d_conv_basic<<<grid_shape, block_shape>>>(A, B, C, K, N);
       break;
     case KernelKind::BasicConst:
-      device_1d_conv_basic_const<<<grid_shape, block_shape>>>(d_A, d_C, K, N);
+      device_1d_conv_basic_const<<<grid_shape, block_shape>>>(A, C, K, N);
       break;
     case KernelKind::Tiled:
     {
       size_t smem_bytes = (block_shape.x + (r * 2)) * sizeof(float);
-      device_1d_conv_tiled<<<grid_shape, block_shape, smem_bytes>>>(d_A, d_B, d_C, K, N);
+      device_1d_conv_tiled<<<grid_shape, block_shape, smem_bytes>>>(A, B, C, K,
+                                                                     N);
       break;
     }
     case KernelKind::TiledConst:
     {
       size_t smem_bytes = (block_shape.x + (r * 2)) * sizeof(float);
-      device_1d_conv_tiled_const<<<grid_shape, block_shape, smem_bytes>>>(d_A, d_C, K, N);
+      device_1d_conv_tiled_const<<<grid_shape, block_shape, smem_bytes>>>(A, C,
+                                                                           K,
+                                                                           N);
       break;
     }
     case KernelKind::BlockStrideStub:
     {
       size_t smem_bytes = (block_shape.x + (r * 2)) * sizeof(float);
       device_1d_conv_tiled_block_stride<<<grid_shape, block_shape, smem_bytes>>>(
-        d_A, d_B, d_C, K, N);
+          A, B, C, K, N);
       break;
     }
     case KernelKind::BlockStrideConst:
     {
       size_t smem_bytes = (block_shape.x + (r * 2)) * sizeof(float);
       device_1d_conv_tiled_block_stride_const<<<grid_shape, block_shape, smem_bytes>>>(
-        d_A, d_C, K, N);
+          A, C, K, N);
       break;
     }
   }
-  CUDA_CHECK(cudaDeviceSynchronize());
-  CUDA_CHECK(cudaEventRecord(kernel_stop));
 
-  CUDA_CHECK(cudaMemcpy(C, d_C, outN * sizeof(float), cudaMemcpyDeviceToHost));
-
-  CUDA_CHECK(cudaEventRecord(total_stop));
-  CUDA_CHECK(cudaEventSynchronize(total_stop));
-
-  float total_ms = 0.0f;
-  float kernel_ms = 0.0f;
-  CUDA_CHECK(cudaEventElapsedTime(&total_ms, total_start, total_stop));
-  CUDA_CHECK(cudaEventElapsedTime(&kernel_ms, kernel_start, kernel_stop));
-  g_last_timing.total_ms = total_ms;
-  g_last_timing.kernel_ms = kernel_ms;
-  if (g_print_timing) {
-    std::cerr << "total_ms=" << total_ms << " kernel_ms=" << kernel_ms << '\n';
-  }
-
-  CUDA_CHECK(cudaEventDestroy(total_start));
-  CUDA_CHECK(cudaEventDestroy(total_stop));
-  CUDA_CHECK(cudaEventDestroy(kernel_start));
-  CUDA_CHECK(cudaEventDestroy(kernel_stop));
-  CUDA_CHECK(cudaFree(d_A));
-  CUDA_CHECK(cudaFree(d_B));
-  CUDA_CHECK(cudaFree(d_C));
+  CUDA_CHECK(cudaGetLastError());
 }
 
 int main(int argc, char** argv) {

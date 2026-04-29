@@ -66,6 +66,9 @@ Short summary:
 - `basic` remains very competitive, especially at large `K`.
 - Larger blocks (`256` or `512`) with moderate-to-high grid counts perform best
   for the `K=8191` scaling cases.
+- Default runs focus on small, medium, and selected large correctness cases with CPU checking.
+- Odd-size cases are included to exercise boundary and non-multiple launch behavior.
+- `--skip-cpu` enables the heavier large/tile/web/odd/scaling benchmark sweep.
 - Full benchmark dump, scaling heatmaps, and best-launch notes:
   [P1_1D_CONVOLUTIONS_RESULTS.md](/mnt/d/gitrepo/TensaraCudaProblems/P1_1D_CONVOLUTIONS_RESULTS.md)
 
@@ -78,5 +81,6 @@ Local ReLU harness for the Tensara problem:
 - Treats the input/output as row-major `m x n` matrices and applies
   `C[i][j] = max(0, A[i][j])`
 - Includes a CPU reference and a baseline GPU kernel implementation
-- Default runs focus on small and medium correctness cases with CPU checking
-- `--skip-cpu` enables the heavier large/shape/scaling benchmark sweep
+- Default runs focus on small, medium, and selected large correctness cases with CPU checking
+- Odd-shape cases are included to exercise tail paths such as `float4` remainder handling
+- `--skip-cpu` enables the heavier Tensara-size/shape/tail/scaling benchmark sweep

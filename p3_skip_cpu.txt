@@ -1,0 +1,209 @@
+group   name          kernel        rows      cols      block_x grid_x  cpu   gpu   total_ms    kernel_ms   
+------------------------------------------------------------------------------------------------------------
+small   small_1       basic         2         4         256     64      SKIP  PASS  3.156       2.272       
+small   small_2       basic         3         3         256     64      SKIP  PASS  0.310       0.006       
+small   small_3       basic         1         8         256     64      SKIP  PASS  0.352       0.005       
+medium  medium_1      basic         64        64        256     64      SKIP  SKIP  0.306       0.004       
+medium  medium_2      basic         255       257       256     64      SKIP  SKIP  0.493       0.006       
+medium  medium_3      basic         513       1025      256     64      SKIP  SKIP  1.683       0.031       
+medium  medium_4      basic         1024      1024      256     64      SKIP  SKIP  2.460       0.055       
+large   large_1       basic         1023      2049      256     64      SKIP  SKIP  4.571       0.103       
+large   large_2       basic         1537      2049      256     64      SKIP  SKIP  6.153       0.154       
+tensara tensara_1     basic         4096      4096      256     64      SKIP  SKIP  29.247      0.794       
+tensara tensara_2     basic         6144      4096      256     64      SKIP  SKIP  39.004      1.192       
+tensara tensara_3     basic         4096      7168      256     64      SKIP  SKIP  46.979      1.379       
+tensara tensara_4     basic         4096      8192      256     64      SKIP  SKIP  51.002      1.572       
+tensara tensara_5     basic         8192      8192      256     64      SKIP  SKIP  106.075     3.201       
+shape   shape_1       basic         6144      4096      256     64      SKIP  SKIP  39.215      1.179       
+shape   shape_2       basic         4096      7168      256     64      SKIP  SKIP  44.290      1.370       
+shape   shape_3       basic         4096      8192      256     64      SKIP  SKIP  49.433      1.556       
+shape   shape_4       basic         8192      8192      256     64      SKIP  SKIP  96.059      3.151       
+tail    tail_1        basic         2049      2049      256     64      SKIP  SKIP  7.800       0.200       
+tail    tail_2        basic         3073      4097      256     64      SKIP  SKIP  18.653      0.589       
+tail    tail_3        basic         4097      8193      256     64      SKIP  SKIP  53.589      1.562       
+scale   scale_sq      basic         4096      4096      64      8       SKIP  SKIP  34.650      10.364      
+scale   scale_sq      basic         4096      4096      64      16      SKIP  SKIP  30.047      5.303       
+scale   scale_sq      basic         4096      4096      64      32      SKIP  SKIP  28.469      2.775       
+scale   scale_sq      basic         4096      4096      64      64      SKIP  SKIP  25.972      1.517       
+scale   scale_sq      basic         4096      4096      64      128     SKIP  SKIP  24.775      0.943       
+scale   scale_sq      basic         4096      4096      128     8       SKIP  SKIP  28.976      5.320       
+scale   scale_sq      basic         4096      4096      128     16      SKIP  SKIP  27.466      2.781       
+scale   scale_sq      basic         4096      4096      128     32      SKIP  SKIP  25.226      1.514       
+scale   scale_sq      basic         4096      4096      128     64      SKIP  SKIP  27.600      0.949       
+scale   scale_sq      basic         4096      4096      128     128     SKIP  SKIP  31.261      0.785       
+scale   scale_sq      basic         4096      4096      256     8       SKIP  SKIP  56.456      2.776       
+scale   scale_sq      basic         4096      4096      256     16      SKIP  SKIP  28.435      1.512       
+scale   scale_sq      basic         4096      4096      256     32      SKIP  SKIP  28.056      0.942       
+scale   scale_sq      basic         4096      4096      256     64      SKIP  SKIP  28.792      0.782       
+scale   scale_sq      basic         4096      4096      256     128     SKIP  SKIP  28.397      0.878       
+scale   scale_sq      basic         4096      4096      512     8       SKIP  SKIP  28.506      1.520       
+scale   scale_sq      basic         4096      4096      512     16      SKIP  SKIP  50.939      0.938       
+scale   scale_sq      basic         4096      4096      512     32      SKIP  SKIP  29.677      0.785       
+scale   scale_sq      basic         4096      4096      512     64      SKIP  SKIP  32.832      0.880       
+scale   scale_sq      basic         4096      4096      512     128     SKIP  SKIP  37.421      0.807       
+scale   scale_rect_1  basic         6144      4096      64      8       SKIP  SKIP  57.868      15.498      
+scale   scale_rect_1  basic         6144      4096      64      16      SKIP  SKIP  53.835      7.959       
+scale   scale_rect_1  basic         6144      4096      64      32      SKIP  SKIP  40.887      4.156       
+scale   scale_rect_1  basic         6144      4096      64      64      SKIP  SKIP  42.871      2.258       
+scale   scale_rect_1  basic         6144      4096      64      128     SKIP  SKIP  36.863      1.396       
+scale   scale_rect_1  basic         6144      4096      128     8       SKIP  SKIP  45.660      7.972       
+scale   scale_rect_1  basic         6144      4096      128     16      SKIP  SKIP  40.734      4.157       
+scale   scale_rect_1  basic         6144      4096      128     32      SKIP  SKIP  41.876      2.253       
+scale   scale_rect_1  basic         6144      4096      128     64      SKIP  SKIP  44.037      1.399       
+scale   scale_rect_1  basic         6144      4096      128     128     SKIP  SKIP  46.353      1.178       
+scale   scale_rect_1  basic         6144      4096      256     8       SKIP  SKIP  43.084      4.145       
+scale   scale_rect_1  basic         6144      4096      256     16      SKIP  SKIP  39.666      2.264       
+scale   scale_rect_1  basic         6144      4096      256     32      SKIP  SKIP  41.006      1.404       
+scale   scale_rect_1  basic         6144      4096      256     64      SKIP  SKIP  39.965      1.169       
+scale   scale_rect_1  basic         6144      4096      256     128     SKIP  SKIP  36.737      1.445       
+scale   scale_rect_1  basic         6144      4096      512     8       SKIP  SKIP  40.620      2.256       
+scale   scale_rect_1  basic         6144      4096      512     16      SKIP  SKIP  39.935      1.405       
+scale   scale_rect_1  basic         6144      4096      512     32      SKIP  SKIP  41.419      1.169       
+scale   scale_rect_1  basic         6144      4096      512     64      SKIP  SKIP  38.225      1.455       
+scale   scale_rect_1  basic         6144      4096      512     128     SKIP  SKIP  37.245      1.278       
+scale   scale_rect_2  basic         4096      8192      64      8       SKIP  SKIP  69.660      20.652      
+scale   scale_rect_2  basic         4096      8192      64      16      SKIP  SKIP  58.396      10.628      
+scale   scale_rect_2  basic         4096      8192      64      32      SKIP  SKIP  54.349      5.531       
+scale   scale_rect_2  basic         4096      8192      64      64      SKIP  SKIP  51.158      3.016       
+scale   scale_rect_2  basic         4096      8192      64      128     SKIP  SKIP  49.064      1.876       
+scale   scale_rect_2  basic         4096      8192      128     8       SKIP  SKIP  58.777      10.621      
+scale   scale_rect_2  basic         4096      8192      128     16      SKIP  SKIP  52.958      5.542       
+scale   scale_rect_2  basic         4096      8192      128     32      SKIP  SKIP  49.916      2.998       
+scale   scale_rect_2  basic         4096      8192      128     64      SKIP  SKIP  49.657      1.858       
+scale   scale_rect_2  basic         4096      8192      128     128     SKIP  SKIP  50.988      1.562       
+scale   scale_rect_2  basic         4096      8192      256     8       SKIP  SKIP  53.050      5.535       
+scale   scale_rect_2  basic         4096      8192      256     16      SKIP  SKIP  51.427      3.010       
+scale   scale_rect_2  basic         4096      8192      256     32      SKIP  SKIP  48.662      1.858       
+scale   scale_rect_2  basic         4096      8192      256     64      SKIP  SKIP  48.925      1.552       
+scale   scale_rect_2  basic         4096      8192      256     128     SKIP  SKIP  50.834      1.739       
+scale   scale_rect_2  basic         4096      8192      512     8       SKIP  SKIP  50.304      2.994       
+scale   scale_rect_2  basic         4096      8192      512     16      SKIP  SKIP  53.545      1.865       
+scale   scale_rect_2  basic         4096      8192      512     32      SKIP  SKIP  55.970      1.558       
+scale   scale_rect_2  basic         4096      8192      512     64      SKIP  SKIP  67.912      1.746       
+scale   scale_rect_2  basic         4096      8192      512     128     SKIP  SKIP  50.490      1.669       
+small   small_1       float4        2         4         256     64      SKIP  PASS  1.129       0.128       
+small   small_2       float4        3         3         256     64      SKIP  PASS  0.462       0.004       
+small   small_3       float4        1         8         256     64      SKIP  PASS  0.312       0.006       
+medium  medium_1      float4        64        64        256     64      SKIP  SKIP  0.280       0.004       
+medium  medium_2      float4        255       257       256     64      SKIP  SKIP  0.441       0.004       
+medium  medium_3      float4        513       1025      256     64      SKIP  SKIP  1.270       0.028       
+medium  medium_4      float4        1024      1024      256     64      SKIP  SKIP  2.653       0.052       
+large   large_1       float4        1023      2049      256     64      SKIP  SKIP  4.401       0.099       
+large   large_2       float4        1537      2049      256     64      SKIP  SKIP  5.471       0.146       
+tensara tensara_1     float4        4096      4096      256     64      SKIP  SKIP  25.249      0.754       
+tensara tensara_2     float4        6144      4096      256     64      SKIP  SKIP  36.957      1.124       
+tensara tensara_3     float4        4096      7168      256     64      SKIP  SKIP  45.090      1.310       
+tensara tensara_4     float4        4096      8192      256     64      SKIP  SKIP  51.518      1.498       
+tensara tensara_5     float4        8192      8192      256     64      SKIP  SKIP  96.297      2.982       
+shape   shape_1       float4        6144      4096      256     64      SKIP  SKIP  38.456      1.125       
+shape   shape_2       float4        4096      7168      256     64      SKIP  SKIP  44.878      1.312       
+shape   shape_3       float4        4096      8192      256     64      SKIP  SKIP  49.284      1.500       
+shape   shape_4       float4        8192      8192      256     64      SKIP  SKIP  101.832     2.990       
+tail    tail_1        float4        2049      2049      256     64      SKIP  SKIP  7.741       0.193       
+tail    tail_2        float4        3073      4097      256     64      SKIP  SKIP  22.868      0.565       
+tail    tail_3        float4        4097      8193      256     64      SKIP  SKIP  53.453      1.499       
+scale   scale_sq      float4        4096      4096      64      8       SKIP  SKIP  28.240      2.926       
+scale   scale_sq      float4        4096      4096      64      16      SKIP  SKIP  29.193      1.593       
+scale   scale_sq      float4        4096      4096      64      32      SKIP  SKIP  26.738      0.978       
+scale   scale_sq      float4        4096      4096      64      64      SKIP  SKIP  30.422      0.777       
+scale   scale_sq      float4        4096      4096      64      128     SKIP  SKIP  30.323      0.752       
+scale   scale_sq      float4        4096      4096      128     8       SKIP  SKIP  27.504      1.588       
+scale   scale_sq      float4        4096      4096      128     16      SKIP  SKIP  26.289      0.957       
+scale   scale_sq      float4        4096      4096      128     32      SKIP  SKIP  25.995      0.777       
+scale   scale_sq      float4        4096      4096      128     64      SKIP  SKIP  27.242      0.754       
+scale   scale_sq      float4        4096      4096      128     128     SKIP  SKIP  27.747      0.755       
+scale   scale_sq      float4        4096      4096      256     8       SKIP  SKIP  27.101      0.966       
+scale   scale_sq      float4        4096      4096      256     16      SKIP  SKIP  32.333      0.779       
+scale   scale_sq      float4        4096      4096      256     32      SKIP  SKIP  26.044      0.755       
+scale   scale_sq      float4        4096      4096      256     64      SKIP  SKIP  25.154      0.753       
+scale   scale_sq      float4        4096      4096      256     128     SKIP  SKIP  25.321      0.766       
+scale   scale_sq      float4        4096      4096      512     8       SKIP  SKIP  24.044      0.777       
+scale   scale_sq      float4        4096      4096      512     16      SKIP  SKIP  24.577      0.754       
+scale   scale_sq      float4        4096      4096      512     32      SKIP  SKIP  24.012      0.753       
+scale   scale_sq      float4        4096      4096      512     64      SKIP  SKIP  28.485      0.774       
+scale   scale_sq      float4        4096      4096      512     128     SKIP  SKIP  30.079      0.754       
+scale   scale_rect_1  float4        6144      4096      64      8       SKIP  SKIP  41.524      4.285       
+scale   scale_rect_1  float4        6144      4096      64      16      SKIP  SKIP  37.926      2.356       
+scale   scale_rect_1  float4        6144      4096      64      32      SKIP  SKIP  37.188      1.426       
+scale   scale_rect_1  float4        6144      4096      64      64      SKIP  SKIP  52.332      1.158       
+scale   scale_rect_1  float4        6144      4096      64      128     SKIP  SKIP  42.137      1.125       
+scale   scale_rect_1  float4        6144      4096      128     8       SKIP  SKIP  38.001      2.350       
+scale   scale_rect_1  float4        6144      4096      128     16      SKIP  SKIP  37.469      1.427       
+scale   scale_rect_1  float4        6144      4096      128     32      SKIP  SKIP  37.512      1.161       
+scale   scale_rect_1  float4        6144      4096      128     64      SKIP  SKIP  42.087      1.139       
+scale   scale_rect_1  float4        6144      4096      128     128     SKIP  SKIP  37.923      1.124       
+scale   scale_rect_1  float4        6144      4096      256     8       SKIP  SKIP  43.327      1.430       
+scale   scale_rect_1  float4        6144      4096      256     16      SKIP  SKIP  37.760      1.163       
+scale   scale_rect_1  float4        6144      4096      256     32      SKIP  SKIP  42.131      1.129       
+scale   scale_rect_1  float4        6144      4096      256     64      SKIP  SKIP  39.731      1.121       
+scale   scale_rect_1  float4        6144      4096      256     128     SKIP  SKIP  39.564      1.138       
+scale   scale_rect_1  float4        6144      4096      512     8       SKIP  SKIP  45.057      1.164       
+scale   scale_rect_1  float4        6144      4096      512     16      SKIP  SKIP  39.304      1.132       
+scale   scale_rect_1  float4        6144      4096      512     32      SKIP  SKIP  40.364      1.129       
+scale   scale_rect_1  float4        6144      4096      512     64      SKIP  SKIP  40.990      1.139       
+scale   scale_rect_1  float4        6144      4096      512     128     SKIP  SKIP  39.827      1.121       
+scale   scale_rect_2  float4        4096      8192      64      8       SKIP  SKIP  53.494      5.701       
+scale   scale_rect_2  float4        4096      8192      64      16      SKIP  SKIP  50.748      3.143       
+scale   scale_rect_2  float4        4096      8192      64      32      SKIP  SKIP  49.903      1.884       
+scale   scale_rect_2  float4        4096      8192      64      64      SKIP  SKIP  48.458      1.541       
+scale   scale_rect_2  float4        4096      8192      64      128     SKIP  SKIP  49.985      1.499       
+scale   scale_rect_2  float4        4096      8192      128     8       SKIP  SKIP  53.815      3.143       
+scale   scale_rect_2  float4        4096      8192      128     16      SKIP  SKIP  50.606      1.889       
+scale   scale_rect_2  float4        4096      8192      128     32      SKIP  SKIP  55.736      1.537       
+scale   scale_rect_2  float4        4096      8192      128     64      SKIP  SKIP  50.765      1.500       
+scale   scale_rect_2  float4        4096      8192      128     128     SKIP  SKIP  56.205      1.505       
+scale   scale_rect_2  float4        4096      8192      256     8       SKIP  SKIP  52.705      1.884       
+scale   scale_rect_2  float4        4096      8192      256     16      SKIP  SKIP  49.315      1.537       
+scale   scale_rect_2  float4        4096      8192      256     32      SKIP  SKIP  51.949      1.505       
+scale   scale_rect_2  float4        4096      8192      256     64      SKIP  SKIP  50.977      1.502       
+scale   scale_rect_2  float4        4096      8192      256     128     SKIP  SKIP  49.395      1.523       
+scale   scale_rect_2  float4        4096      8192      512     8       SKIP  SKIP  52.869      1.543       
+scale   scale_rect_2  float4        4096      8192      512     16      SKIP  SKIP  49.517      1.497       
+scale   scale_rect_2  float4        4096      8192      512     32      SKIP  SKIP  55.307      1.498       
+scale   scale_rect_2  float4        4096      8192      512     64      SKIP  SKIP  50.051      1.518       
+scale   scale_rect_2  float4        4096      8192      512     128     SKIP  SKIP  50.666      1.499       
+
+Scaling Heatmaps (kernel_ms, lower is better)
+============================================================
+
+scale_sq / basic  best=(256, 64) -> 0.782 ms
+block\grid8         16        32        64        128       
+64        10.364    5.303     2.775     1.517     0.943     
+128       5.320     2.781     1.514     0.949     0.785     
+256       2.776     1.512     0.942     0.782     0.878     
+512       1.520     0.938     0.785     0.880     0.807     
+
+scale_sq / float4  best=(64, 128) -> 0.752 ms
+block\grid8         16        32        64        128       
+64        2.926     1.593     0.978     0.777     0.752     
+128       1.588     0.957     0.777     0.754     0.755     
+256       0.966     0.779     0.755     0.753     0.766     
+512       0.777     0.754     0.753     0.774     0.754     
+
+scale_rect_1 / basic  best=(256, 64) -> 1.169 ms
+block\grid8         16        32        64        128       
+64        15.498    7.959     4.156     2.258     1.396     
+128       7.972     4.157     2.253     1.399     1.178     
+256       4.145     2.264     1.404     1.169     1.445     
+512       2.256     1.405     1.169     1.455     1.278     
+
+scale_rect_1 / float4  best=(256, 64) -> 1.121 ms
+block\grid8         16        32        64        128       
+64        4.285     2.356     1.426     1.158     1.125     
+128       2.350     1.427     1.161     1.139     1.124     
+256       1.430     1.163     1.129     1.121     1.138     
+512       1.164     1.132     1.129     1.139     1.121     
+
+scale_rect_2 / basic  best=(256, 64) -> 1.552 ms
+block\grid8         16        32        64        128       
+64        20.652    10.628    5.531     3.016     1.876     
+128       10.621    5.542     2.998     1.858     1.562     
+256       5.535     3.010     1.858     1.552     1.739     
+512       2.994     1.865     1.558     1.746     1.669     
+
+scale_rect_2 / float4  best=(512, 16) -> 1.497 ms
+block\grid8         16        32        64        128       
+64        5.701     3.143     1.884     1.541     1.499     
+128       3.143     1.889     1.537     1.500     1.505     
+256       1.884     1.537     1.505     1.502     1.523     
+512       1.543     1.497     1.498     1.518     1.499     

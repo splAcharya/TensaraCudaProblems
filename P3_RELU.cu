@@ -25,8 +25,24 @@ struct LaunchConfig {
   int grid_x = 64;
 };
 
+enum class KernelVariant {
+  kBasic,
+  kFloat4,
+};
+
 static LaunchConfig g_launch_config{256, 64};
+static KernelVariant g_kernel_variant = KernelVariant::kBasic;
 static Timing g_last_timing;
+
+static const char* current_kernel_name() {
+  switch (g_kernel_variant) {
+    case KernelVariant::kBasic:
+      return "basic";
+    case KernelVariant::kFloat4:
+      return "float4";
+  }
+  return "unknown";
+}
 
 static bool cuda_runtime_ready() {
   int device_count = 0;
@@ -176,7 +192,7 @@ static void print_scale_heatmaps(const std::vector<TestResult>& results) {
   std::vector<int> grid_sizes;
 
   for (const auto& r : results) {
-    if (r.group != std::string("scale") || r.gpu == "SKIP") {
+    if (r.group != std::string("scale") || r.gpu == "FAIL") {
       continue;
     }
     if (std::find(names.begin(), names.end(), r.name) == names.end()) {
@@ -214,7 +230,7 @@ static void print_scale_heatmaps(const std::vector<TestResult>& results) {
 
       for (const auto& r : results) {
         if (r.group == std::string("scale") && r.name == name &&
-            r.kernel == kernel && r.gpu != "SKIP") {
+            r.kernel == kernel && r.gpu != "FAIL") {
           if (best_ms < 0.0f || r.kernel_ms < best_ms) {
             best_ms = r.kernel_ms;
             best_block = r.block_x;
@@ -238,7 +254,7 @@ static void print_scale_heatmaps(const std::vector<TestResult>& results) {
           for (const auto& r : results) {
             if (r.group == std::string("scale") && r.name == name &&
                 r.kernel == kernel && r.block_x == block_x &&
-                r.grid_x == grid_x && r.gpu != "SKIP") {
+                r.grid_x == grid_x && r.gpu != "FAIL") {
               std::cout << std::setw(10) << r.kernel_ms;
               found = true;
               break;
@@ -335,8 +351,8 @@ static int run_tests(bool skip_cpu_verify) {
     size_t cols;
   } medium_tests[] = {
       {"medium_1", 64, 64},
-      {"medium_2", 256, 256},
-      {"medium_3", 512, 1024},
+      {"medium_2", 255, 257},
+      {"medium_3", 513, 1025},
       {"medium_4", 1024, 1024},
   };
 
@@ -344,9 +360,21 @@ static int run_tests(bool skip_cpu_verify) {
     const char* name;
     size_t rows;
     size_t cols;
-  } large_tests[] = {
-      {"large_1", 2048, 1024},
-      {"large_2", 4096, 1024},
+  } large_verify_tests[] = {
+      {"large_1", 1023, 2049},
+      {"large_2", 1537, 2049},
+  };
+
+  const struct {
+    const char* name;
+    size_t rows;
+    size_t cols;
+  } tensara_tests[] = {
+      {"tensara_1", 4096, 4096},
+      {"tensara_2", 6144, 4096},
+      {"tensara_3", 4096, 7168},
+      {"tensara_4", 4096, 8192},
+      {"tensara_5", 8192, 8192},
   };
 
   const struct {
@@ -354,10 +382,20 @@ static int run_tests(bool skip_cpu_verify) {
     size_t rows;
     size_t cols;
   } shape_tests[] = {
-      {"shape_1", 64, 16384},
-      {"shape_2", 16384, 64},
-      {"shape_3", 512, 8192},
-      {"shape_4", 8192, 512},
+      {"shape_1", 6144, 4096},
+      {"shape_2", 4096, 7168},
+      {"shape_3", 4096, 8192},
+      {"shape_4", 8192, 8192},
+  };
+
+  const struct {
+    const char* name;
+    size_t rows;
+    size_t cols;
+  } tail_tests[] = {
+      {"tail_1", 2049, 2049},
+      {"tail_2", 3073, 4097},
+      {"tail_3", 4097, 8193},
   };
 
   const struct {
@@ -365,48 +403,18 @@ static int run_tests(bool skip_cpu_verify) {
     size_t rows;
     size_t cols;
   } scale_tests[] = {
-      {"scale_sq", 1024, 1024},
-      {"scale_wide", 256, 16384},
-      {"scale_tall", 16384, 256},
+      {"scale_sq", 4096, 4096},
+      {"scale_rect_1", 6144, 4096},
+      {"scale_rect_2", 4096, 8192},
   };
 
   const int scale_block_sizes[] = {64, 128, 256, 512};
   const int scale_grid_sizes[] = {8, 16, 32, 64, 128};
+  const KernelVariant kernel_variants[] = {KernelVariant::kBasic,
+                                           KernelVariant::kFloat4};
 
   bool all_ok = true;
   std::vector<TestResult> results;
-
-  for (const auto& tc : tests) {
-    std::string cpu_status = "SKIP";
-    if (!skip_cpu_verify && kCpuReferenceImplemented) {
-      const auto ref = cpu_relu(tc.input);
-      const bool cpu_ok =
-          verify_close(ref, tc.expected, 1e-6f, 1e-6f, tc.name, false);
-      cpu_status = cpu_ok ? "PASS" : "FAIL";
-      all_ok &= cpu_ok;
-    }
-
-    std::vector<float> gpu_out(tc.input.size(), 0.0f);
-    run_solution_host(tc.input, gpu_out, tc.cols, tc.rows);
-
-    const bool gpu_ok =
-        verify_close(gpu_out, tc.expected, 1e-6f, 1e-6f, tc.name, false);
-    all_ok &= gpu_ok;
-
-    TestResult res;
-    res.group = "small";
-    res.name = tc.name;
-    res.kernel = "basic";
-    res.rows = tc.rows;
-    res.cols = tc.cols;
-    res.block_x = g_launch_config.block_x;
-    res.grid_x = g_launch_config.grid_x;
-    res.cpu = cpu_status;
-    res.gpu = gpu_ok ? "PASS" : "FAIL";
-    res.total_ms = g_last_timing.total_ms;
-    res.kernel_ms = g_last_timing.kernel_ms;
-    results.push_back(res);
-  }
 
   auto run_sized = [&](const char* group, const char* name, size_t rows,
                        size_t cols) {
@@ -427,7 +435,7 @@ static int run_tests(bool skip_cpu_verify) {
     TestResult res;
     res.group = group;
     res.name = name;
-    res.kernel = "basic";
+    res.kernel = current_kernel_name();
     res.rows = rows;
     res.cols = cols;
     res.block_x = g_launch_config.block_x;
@@ -467,7 +475,7 @@ static int run_tests(bool skip_cpu_verify) {
         TestResult res;
         res.group = "scale";
         res.name = name;
-        res.kernel = "basic";
+        res.kernel = current_kernel_name();
         res.rows = rows;
         res.cols = cols;
         res.block_x = g_launch_config.block_x;
@@ -490,22 +498,68 @@ static int run_tests(bool skip_cpu_verify) {
     }
   };
 
-  for (const auto& mt : medium_tests) {
-    run_sized("medium", mt.name, mt.rows, mt.cols);
-  }
+  for (KernelVariant kernel_variant : kernel_variants) {
+    g_kernel_variant = kernel_variant;
 
-  if (skip_cpu_verify) {
-    for (const auto& lt : large_tests) {
+    for (const auto& tc : tests) {
+      g_launch_config = default_launch;
+
+      std::string cpu_status = "SKIP";
+      if (!skip_cpu_verify && kCpuReferenceImplemented) {
+        const auto ref = cpu_relu(tc.input);
+        const bool cpu_ok =
+            verify_close(ref, tc.expected, 1e-6f, 1e-6f, tc.name, false);
+        cpu_status = cpu_ok ? "PASS" : "FAIL";
+        all_ok &= cpu_ok;
+      }
+
+      std::vector<float> gpu_out(tc.input.size(), 0.0f);
+      run_solution_host(tc.input, gpu_out, tc.cols, tc.rows);
+
+      const bool gpu_ok =
+          verify_close(gpu_out, tc.expected, 1e-6f, 1e-6f, tc.name, false);
+      all_ok &= gpu_ok;
+
+      TestResult res;
+      res.group = "small";
+      res.name = tc.name;
+      res.kernel = current_kernel_name();
+      res.rows = tc.rows;
+      res.cols = tc.cols;
+      res.block_x = g_launch_config.block_x;
+      res.grid_x = g_launch_config.grid_x;
+      res.cpu = cpu_status;
+      res.gpu = gpu_ok ? "PASS" : "FAIL";
+      res.total_ms = g_last_timing.total_ms;
+      res.kernel_ms = g_last_timing.kernel_ms;
+      results.push_back(res);
+    }
+
+    for (const auto& mt : medium_tests) {
+      run_sized("medium", mt.name, mt.rows, mt.cols);
+    }
+
+    for (const auto& lt : large_verify_tests) {
       run_sized("large", lt.name, lt.rows, lt.cols);
     }
-    for (const auto& st : shape_tests) {
-      run_sized("shape", st.name, st.rows, st.cols);
-    }
-    for (const auto& sc : scale_tests) {
-      run_scaling(sc.name, sc.rows, sc.cols);
+
+    if (skip_cpu_verify) {
+      for (const auto& tt : tensara_tests) {
+        run_sized("tensara", tt.name, tt.rows, tt.cols);
+      }
+      for (const auto& st : shape_tests) {
+        run_sized("shape", st.name, st.rows, st.cols);
+      }
+      for (const auto& tt : tail_tests) {
+        run_sized("tail", tt.name, tt.rows, tt.cols);
+      }
+      for (const auto& sc : scale_tests) {
+        run_scaling(sc.name, sc.rows, sc.cols);
+      }
     }
   }
 
+  g_kernel_variant = KernelVariant::kBasic;
   g_launch_config = default_launch;
   print_results_table(results);
   print_scale_heatmaps(results);
@@ -523,12 +577,54 @@ __global__ void device_relu_basic(const float* input, float* output,
   }
 }
 
+__global__ void device_relu_float4(const float* input, float* output,
+                                   size_t total) {
+
+  //converts arrays to float4 array so each[i] represents block of 4
+  //but can be treated like single unit
+  size_t total_vec = total / 4;
+  const float4 *input_vec = reinterpret_cast<const float4 *>(input);
+  float4 *output_vec = reinterpret_cast<float4 *>(output);
+
+  //each thread processes 4 elements
+  const size_t gix = ((blockDim.x * blockIdx.x) + threadIdx.x);  
+
+  //each grid processes 4 elements each
+  const size_t grid_stride = (blockDim.x * gridDim.x);
+
+  for (size_t gx = gix; gx < total_vec; gx += grid_stride)
+  {
+    float4 ivec = input_vec[gx];
+    ivec.w = ivec.w < 0 ? 0.0f : ivec.w;
+    ivec.x = ivec.x < 0 ? 0.0f : ivec.x;
+    ivec.y = ivec.y < 0 ? 0.0f : ivec.y;
+    ivec.z = ivec.z < 0 ? 0.0f : ivec.z;
+    output_vec[gx] = ivec;
+  }
+
+  //tail part
+  size_t tail_start = (total_vec * 4) + gix;
+  for (size_t gx = tail_start; gx < total; gx += grid_stride)
+  {
+    float val = input[gx];
+    output[gx] = val < 0 ? 0.0f : val;
+  }
+}
+
 extern "C" void solution(const float* input, float* output, size_t n,
                          size_t m) {
   const size_t total = n * m;
   dim3 block_shape(g_launch_config.block_x, 1, 1);
   dim3 grid_shape(g_launch_config.grid_x, 1, 1);
-  device_relu_basic<<<grid_shape, block_shape>>>(input, output, total);
+
+  switch (g_kernel_variant) {
+    case KernelVariant::kBasic:
+      device_relu_basic<<<grid_shape, block_shape>>>(input, output, total);
+      break;
+    case KernelVariant::kFloat4:
+      device_relu_float4<<<grid_shape, block_shape>>>(input, output, total);
+      break;
+  }
 
   CUDA_CHECK(cudaGetLastError());
 }
