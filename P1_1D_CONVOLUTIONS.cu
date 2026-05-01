@@ -134,6 +134,13 @@ struct TestCase {
   std::vector<float> expected;
 };
 
+// CPU reference for same-size 1D convolution / cross-correlation.
+//
+// A: input vector with shape (N)
+// B: filter vector with shape (K)
+// Returns C: output vector with shape (N)
+// N: inferred from A.size()
+// K: inferred from B.size(); K is centered with radius (K - 1) / 2
 static std::vector<float> cpu_conv_same(const std::vector<float>& A,
                                         const std::vector<float>& B) {
   const size_t N = A.size();
@@ -708,6 +715,13 @@ static int run_tests(bool skip_cpu_verify) {
   return all_ok ? 0 : 1;
 }
 
+// Basic global-memory GPU kernel.
+//
+// gm_a: device pointer to input vector with shape (N)
+// gm_b: device pointer to filter vector with shape (K)
+// gm_c: device pointer to output vector with shape (N)
+// K: filter length
+// N: input and output length
 __global__ void device_1d_conv_basic(
   const float *gm_a, 
   const float *gm_b, 
@@ -734,6 +748,12 @@ __global__ void device_1d_conv_basic(
   }
 }
 
+// Basic GPU kernel using constant memory for the filter.
+//
+// gm_a: device pointer to input vector with shape (N)
+// gm_c: device pointer to output vector with shape (N)
+// K: filter length; filter values are read from g_const_b[0:K]
+// N: input and output length
 __global__ void device_1d_conv_basic_const(
   const float *gm_a,
   float *gm_c,
@@ -757,6 +777,13 @@ __global__ void device_1d_conv_basic_const(
   }
 }
 
+// Shared-memory tiled GPU kernel.
+//
+// gm_a: device pointer to input vector with shape (N)
+// gm_b: device pointer to filter vector with shape (K)
+// gm_c: device pointer to output vector with shape (N)
+// K: filter length; shared memory must hold blockDim.x + 2 * ((K - 1) / 2)
+// N: input and output length
 __global__ void device_1d_conv_tiled(
   const float *gm_a,
   const float *gm_b,
@@ -818,6 +845,12 @@ __global__ void device_1d_conv_tiled(
   }
 }
 
+// Shared-memory tiled GPU kernel using constant memory for the filter.
+//
+// gm_a: device pointer to input vector with shape (N)
+// gm_c: device pointer to output vector with shape (N)
+// K: filter length; filter values are read from g_const_b[0:K]
+// N: input and output length
 __global__ void device_1d_conv_tiled_const(
   const float *gm_a,
   float *gm_c,
@@ -868,6 +901,13 @@ __global__ void device_1d_conv_tiled_const(
   }
 }
 
+// Block-stride shared-memory tiled GPU kernel.
+//
+// gm_a: device pointer to input vector with shape (N)
+// gm_b: device pointer to filter vector with shape (K)
+// gm_c: device pointer to output vector with shape (N)
+// K: filter length; shared memory must hold blockDim.x + 2 * ((K - 1) / 2)
+// N: input and output length
 __global__ void device_1d_conv_tiled_block_stride(
   const float *gm_a,
   const float *gm_b,
@@ -911,6 +951,12 @@ __global__ void device_1d_conv_tiled_block_stride(
   }
 }
 
+// Block-stride shared-memory tiled GPU kernel using constant memory for B.
+//
+// gm_a: device pointer to input vector with shape (N)
+// gm_c: device pointer to output vector with shape (N)
+// K: filter length; filter values are read from g_const_b[0:K]
+// N: input and output length
 __global__ void device_1d_conv_tiled_block_stride_const(
   const float *gm_a,
   float *gm_c,

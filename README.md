@@ -22,6 +22,7 @@ Current problem files:
 
 - `P1_1D_CONVOLUTIONS.cu`: 1D same-padding convolution / cross-correlation.
 - `P3_RELU.cu`: elementwise ReLU over a row-major matrix.
+- `P4_MVM.cu`: matrix-vector multiplication over a row-major matrix.
 
 Detailed correctness and benchmark notes live next to each problem:
 
