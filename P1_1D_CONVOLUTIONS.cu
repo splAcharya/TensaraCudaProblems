@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <cstdlib>
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -99,6 +100,21 @@ static bool parse_kernel_arg(const std::string& arg) {
   return false;
 }
 
+static bool cuda_runtime_ready() {
+  int device_count = 0;
+  const cudaError_t err = cudaGetDeviceCount(&device_count);
+  if (err != cudaSuccess) {
+    std::cerr << "CUDA runtime unavailable: " << cudaGetErrorString(err)
+              << '\n';
+    return false;
+  }
+  if (device_count <= 0) {
+    std::cerr << "CUDA runtime unavailable: no CUDA devices found\n";
+    return false;
+  }
+  return true;
+}
+
 inline void cuda_check(cudaError_t err, const char* file, int line,
                        const char* expr) {
   if (err == cudaSuccess) {
@@ -106,6 +122,7 @@ inline void cuda_check(cudaError_t err, const char* file, int line,
   }
   std::cerr << "CUDA error: " << cudaGetErrorString(err) << " (" << expr
             << ") at " << file << ":" << line << '\n';
+  std::exit(EXIT_FAILURE);
 }
 
 #define CUDA_CHECK(expr) cuda_check((expr), __FILE__, __LINE__, #expr)
@@ -152,6 +169,13 @@ static bool verify_close(const std::vector<float>& got,
   bool ok = true;
   size_t first_bad = 0;
   for (size_t i = 0; i < got.size(); ++i) {
+    if (!std::isfinite(got[i]) || !std::isfinite(expected[i])) {
+      if (ok) {
+        ok = false;
+        first_bad = i;
+      }
+      continue;
+    }
     const float diff = std::fabs(got[i] - expected[i]);
     if (diff > max_abs) {
       max_abs = diff;
@@ -194,17 +218,17 @@ struct TestResult {
 };
 
 static void print_results_table(const std::vector<TestResult>& results) {
-  std::cout << std::left << std::setw(8) << "group" << std::setw(12) << "name"
+  std::cout << std::left << std::setw(8) << "group" << std::setw(16) << "name"
             << std::setw(10) << "kernel" << std::setw(10) << "N"
             << std::setw(8) << "K" << std::setw(8) << "block_x"
             << std::setw(8) << "grid_x" << std::setw(6) << "cpu"
             << std::setw(6) << "gpu" << std::setw(12) << "total_ms"
             << std::setw(12) << "kernel_ms"
             << '\n';
-  std::cout << std::string(100, '-') << '\n';
+  std::cout << std::string(104, '-') << '\n';
   std::cout << std::fixed << std::setprecision(3);
   for (const auto& r : results) {
-    std::cout << std::left << std::setw(8) << r.group << std::setw(12)
+    std::cout << std::left << std::setw(8) << r.group << std::setw(16)
               << r.name << std::setw(10) << r.kernel << std::setw(10) << r.N
               << std::setw(8) << r.K << std::setw(8) << r.block_x
               << std::setw(8) << r.grid_x << std::setw(6) << r.cpu
@@ -373,6 +397,10 @@ static void run_solution_host(const std::vector<float>& A,
 }
 
 static int run_tests(bool skip_cpu_verify) {
+  if (!cuda_runtime_ready()) {
+    return 1;
+  }
+
   g_print_timing = false;
   const LaunchConfig default_launch = g_launch_config;
   const struct {
@@ -411,6 +439,14 @@ static int run_tests(bool skip_cpu_verify) {
   } large_verify_tests[] = {
       {"large_1", 32769, 127},
       {"large_2", 65537, 191},
+  };
+  const struct {
+    const char* name;
+    size_t N;
+    size_t K;
+  } large_filter_verify_tests[] = {
+      {"webvfy_1", 8193, 8191},
+      {"webvfy_2", 16385, 8191},
   };
   bool all_ok = true;
   std::vector<TestResult> results;
@@ -493,10 +529,10 @@ static int run_tests(bool skip_cpu_verify) {
     std::vector<float> A(N);
     std::vector<float> B(K);
     for (size_t i = 0; i < N; ++i) {
-      A[i] = static_cast<float>((i % 97) - 48) / 50.0f;
+      A[i] = static_cast<float>(static_cast<int>(i % 97) - 48) / 50.0f;
     }
     for (size_t j = 0; j < K; ++j) {
-      B[j] = static_cast<float>((j % 11) - 5) / 7.0f;
+      B[j] = static_cast<float>(static_cast<int>(j % 11) - 5) / 7.0f;
     }
     std::string cpu_status = "SKIP";
     if (!skip_cpu_verify) {
@@ -576,10 +612,10 @@ static int run_tests(bool skip_cpu_verify) {
     std::vector<float> A(N);
     std::vector<float> B(K);
     for (size_t i = 0; i < N; ++i) {
-      A[i] = static_cast<float>((i % 97) - 48) / 50.0f;
+      A[i] = static_cast<float>(static_cast<int>(i % 97) - 48) / 50.0f;
     }
     for (size_t j = 0; j < K; ++j) {
-      B[j] = static_cast<float>((j % 11) - 5) / 7.0f;
+      B[j] = static_cast<float>(static_cast<int>(j % 11) - 5) / 7.0f;
     }
 
     std::vector<float> ref;
@@ -642,6 +678,12 @@ static int run_tests(bool skip_cpu_verify) {
   }
   for (const auto& lt : large_verify_tests) {
     run_sized("large", lt.name, lt.N, lt.K);
+  }
+  for (const auto& wt : large_filter_verify_tests) {
+    run_sized("webvfy", wt.name, wt.N, wt.K);
+  }
+  if (!skip_cpu_verify) {
+    run_scaling("scale_verify", 4097, 383);
   }
   if (skip_cpu_verify) {
     for (const auto& lt : large_tests) {

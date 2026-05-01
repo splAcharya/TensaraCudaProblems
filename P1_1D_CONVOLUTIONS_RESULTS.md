@@ -25,6 +25,8 @@ Updated summary based on the current local harness structure:
   - small exact tests
   - medium generated tests
   - selected larger odd-`N` tests
+  - large-filter `K=8191` CPU-reference checks
+  - a CPU-backed launch-configuration sweep
 - `--skip-cpu` adds:
   - heavier `large`
   - `tile`
@@ -47,8 +49,13 @@ From [p1_with_cpu.txt](/mnt/d/gitrepo/TensaraCudaProblems/p1_with_cpu.txt):
 - All six kernels also pass the selected larger odd-size verification cases:
   - `large_1: N=32769, K=127`
   - `large_2: N=65537, K=191`
+- All six kernels pass the added large-filter verification cases:
+  - `webvfy_1: N=8193, K=8191`
+  - `webvfy_2: N=16385, K=8191`
+- The verified launch sweep `scale_verify: N=4097, K=383` passes for all six kernels across every tested `(block_x, grid_x)` pair.
+- The regenerated CPU-backed log has `18 PASS/PASS`, `168 REF/PASS`, `0 FAIL`, and `0 SKIP` result rows.
 
-That gives reasonable confidence that the current kernels handle both ordinary and odd-length signals correctly under the refactored harness.
+That gives stronger confidence that the current kernels handle ordinary, odd-length, large-filter, and launch-sensitive cases correctly under the refactored harness.
 
 ## Performance Summary
 
@@ -61,33 +68,33 @@ From [p1_skip_cpu.txt](/mnt/d/gitrepo/TensaraCudaProblems/p1_skip_cpu.txt):
 Representative default-launch rows:
 
 - `web_1 (N=32768, K=8191)`:
-  - `basic 1.504 ms`
-  - `basic_c 1.408 ms`
-  - `tiled 1.901 ms`
-  - `tiled_c 1.151 ms`
+  - `basic 1.508 ms`
+  - `basic_c 1.406 ms`
+  - `tiled 1.900 ms`
+  - `tiled_c 1.147 ms`
   - `bstride 1.449 ms`
   - `bstride_c 0.734 ms`
 - `web_2 (N=65536, K=8191)`:
-  - `basic 3.167 ms`
-  - `basic_c 2.806 ms`
-  - `tiled 3.832 ms`
-  - `tiled_c 2.339 ms`
-  - `bstride 2.889 ms`
-  - `bstride_c 1.459 ms`
+  - `basic 3.169 ms`
+  - `basic_c 2.797 ms`
+  - `tiled 3.810 ms`
+  - `tiled_c 2.356 ms`
+  - `bstride 2.890 ms`
+  - `bstride_c 1.460 ms`
 - `odd_3 (N=262147, K=383)`:
-  - `basic 0.601 ms`
+  - `basic 0.609 ms`
   - `basic_c 0.547 ms`
-  - `tiled 0.744 ms`
-  - `tiled_c 0.479 ms`
-  - `bstride 0.571 ms`
-  - `bstride_c 0.298 ms`
+  - `tiled 0.749 ms`
+  - `tiled_c 0.481 ms`
+  - `bstride 0.572 ms`
+  - `bstride_c 0.300 ms`
 - `tile_5 (N=2097152, K=511)`:
   - `basic 6.277 ms`
-  - `basic_c 5.890 ms`
-  - `tiled 8.410 ms`
-  - `tiled_c 5.030 ms`
-  - `bstride 6.001 ms`
-  - `bstride_c 3.145 ms`
+  - `basic_c 5.865 ms`
+  - `tiled 8.370 ms`
+  - `tiled_c 5.151 ms`
+  - `bstride 6.002 ms`
+  - `bstride_c 3.124 ms`
 
 ## What Seems To Matter
 
@@ -101,18 +108,18 @@ Representative default-launch rows:
 
 From the heatmaps in [p1_skip_cpu.txt](/mnt/d/gitrepo/TensaraCudaProblems/p1_skip_cpu.txt):
 
-- `web_1 / basic`: best `1.068 ms` at `(512, 32)`
-- `web_1 / basic_c`: best `0.936 ms` at `(512, 64)`
-- `web_1 / tiled`: best `1.277 ms` at `(512, 64)`
-- `web_1 / tiled_c`: best `0.751 ms` at `(512, 64)`
-- `web_1 / bstride`: best `1.070 ms` at `(512, 64)`
-- `web_1 / bstride_c`: best `0.550 ms` at `(256, 32)`
-- `web_2 / basic`: best `2.158 ms` at `(512, 64)`
-- `web_2 / basic_c`: best `1.984 ms` at `(512, 64)`
-- `web_2 / tiled`: best `2.546 ms` at `(512, 64)`
-- `web_2 / tiled_c`: best `1.459 ms` at `(512, 64)`
-- `web_2 / bstride`: best `2.152 ms` at `(256, 64)`
-- `web_2 / bstride_c`: best `1.081 ms` at `(512, 64)`
+- `web_1 / basic`: best `1.063 ms` at `(512, 64)`
+- `web_1 / basic_c`: best `0.899 ms` at `(512, 64)`
+- `web_1 / tiled`: best `1.234 ms` at `(512, 64)`
+- `web_1 / tiled_c`: best `0.706 ms` at `(512, 64)`
+- `web_1 / bstride`: best `1.068 ms` at `(512, 64)`
+- `web_1 / bstride_c`: best `0.538 ms` at `(512, 64)`
+- `web_2 / basic`: best `2.132 ms` at `(512, 64)`
+- `web_2 / basic_c`: best `1.965 ms` at `(512, 64)`
+- `web_2 / tiled`: best `2.512 ms` at `(512, 64)`
+- `web_2 / tiled_c`: best `1.448 ms` at `(512, 64)`
+- `web_2 / bstride`: best `2.143 ms` at `(512, 64)`
+- `web_2 / bstride_c`: best `1.076 ms` at `(512, 64)`
 
 The useful high-level takeaway is unchanged: larger blocks with moderate-to-high grid counts work well, and `bstride_c` is still the best tuned path in this local environment.
 

@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <cstdlib>
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -66,6 +67,7 @@ inline void cuda_check(cudaError_t err, const char* file, int line,
   }
   std::cerr << "CUDA error: " << cudaGetErrorString(err) << " (" << expr
             << ") at " << file << ":" << line << '\n';
+  std::exit(EXIT_FAILURE);
 }
 
 #define CUDA_CHECK(expr) cuda_check((expr), __FILE__, __LINE__, #expr)
@@ -122,6 +124,13 @@ static bool verify_close(const std::vector<float>& got,
   size_t first_bad = 0;
 
   for (size_t i = 0; i < got.size(); ++i) {
+    if (!std::isfinite(got[i]) || !std::isfinite(expected[i])) {
+      if (ok) {
+        ok = false;
+        first_bad = i;
+      }
+      continue;
+    }
     const float diff = std::fabs(got[i] - expected[i]);
     if (diff > max_abs) {
       max_abs = diff;
@@ -343,6 +352,11 @@ static int run_tests(bool skip_cpu_verify) {
        8,
        {-8.0f, -4.0f, -0.0f, 0.0f, 0.25f, 1.0f, 8.0f, -2.0f},
        {0.0f, 0.0f, -0.0f, 0.0f, 0.25f, 1.0f, 8.0f, 0.0f}},
+      {"small_tail2",
+       2,
+       3,
+       {-2.0f, -1.0f, 0.0f, 1.0f, 2.0f, -3.0f},
+       {0.0f, 0.0f, 0.0f, 1.0f, 2.0f, 0.0f}},
   };
 
   const struct {
@@ -354,6 +368,7 @@ static int run_tests(bool skip_cpu_verify) {
       {"medium_2", 255, 257},
       {"medium_3", 513, 1025},
       {"medium_4", 1024, 1024},
+      {"medium_tail2", 257, 258},
   };
 
   const struct {
@@ -541,6 +556,11 @@ static int run_tests(bool skip_cpu_verify) {
 
     for (const auto& lt : large_verify_tests) {
       run_sized("large", lt.name, lt.rows, lt.cols);
+    }
+
+    if (!skip_cpu_verify) {
+      run_scaling("scale_tail2", 257, 258);
+      run_scaling("scale_rect", 513, 1025);
     }
 
     if (skip_cpu_verify) {
