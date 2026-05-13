@@ -16,8 +16,13 @@
 extern "C" void solution(const float* input_a, const float* input_b,
                          float* output_c, size_t m, size_t k);
 
-// Flip this to true after implementing cpu_matrix_vector().
-static constexpr bool kCpuReferenceImplemented = false;
+// CPU reference is available for correctness verification.
+static constexpr bool kCpuReferenceImplemented = true;
+static constexpr size_t kConstantInputBElements = 8192;
+static constexpr int kProfileWarmupIterations = 5;
+static constexpr int kProfileIterations = 50;
+
+__constant__ float g_input_b_constant[kConstantInputBElements];
 
 struct Timing {
   float total_ms = 0.0f;
@@ -31,18 +36,66 @@ struct LaunchConfig {
 
 enum class KernelVariant {
   kBasic,
+  kConstantB,
+  kSharedAB,
+  kWarp,
 };
 
 static LaunchConfig g_launch_config{256, 64};
 static KernelVariant g_kernel_variant = KernelVariant::kBasic;
+static bool g_kernel_arg_set = false;
 static Timing g_last_timing;
 
 static const char* current_kernel_name() {
   switch (g_kernel_variant) {
     case KernelVariant::kBasic:
       return "basic";
+    case KernelVariant::kConstantB:
+      return "constant_b";
+    case KernelVariant::kSharedAB:
+      return "shared_ab";
+    case KernelVariant::kWarp:
+      return "warp";
   }
   return "unknown";
+}
+
+static bool kernel_enabled(KernelVariant variant) {
+  return !g_kernel_arg_set || g_kernel_variant == variant;
+}
+
+static bool parse_kernel_arg(const std::string& arg) {
+  const std::string prefix = "--kernel=";
+  if (arg.rfind(prefix, 0) != 0) {
+    return false;
+  }
+
+  const std::string value = arg.substr(prefix.size());
+  if (value == "basic") {
+    g_kernel_variant = KernelVariant::kBasic;
+    g_kernel_arg_set = true;
+    return true;
+  }
+  if (value == "constant-b" || value == "constant_b") {
+    g_kernel_variant = KernelVariant::kConstantB;
+    g_kernel_arg_set = true;
+    return true;
+  }
+  if (value == "shared-ab" || value == "shared_ab") {
+    g_kernel_variant = KernelVariant::kSharedAB;
+    g_kernel_arg_set = true;
+    return true;
+  }
+  if (value == "warp") {
+    g_kernel_variant = KernelVariant::kWarp;
+    g_kernel_arg_set = true;
+    return true;
+  }
+
+  std::cerr << "Unknown kernel: " << value
+            << " (use --kernel=basic, --kernel=constant-b, "
+            << "--kernel=shared-ab, or --kernel=warp)\n";
+  return false;
 }
 
 static bool cuda_runtime_ready() {
@@ -83,9 +136,10 @@ struct TestCase {
 
 // CPU reference stub.
 //
-// input_a: row-major matrix with shape (m, k), stored as input_a[row * k + col]
+// input_a: row-major matrix with shape (m, k), stored as
+//          input_a[row * k + col]
 // input_b: vector with shape (k)
-// output_c: vector with shape (m), where output_c[row] = input_a[row, :] dot input_b
+// output_c: vector with shape (m), where output_c[row] is the row dot product
 // m: number of matrix rows and output elements
 // k: number of matrix columns and vector elements
 static void cpu_matrix_vector(
@@ -95,7 +149,15 @@ static void cpu_matrix_vector(
     size_t m,
     size_t k)
 {
+  for (size_t row = 0; row < m; ++row)
+  {
+    float rsum = 0.0f;
 
+    for (size_t col = 0; col < k; ++col)
+      rsum += (input_a[row * k + col] * input_b[col]);
+
+    output_c[row] = rsum;
+  }
 }
 
 static std::vector<float> make_matrix_input(size_t m, size_t k) {
@@ -302,10 +364,10 @@ static void print_scale_heatmaps(const std::vector<TestResult>& results) {
   }
 }
 
-static void run_solution_host(const std::vector<float>& input_a,
-                              const std::vector<float>& input_b,
-                              std::vector<float>& output_c, size_t m,
-                              size_t k) {
+static void run_solution_host_global_b(const std::vector<float>& input_a,
+                                       const std::vector<float>& input_b,
+                                       std::vector<float>& output_c, size_t m,
+                                       size_t k) {
   cudaEvent_t total_start = nullptr;
   cudaEvent_t total_stop = nullptr;
   cudaEvent_t kernel_start = nullptr;
@@ -359,13 +421,181 @@ static void run_solution_host(const std::vector<float>& input_a,
   CUDA_CHECK(cudaFree(d_output_c));
 }
 
+static void run_solution_host_constant_b(const std::vector<float>& input_a,
+                                         const std::vector<float>& input_b,
+                                         std::vector<float>& output_c,
+                                         size_t m, size_t k) {
+  if (k > kConstantInputBElements) {
+    std::cerr << "constant_b kernel supports k <= "
+              << kConstantInputBElements << ", got " << k << '\n';
+    std::exit(EXIT_FAILURE);
+  }
+
+  cudaEvent_t total_start = nullptr;
+  cudaEvent_t total_stop = nullptr;
+  cudaEvent_t kernel_start = nullptr;
+  cudaEvent_t kernel_stop = nullptr;
+  CUDA_CHECK(cudaEventCreate(&total_start));
+  CUDA_CHECK(cudaEventCreate(&total_stop));
+  CUDA_CHECK(cudaEventCreate(&kernel_start));
+  CUDA_CHECK(cudaEventCreate(&kernel_stop));
+
+  const size_t bytes_a = m * k * sizeof(float);
+  const size_t bytes_b = k * sizeof(float);
+  const size_t bytes_c = m * sizeof(float);
+
+  float* d_input_a = nullptr;
+  float* d_output_c = nullptr;
+
+  CUDA_CHECK(cudaEventRecord(total_start));
+  CUDA_CHECK(cudaMalloc(&d_input_a, bytes_a));
+  CUDA_CHECK(cudaMalloc(&d_output_c, bytes_c));
+  CUDA_CHECK(cudaMemcpy(d_input_a, input_a.data(), bytes_a,
+                        cudaMemcpyHostToDevice));
+  CUDA_CHECK(cudaMemcpyToSymbol(g_input_b_constant, input_b.data(), bytes_b));
+  CUDA_CHECK(cudaMemset(d_output_c, 0, bytes_c));
+
+  CUDA_CHECK(cudaEventRecord(kernel_start));
+  solution(d_input_a, nullptr, d_output_c, m, k);
+  CUDA_CHECK(cudaEventRecord(kernel_stop));
+  CUDA_CHECK(cudaEventSynchronize(kernel_stop));
+
+  CUDA_CHECK(cudaMemcpy(output_c.data(), d_output_c, bytes_c,
+                        cudaMemcpyDeviceToHost));
+  CUDA_CHECK(cudaEventRecord(total_stop));
+  CUDA_CHECK(cudaEventSynchronize(total_stop));
+
+  float total_ms = 0.0f;
+  float kernel_ms = 0.0f;
+  CUDA_CHECK(cudaEventElapsedTime(&total_ms, total_start, total_stop));
+  CUDA_CHECK(cudaEventElapsedTime(&kernel_ms, kernel_start, kernel_stop));
+  g_last_timing.total_ms = total_ms;
+  g_last_timing.kernel_ms = kernel_ms;
+
+  CUDA_CHECK(cudaEventDestroy(total_start));
+  CUDA_CHECK(cudaEventDestroy(total_stop));
+  CUDA_CHECK(cudaEventDestroy(kernel_start));
+  CUDA_CHECK(cudaEventDestroy(kernel_stop));
+  CUDA_CHECK(cudaFree(d_input_a));
+  CUDA_CHECK(cudaFree(d_output_c));
+}
+
+static void run_solution_host(const std::vector<float>& input_a,
+                              const std::vector<float>& input_b,
+                              std::vector<float>& output_c, size_t m,
+                              size_t k) {
+  switch (g_kernel_variant) {
+    case KernelVariant::kBasic:
+    case KernelVariant::kSharedAB:
+    case KernelVariant::kWarp:
+      run_solution_host_global_b(input_a, input_b, output_c, m, k);
+      break;
+    case KernelVariant::kConstantB:
+      run_solution_host_constant_b(input_a, input_b, output_c, m, k);
+      break;
+  }
+}
+
+static int run_profile() {
+  if (!cuda_runtime_ready()) {
+    return 1;
+  }
+
+  const size_t m = 32768;
+  const size_t k = 4096;
+  const auto input_a = make_matrix_input(m, k);
+  const auto input_b = make_vector_input(k);
+  const size_t bytes_a = m * k * sizeof(float);
+  const size_t bytes_b = k * sizeof(float);
+  const size_t bytes_c = m * sizeof(float);
+
+  if (g_kernel_variant == KernelVariant::kConstantB &&
+      k > kConstantInputBElements) {
+    std::cerr << "constant_b kernel supports k <= "
+              << kConstantInputBElements << ", got " << k << '\n';
+    return 1;
+  }
+
+  float* d_input_a = nullptr;
+  float* d_input_b = nullptr;
+  float* d_output_c = nullptr;
+  cudaEvent_t kernel_start = nullptr;
+  cudaEvent_t kernel_stop = nullptr;
+
+  CUDA_CHECK(cudaMalloc(&d_input_a, bytes_a));
+  CUDA_CHECK(cudaMalloc(&d_output_c, bytes_c));
+  CUDA_CHECK(cudaMemcpy(d_input_a, input_a.data(), bytes_a,
+                        cudaMemcpyHostToDevice));
+  if (g_kernel_variant == KernelVariant::kConstantB) {
+    CUDA_CHECK(cudaMemcpyToSymbol(g_input_b_constant, input_b.data(),
+                                  bytes_b));
+  } else {
+    CUDA_CHECK(cudaMalloc(&d_input_b, bytes_b));
+    CUDA_CHECK(cudaMemcpy(d_input_b, input_b.data(), bytes_b,
+                          cudaMemcpyHostToDevice));
+  }
+  CUDA_CHECK(cudaMemset(d_output_c, 0, bytes_c));
+
+  for (int i = 0; i < kProfileWarmupIterations; ++i) {
+    solution(d_input_a, d_input_b, d_output_c, m, k);
+  }
+  CUDA_CHECK(cudaDeviceSynchronize());
+
+  CUDA_CHECK(cudaEventCreate(&kernel_start));
+  CUDA_CHECK(cudaEventCreate(&kernel_stop));
+  CUDA_CHECK(cudaEventRecord(kernel_start));
+  for (int i = 0; i < kProfileIterations; ++i) {
+    solution(d_input_a, d_input_b, d_output_c, m, k);
+  }
+  CUDA_CHECK(cudaEventRecord(kernel_stop));
+  CUDA_CHECK(cudaEventSynchronize(kernel_stop));
+
+  float kernel_ms = 0.0f;
+  CUDA_CHECK(cudaEventElapsedTime(&kernel_ms, kernel_start, kernel_stop));
+  const float avg_kernel_ms = kernel_ms / kProfileIterations;
+  const size_t device_bytes =
+      bytes_a + bytes_c +
+      ((g_kernel_variant == KernelVariant::kConstantB) ? 0 : bytes_b);
+  const double device_mib =
+      static_cast<double>(device_bytes) / (1024.0 * 1024.0);
+
+  std::cout << std::fixed << std::setprecision(3)
+            << "profile scope=kernel-only verify=off"
+            << " kernel=" << current_kernel_name()
+            << " b_mode="
+            << ((g_kernel_variant == KernelVariant::kConstantB)
+                    ? "constant-preloaded-fixed-b"
+                    : "device-pointer")
+            << " m=" << m
+            << " k=" << k << " block_x=" << g_launch_config.block_x
+            << " grid_x=" << g_launch_config.grid_x
+            << " warmup=" << kProfileWarmupIterations
+            << " repeats=" << kProfileIterations
+            << " device_mib=" << device_mib
+            << " avg_kernel_ms=" << avg_kernel_ms << '\n';
+
+  CUDA_CHECK(cudaEventDestroy(kernel_start));
+  CUDA_CHECK(cudaEventDestroy(kernel_stop));
+  CUDA_CHECK(cudaFree(d_input_a));
+  if (d_input_b != nullptr) {
+    CUDA_CHECK(cudaFree(d_input_b));
+  }
+  CUDA_CHECK(cudaFree(d_output_c));
+  return 0;
+}
+
 static int run_tests(bool skip_cpu_verify) {
   if (!cuda_runtime_ready()) {
     return 1;
   }
 
   const LaunchConfig default_launch = g_launch_config;
-  const KernelVariant kernel_variants[] = {KernelVariant::kBasic};
+  const KernelVariant kernel_variants[] = {
+      KernelVariant::kBasic,
+      KernelVariant::kConstantB,
+      KernelVariant::kSharedAB,
+      KernelVariant::kWarp,
+  };
 
   const std::vector<TestCase> tests = {
       {"small_1",
@@ -392,7 +622,7 @@ static int run_tests(bool skip_cpu_verify) {
        {1.0f, 2.0f, 3.0f, 4.0f, -1.0f, -2.0f, 1.5f, 0.5f, 0.0f, 1.0f,
         0.0f, 2.0f},
        {0.25f, -1.0f, 2.0f, 0.5f},
-       {6.25f, 4.0f, 0.0f}},
+       {6.25f, 5.0f, 0.0f}},
   };
 
   const struct {
@@ -543,6 +773,9 @@ static int run_tests(bool skip_cpu_verify) {
   };
 
   for (KernelVariant kernel_variant : kernel_variants) {
+    if (!kernel_enabled(kernel_variant)) {
+      continue;
+    }
     g_kernel_variant = kernel_variant;
 
     for (const auto& tc : tests) {
@@ -612,7 +845,7 @@ static int run_tests(bool skip_cpu_verify) {
   return all_ok ? 0 : 1;
 }
 
-// Basic GPU kernel stub.
+// Basic GPU kernel.
 //
 // input_a: device pointer to a row-major matrix with shape (m, k),
 //          stored as input_a[row * k + col]
@@ -620,21 +853,210 @@ static int run_tests(bool skip_cpu_verify) {
 // output_c: device pointer to a vector with shape (m)
 // m: number of matrix rows and output elements
 // k: number of matrix columns and vector elements
-__global__ void device_mvm_basic(const float* input_a, const float* input_b,
+__global__ void device_mvm_basic(const float* input_a,
+                                 const float* input_b,
                                  float* output_c, size_t m, size_t k) {
+  const size_t gix =
+      static_cast<size_t>(blockDim.x) * blockIdx.x + threadIdx.x;
+  const size_t grid_stride =
+      static_cast<size_t>(blockDim.x) * gridDim.x;
 
+  for (size_t row = gix; row < m; row += grid_stride) {
+    float rsum = 0.0f;
 
+    for (size_t col = 0; col < k; ++col) {
+      rsum += input_a[row * k + col] * input_b[col];
+    }
+
+    output_c[row] = rsum;
+  }
+}
+
+// Constant-memory input_b GPU kernel.
+//
+// input_a: device pointer to a row-major matrix with shape (m, k),
+//          stored as input_a[row * k + col]
+// output_c: device pointer to a vector with shape (m)
+// m: number of matrix rows and output elements
+// k: number of matrix columns and vector elements
+__global__ void device_mvm_constant_b(const float* input_a, float* output_c,
+                                      size_t m, size_t k) {
+  const size_t gix =
+      static_cast<size_t>(blockDim.x) * blockIdx.x + threadIdx.x;
+  const size_t grid_stride =
+      static_cast<size_t>(blockDim.x) * gridDim.x;
+
+  for (size_t row = gix; row < m; row += grid_stride) {
+    float rsum = 0.0f;
+
+    for (size_t col = 0; col < k; ++col) {
+      rsum += input_a[row * k + col] * g_input_b_constant[col];
+    }
+
+    output_c[row] = rsum;
+  }
+}
+
+// Shared-memory input_a/input_b GPU kernel.
+//
+// input_a: device pointer to a row-major matrix with shape (m, k),
+//          stored as input_a[row * k + col]
+// input_b: device pointer to a vector with shape (k)
+// output_c: device pointer to a vector with shape (m)
+// m: number of matrix rows and output elements
+// k: number of matrix columns and vector elements
+// shared memory: first blockDim.x floats are intended for input_a values;
+//                next blockDim.x floats are intended for input_b values
+__global__ void device_mvm_shared_ab(const float* input_a,
+                                     const float* input_b, float* output_c,
+                                     size_t m, size_t k) {
+
+  //high level
+  // each output tile is assigned a block of threads
+  // so technically this is a block stride
+  // how many blocks required for all outputs
+
+  size_t total_blocks = m;
+  size_t block_stride = gridDim.x;
+
+  // Dynamic shared memory is one per-block slab. Two separate
+  // extern __shared__ arrays would alias the same base address, so carve the
+  // slab manually: A uses [0, blockDim.x), B uses [blockDim.x, 2*blockDim.x).
+  // This keeps the two loaded tiles from overwriting each other before the
+  // per-block reduction reads them.
+  extern __shared__ float smem[];
+  float *tile_a = smem;
+  float *tile_b = tile_a + blockDim.x;
+  float *block_res  = tile_b + blockDim.x;
+
+  size_t num_tiles =  (k + blockDim.x - 1) / blockDim.x;
+
+  //each output cell is assiged a block
+  for (size_t bx = blockIdx.x; bx < total_blocks; bx += block_stride)
+  {
+    //load tiles from gmem to smem
+    float rsum = 0.0f;
+    for (size_t tile_id = 0; tile_id < num_tiles; ++tile_id)
+    {
+      //load current a tile
+
+      //each output row is assigned a block, i.e
+      //each block is responsible for a row in input_a
+      size_t row_pos_a = bx;
+
+      //we bring in blockdim worth of elements per row into the current tile
+      //within each tile, each thread will load a particular element
+      size_t col_pos_a = (tile_id * blockDim.x) + threadIdx.x;
+      size_t load_idx_a = (row_pos_a * k) + col_pos_a;
+      tile_a[threadIdx.x] =
+          (row_pos_a < m && col_pos_a < k) ? input_a[load_idx_a] : 0.0f;
+
+      //load tile b
+      size_t col_pos_b = (tile_id * blockDim.x) + threadIdx.x;
+      tile_b[threadIdx.x] =
+          (col_pos_b < k) ? input_b[col_pos_b] : 0.0f;
+
+      //wait for the entire block to finish writting to shared memory
+      __syncthreads();
+
+      //only 1 thread per block needs to compute the sum,
+      if (threadIdx.x == 0)
+      {
+        for (size_t rdim = 0; rdim < blockDim.x; ++rdim)
+          rsum +=  tile_a[rdim] * tile_b[rdim];
+      }
+
+      //wait for shared memory reads to complete
+      __syncthreads();
+    }
+
+    //store output
+    if (threadIdx.x == 0 && bx < m)
+      output_c[bx] = rsum;
+  }
+}
+
+// Warp-level input_a/input_b GPU kernel.
+//
+// input_a: device pointer to a row-major matrix with shape (m, k),
+//          stored as input_a[row * k + col]
+// input_b: device pointer to a vector with shape (k)
+// output_c: device pointer to a vector with shape (m)
+// m: number of matrix rows and output elements
+// k: number of matrix columns and vector elements
+__global__ void device_mvm_warp(const float* input_a,
+                                const float* input_b, float* output_c,
+                                size_t m, size_t k) {
+
+  size_t total_blocks = m; //each block is responsible for 1 output
+  size_t grid_stride = gridDim.x; //at block level
+  size_t num_tiles = (k + blockDim.x - 1) / blockDim.x;
+  __shared__ float block_res;
+  size_t lane_id = threadIdx.x % 32;
+
+  block_res = 0.0f;
+  __syncthreads();
+
+  for (size_t bx = blockIdx.x; bx < total_blocks; bx += grid_stride)
+  {
+    float rsum = 0.0f;
+
+    //each blockdim worth of data will be operated on
+    for (size_t tile_id = 0; tile_id < num_tiles; ++tile_id)
+    {
+      //load from global memory for local registers
+      int row_pos_a = bx;
+      int col_pos_a = (tile_id * blockDim.x) + threadIdx.x;
+      int load_pos_a = (row_pos_a * k) + col_pos_a;
+      float reg_a = (row_pos_a < m && col_pos_a < k) ? input_a[load_pos_a] : 0.0f;
+
+      int load_pos_b = (tile_id * blockDim.x) + threadIdx.x;
+      float reg_b = (load_pos_b < k) ? input_b[load_pos_b] : 0.0f;
+      rsum += reg_a * reg_b;
+    }
+
+    //warp shuffle
+    for (size_t lane_offset = 16; lane_offset > 0; lane_offset /= 2)
+      rsum += __shfl_down_sync(0xffffffffffff, rsum ,lane_offset);
+
+    if (lane_id == 0)
+      atomicAdd(&block_res, rsum);
+
+    __syncthreads();
+
+    if (threadIdx.x == 0 && bx < m)
+    {
+      output_c[bx] = block_res;
+      block_res = 0.0f;
+    }
+
+    __syncthreads();
+  }
 }
 
 extern "C" void solution(const float* input_a, const float* input_b,
                          float* output_c, size_t m, size_t k) {
   dim3 block_shape(g_launch_config.block_x, 1, 1);
   dim3 grid_shape(g_launch_config.grid_x, 1, 1);
+  const size_t shared_bytes =
+      2 * static_cast<size_t>(g_launch_config.block_x) * sizeof(float);
 
   switch (g_kernel_variant) {
     case KernelVariant::kBasic:
       device_mvm_basic<<<grid_shape, block_shape>>>(input_a, input_b, output_c,
                                                     m, k);
+      break;
+    case KernelVariant::kConstantB:
+      device_mvm_constant_b<<<grid_shape, block_shape>>>(input_a, output_c, m,
+                                                         k);
+      break;
+    case KernelVariant::kSharedAB:
+      device_mvm_shared_ab<<<grid_shape, block_shape, shared_bytes>>>(
+          input_a, input_b, output_c, m, k);
+      break;
+    case KernelVariant::kWarp:
+      device_mvm_warp<<<grid_shape, block_shape>>>(input_a, input_b, output_c,
+                                                   m, k);
       break;
   }
 
@@ -646,15 +1068,29 @@ int main(int argc, char** argv) {
   std::cin.tie(nullptr);
 
   bool skip_cpu_verify = false;
+  bool profile_mode = false;
   for (int i = 1; i < argc; ++i) {
     if (std::string(argv[i]) == "--skip-cpu") {
       skip_cpu_verify = true;
+    } else if (std::string(argv[i]) == "--profile") {
+      profile_mode = true;
+    } else if (std::string(argv[i]).rfind("--kernel=", 0) == 0) {
+      if (!parse_kernel_arg(argv[i])) {
+        return 1;
+      }
     } else {
       std::cerr << "Unknown argument: " << argv[i]
-                << " (supported: --skip-cpu)\n";
+                << " (supported: --skip-cpu, --profile, --kernel=...)\n";
       return 1;
     }
   }
 
+  if (profile_mode) {
+    if (!g_kernel_arg_set) {
+      std::cerr << "--profile requires an explicit --kernel=... value\n";
+      return 1;
+    }
+    return run_profile();
+  }
   return run_tests(skip_cpu_verify);
 }

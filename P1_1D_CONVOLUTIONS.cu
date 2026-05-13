@@ -25,6 +25,10 @@ enum class KernelKind {
 };
 
 static KernelKind g_kernel_kind = KernelKind::Basic;
+static bool g_kernel_arg_set = false;
+
+static constexpr int kProfileWarmupIterations = 5;
+static constexpr int kProfileIterations = 50;
 
 struct Timing {
   float total_ms = 0.0f;
@@ -43,6 +47,28 @@ static LaunchConfig g_launch_config{256, 32};
 
 constexpr size_t kMaxConstantFilterSize = 8192;
 __constant__ float g_const_b[kMaxConstantFilterSize];
+
+static const char* current_kernel_name() {
+  switch (g_kernel_kind) {
+    case KernelKind::Basic:
+      return "basic";
+    case KernelKind::BasicConst:
+      return "basic-const";
+    case KernelKind::Tiled:
+      return "tiled";
+    case KernelKind::TiledConst:
+      return "tiled-const";
+    case KernelKind::BlockStrideStub:
+      return "block-stride-stub";
+    case KernelKind::BlockStrideConst:
+      return "block-stride-const";
+  }
+  return "unknown";
+}
+
+static bool kernel_enabled(KernelKind kind) {
+  return !g_kernel_arg_set || g_kernel_kind == kind;
+}
 
 static bool kernel_uses_constant_filter(KernelKind kind) {
   switch (kind) {
@@ -70,26 +96,32 @@ static bool parse_kernel_arg(const std::string& arg) {
   const std::string value = arg.substr(prefix.size());
   if (value == "basic") {
     g_kernel_kind = KernelKind::Basic;
+    g_kernel_arg_set = true;
     return true;
   }
   if (value == "basic-const") {
     g_kernel_kind = KernelKind::BasicConst;
+    g_kernel_arg_set = true;
     return true;
   }
   if (value == "tiled") {
     g_kernel_kind = KernelKind::Tiled;
+    g_kernel_arg_set = true;
     return true;
   }
   if (value == "tiled-const") {
     g_kernel_kind = KernelKind::TiledConst;
+    g_kernel_arg_set = true;
     return true;
   }
   if (value == "block-stride-stub") {
     g_kernel_kind = KernelKind::BlockStrideStub;
+    g_kernel_arg_set = true;
     return true;
   }
   if (value == "block-stride-const") {
     g_kernel_kind = KernelKind::BlockStrideConst;
+    g_kernel_arg_set = true;
     return true;
   }
   std::cerr << "Unknown kernel: " << value
@@ -403,6 +435,96 @@ static void run_solution_host(const std::vector<float>& A,
   CUDA_CHECK(cudaFree(d_C));
 }
 
+static int run_profile() {
+  if (!cuda_runtime_ready()) {
+    return 1;
+  }
+
+  g_print_timing = false;
+  const size_t N = 65536;
+  const size_t K = 8191;
+
+  if (!kernel_supports_filter(g_kernel_kind, K)) {
+    std::cerr << "Profile filter size " << K
+              << " is not supported by kernel "
+              << current_kernel_name() << '\n';
+    return 1;
+  }
+
+  std::vector<float> A(N);
+  std::vector<float> B(K);
+  for (size_t i = 0; i < N; ++i) {
+    A[i] = static_cast<float>(static_cast<int>(i % 97) - 48) / 50.0f;
+  }
+  for (size_t j = 0; j < K; ++j) {
+    B[j] = static_cast<float>(static_cast<int>(j % 11) - 5) / 7.0f;
+  }
+
+  const bool use_constant_filter = kernel_uses_constant_filter(g_kernel_kind);
+  float* d_A = nullptr;
+  float* d_B = nullptr;
+  float* d_C = nullptr;
+  cudaEvent_t kernel_start = nullptr;
+  cudaEvent_t kernel_stop = nullptr;
+
+  CUDA_CHECK(cudaMalloc(&d_A, N * sizeof(float)));
+  CUDA_CHECK(cudaMalloc(&d_C, N * sizeof(float)));
+  CUDA_CHECK(
+      cudaMemcpy(d_A, A.data(), N * sizeof(float), cudaMemcpyHostToDevice));
+  if (use_constant_filter) {
+    CUDA_CHECK(cudaMemcpyToSymbol(g_const_b, B.data(), K * sizeof(float)));
+  } else {
+    CUDA_CHECK(cudaMalloc(&d_B, K * sizeof(float)));
+    CUDA_CHECK(
+        cudaMemcpy(d_B, B.data(), K * sizeof(float), cudaMemcpyHostToDevice));
+  }
+  CUDA_CHECK(cudaMemset(d_C, 0, N * sizeof(float)));
+
+  for (int i = 0; i < kProfileWarmupIterations; ++i) {
+    solution(d_A, d_B, d_C, N, K);
+  }
+  CUDA_CHECK(cudaDeviceSynchronize());
+
+  CUDA_CHECK(cudaEventCreate(&kernel_start));
+  CUDA_CHECK(cudaEventCreate(&kernel_stop));
+  CUDA_CHECK(cudaEventRecord(kernel_start));
+  for (int i = 0; i < kProfileIterations; ++i) {
+    solution(d_A, d_B, d_C, N, K);
+  }
+  CUDA_CHECK(cudaEventRecord(kernel_stop));
+  CUDA_CHECK(cudaEventSynchronize(kernel_stop));
+
+  float kernel_ms = 0.0f;
+  CUDA_CHECK(cudaEventElapsedTime(&kernel_ms, kernel_start, kernel_stop));
+  const float avg_kernel_ms = kernel_ms / kProfileIterations;
+  const size_t device_bytes =
+      ((use_constant_filter ? (2 * N) : ((2 * N) + K)) * sizeof(float));
+  const double device_mib =
+      static_cast<double>(device_bytes) / (1024.0 * 1024.0);
+
+  std::cout << std::fixed << std::setprecision(3)
+            << "profile scope=kernel-only verify=off"
+            << " kernel=" << current_kernel_name()
+            << " filter_mode="
+            << (use_constant_filter ? "constant-preloaded" : "device-pointer")
+            << " N=" << N << " K=" << K
+            << " block_x=" << g_launch_config.block_x
+            << " grid_x=" << g_launch_config.grid_x
+            << " warmup=" << kProfileWarmupIterations
+            << " repeats=" << kProfileIterations
+            << " device_mib=" << device_mib
+            << " avg_kernel_ms=" << avg_kernel_ms << '\n';
+
+  CUDA_CHECK(cudaEventDestroy(kernel_start));
+  CUDA_CHECK(cudaEventDestroy(kernel_stop));
+  CUDA_CHECK(cudaFree(d_A));
+  if (d_B != nullptr) {
+    CUDA_CHECK(cudaFree(d_B));
+  }
+  CUDA_CHECK(cudaFree(d_C));
+  return 0;
+}
+
 static int run_tests(bool skip_cpu_verify) {
   if (!cuda_runtime_ready()) {
     return 1;
@@ -468,6 +590,9 @@ static int run_tests(bool skip_cpu_verify) {
       all_ok &= cpu_ok;
     }
     for (const auto& k : kernels) {
+      if (!kernel_enabled(k.kind)) {
+        continue;
+      }
       g_kernel_kind = k.kind;
       std::vector<float> gpu_out(tc.A.size(), 0.0f);
       run_solution_host(tc.A, tc.B, gpu_out);
@@ -546,6 +671,9 @@ static int run_tests(bool skip_cpu_verify) {
       const auto ref = cpu_conv_same(A, B);
       cpu_status = "REF";
       for (const auto& k : kernels) {
+        if (!kernel_enabled(k.kind)) {
+          continue;
+        }
         if (!kernel_supports_filter(k.kind, K)) {
           TestResult res;
           res.group = group;
@@ -583,6 +711,9 @@ static int run_tests(bool skip_cpu_verify) {
       return;
     }
     for (const auto& k : kernels) {
+      if (!kernel_enabled(k.kind)) {
+        continue;
+      }
       if (!kernel_supports_filter(k.kind, K)) {
         TestResult res;
         res.group = group;
@@ -636,6 +767,9 @@ static int run_tests(bool skip_cpu_verify) {
       for (int grid_x : scale_grid_sizes) {
         g_launch_config = {block_x, grid_x};
         for (const auto& k : kernels) {
+          if (!kernel_enabled(k.kind)) {
+            continue;
+          }
           if (!kernel_supports_filter(k.kind, K)) {
             TestResult res;
             res.group = "scale";
@@ -804,7 +938,8 @@ __global__ void device_1d_conv_tiled(
 
     //load left halo
     // block_dim = 256, R = 2, smem_size = 256 + (R * 2) = 256 + 4 = 260
-    // left halo: sm[0]..sm[1] || main elements: sm[2]..sm[257] || right halo: sm[258]..sm[259]
+    // left halo: sm[0]..sm[1], main: sm[2]..sm[257],
+    // right halo: sm[258]..sm[259]
     if (threadIdx.x == 0 ) 
     {
       //load all left padding
@@ -1043,15 +1178,15 @@ extern "C" void solution(const float* A, const float* B, float* C, size_t N,
     case KernelKind::BlockStrideStub:
     {
       size_t smem_bytes = (block_shape.x + (r * 2)) * sizeof(float);
-      device_1d_conv_tiled_block_stride<<<grid_shape, block_shape, smem_bytes>>>(
-          A, B, C, K, N);
+      device_1d_conv_tiled_block_stride
+          <<<grid_shape, block_shape, smem_bytes>>>(A, B, C, K, N);
       break;
     }
     case KernelKind::BlockStrideConst:
     {
       size_t smem_bytes = (block_shape.x + (r * 2)) * sizeof(float);
-      device_1d_conv_tiled_block_stride_const<<<grid_shape, block_shape, smem_bytes>>>(
-          A, C, K, N);
+      device_1d_conv_tiled_block_stride_const
+          <<<grid_shape, block_shape, smem_bytes>>>(A, C, K, N);
       break;
     }
   }
@@ -1064,12 +1199,28 @@ int main(int argc, char** argv) {
   std::cin.tie(nullptr);
 
   bool skip_cpu_verify = false;
+  bool profile_mode = false;
   for (int i = 1; i < argc; ++i) {
     if (std::string(argv[i]) == "--skip-cpu") {
       skip_cpu_verify = true;
-    } else if (!parse_kernel_arg(argv[i])) {
+    } else if (std::string(argv[i]) == "--profile") {
+      profile_mode = true;
+    } else if (std::string(argv[i]).rfind("--kernel=", 0) == 0) {
+      if (!parse_kernel_arg(argv[i])) {
+        return 1;
+      }
+    } else {
+      std::cerr << "Unknown argument: " << argv[i]
+                << " (supported: --skip-cpu, --profile, --kernel=...)\n";
       return 1;
     }
+  }
+  if (profile_mode) {
+    if (!g_kernel_arg_set) {
+      std::cerr << "--profile requires an explicit --kernel=... value\n";
+      return 1;
+    }
+    return run_profile();
   }
   return run_tests(skip_cpu_verify);
 }
