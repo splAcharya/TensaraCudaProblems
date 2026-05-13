@@ -2,8 +2,8 @@
 
 Updated summary based on the current local harness structure:
 
-- CPU-backed correctness run: [p1_with_cpu.txt](/mnt/d/gitrepo/TensaraCudaProblems/p1_with_cpu.txt)
-- Heavier benchmark run: [p1_skip_cpu.txt](/mnt/d/gitrepo/TensaraCudaProblems/p1_skip_cpu.txt)
+- CPU-backed correctness run: [p1_with_cpu.txt](p1_with_cpu.txt)
+- Heavier benchmark run: [p1_skip_cpu.txt](p1_skip_cpu.txt)
 
 ## Kernel Variants
 
@@ -40,92 +40,107 @@ From [p1_with_cpu.txt](/mnt/d/gitrepo/TensaraCudaProblems/p1_with_cpu.txt):
 
 - Status legend:
   - `cpu=PASS`: CPU output matched a hard-coded expected answer.
-  - `cpu=REF`: CPU output was generated and used as the reference for GPU verification.
+  - `cpu=REF`: CPU output was generated and used as the reference for GPU
+    verification.
   - `cpu=SKIP`: CPU reference generation was skipped.
-  - `gpu=PASS`: GPU output matched either the hard-coded expected answer or the CPU reference.
-  - `gpu=SKIP`: GPU verification was skipped, usually because the run used `--skip-cpu`.
+  - `gpu=PASS`: GPU output matched either the hard-coded expected answer or
+    the CPU reference.
+  - `gpu=SKIP`: GPU verification was skipped, usually because the run used
+    `--skip-cpu`.
 - All six kernels pass the current small exact tests.
-- All six kernels pass the new medium CPU-reference cases, including odd sizes like `N=4097, K=63` and `N=8193, K=95`.
+- All six kernels pass the new medium CPU-reference cases, including odd sizes
+  like `N=4097, K=63` and `N=8193, K=95`.
 - All six kernels also pass the selected larger odd-size verification cases:
   - `large_1: N=32769, K=127`
   - `large_2: N=65537, K=191`
 - All six kernels pass the added large-filter verification cases:
   - `webvfy_1: N=8193, K=8191`
   - `webvfy_2: N=16385, K=8191`
-- The verified launch sweep `scale_verify: N=4097, K=383` passes for all six kernels across every tested `(block_x, grid_x)` pair.
-- The regenerated CPU-backed log has `18 PASS/PASS`, `168 REF/PASS`, `0 FAIL`, and `0 SKIP` result rows.
+- The verified launch sweep `scale_verify: N=4097, K=383` passes for all six
+  kernels across every tested `(block_x, grid_x)` pair.
+- The regenerated CPU-backed log has `18 PASS/PASS`, `168 REF/PASS`,
+  `0 FAIL`, and `0 SKIP` result rows.
 
-That gives stronger confidence that the current kernels handle ordinary, odd-length, large-filter, and launch-sensitive cases correctly under the refactored harness.
+That gives stronger confidence that the current kernels handle ordinary,
+odd-length, large-filter, and launch-sensitive cases correctly under the
+refactored harness.
 
 ## Performance Summary
 
 From [p1_skip_cpu.txt](/mnt/d/gitrepo/TensaraCudaProblems/p1_skip_cpu.txt):
 
-- `bstride_c` remains the strongest overall kernel on the heavy runs.
+- `bstride_c` remains the strongest overall kernel on the heavy runs,
+  winning 59 of 66 comparable skip-CPU configurations.
 - Constant memory still helps most when the filter is large and heavily reused.
-- The odd-size benchmark rows behave consistently with the even-size rows; the new odd cases did not expose a correctness-looking performance collapse.
+- The odd-size benchmark rows behave consistently with the even-size rows; the
+  new odd cases did not expose a correctness-looking performance collapse.
 
 Representative default-launch rows:
 
 - `web_1 (N=32768, K=8191)`:
-  - `basic 1.508 ms`
-  - `basic_c 1.406 ms`
-  - `tiled 1.900 ms`
-  - `tiled_c 1.147 ms`
-  - `bstride 1.449 ms`
+  - `basic 1.502 ms`
+  - `basic_c 1.430 ms`
+  - `tiled 1.897 ms`
+  - `tiled_c 1.141 ms`
+  - `bstride 1.450 ms`
   - `bstride_c 0.734 ms`
 - `web_2 (N=65536, K=8191)`:
-  - `basic 3.169 ms`
-  - `basic_c 2.797 ms`
-  - `tiled 3.810 ms`
-  - `tiled_c 2.356 ms`
-  - `bstride 2.890 ms`
-  - `bstride_c 1.460 ms`
+  - `basic 3.021 ms`
+  - `basic_c 2.176 ms`
+  - `tiled 2.964 ms`
+  - `tiled_c 1.818 ms`
+  - `bstride 2.245 ms`
+  - `bstride_c 1.135 ms`
 - `odd_3 (N=262147, K=383)`:
-  - `basic 0.609 ms`
-  - `basic_c 0.547 ms`
-  - `tiled 0.749 ms`
-  - `tiled_c 0.481 ms`
-  - `bstride 0.572 ms`
-  - `bstride_c 0.300 ms`
+  - `basic 0.466 ms`
+  - `basic_c 0.424 ms`
+  - `tiled 0.600 ms`
+  - `tiled_c 0.374 ms`
+  - `bstride 0.464 ms`
+  - `bstride_c 0.232 ms`
 - `tile_5 (N=2097152, K=511)`:
-  - `basic 6.277 ms`
-  - `basic_c 5.865 ms`
-  - `tiled 8.370 ms`
-  - `tiled_c 5.151 ms`
-  - `bstride 6.002 ms`
-  - `bstride_c 3.124 ms`
+  - `basic 6.283 ms`
+  - `basic_c 5.878 ms`
+  - `tiled 8.291 ms`
+  - `tiled_c 5.150 ms`
+  - `bstride 5.999 ms`
+  - `bstride_c 3.127 ms`
 
 ## What Seems To Matter
 
-- For small and medium filters, the ranking is not perfectly stable, but the stronger shared-memory variants are usually near the front.
+- For small and medium filters, the ranking is not perfectly stable, but the
+  stronger shared-memory variants are usually near the front.
 - For larger filters, moving `B` to constant memory is consistently useful.
 - `bstride_c` is the most reliable top-tier kernel across the heavier cases.
 - `tiled` without constant memory is usually the weakest heavy-case option.
-- The new odd-size cases follow the same broad pattern as the even-size cases, which is a useful sanity check for boundary handling.
+- The new odd-size cases follow the same broad pattern as the even-size cases,
+  which is a useful sanity check for boundary handling.
 
 ## Best Scaling Results
 
-From the heatmaps in [p1_skip_cpu.txt](/mnt/d/gitrepo/TensaraCudaProblems/p1_skip_cpu.txt):
+From the heatmaps in [p1_skip_cpu.txt](p1_skip_cpu.txt):
 
 - `web_1 / basic`: best `1.063 ms` at `(512, 64)`
-- `web_1 / basic_c`: best `0.899 ms` at `(512, 64)`
-- `web_1 / tiled`: best `1.234 ms` at `(512, 64)`
-- `web_1 / tiled_c`: best `0.706 ms` at `(512, 64)`
-- `web_1 / bstride`: best `1.068 ms` at `(512, 64)`
-- `web_1 / bstride_c`: best `0.538 ms` at `(512, 64)`
-- `web_2 / basic`: best `2.132 ms` at `(512, 64)`
-- `web_2 / basic_c`: best `1.965 ms` at `(512, 64)`
-- `web_2 / tiled`: best `2.512 ms` at `(512, 64)`
-- `web_2 / tiled_c`: best `1.448 ms` at `(512, 64)`
-- `web_2 / bstride`: best `2.143 ms` at `(512, 64)`
-- `web_2 / bstride_c`: best `1.076 ms` at `(512, 64)`
+- `web_1 / basic`: best `1.074 ms` at `(512, 64)`
+- `web_1 / basic_c`: best `0.908 ms` at `(512, 64)`
+- `web_1 / tiled`: best `1.285 ms` at `(512, 64)`
+- `web_1 / tiled_c`: best `0.711 ms` at `(512, 64)`
+- `web_1 / bstride`: best `1.085 ms` at `(256, 64)`
+- `web_1 / bstride_c`: best `0.543 ms` at `(512, 64)`
+- `web_2 / basic`: best `2.142 ms` at `(512, 32)`
+- `web_2 / basic_c`: best `1.979 ms` at `(512, 64)`
+- `web_2 / tiled`: best `2.518 ms` at `(512, 64)`
+- `web_2 / tiled_c`: best `1.456 ms` at `(512, 64)`
+- `web_2 / bstride`: best `2.150 ms` at `(512, 64)`
+- `web_2 / bstride_c`: best `1.080 ms` at `(512, 64)`
 
-The useful high-level takeaway is unchanged: larger blocks with moderate-to-high grid counts work well, and `bstride_c` is still the best tuned path in this local environment.
+The useful high-level takeaway is unchanged: larger blocks with
+moderate-to-high grid counts work well, and `bstride_c` is still the best tuned
+path in this local environment.
 
 ## Notes
 
 - The markdown summary is intentionally shorter than the raw console dumps.
 - For complete row-by-row data, use:
-  - [p1_with_cpu.txt](/mnt/d/gitrepo/TensaraCudaProblems/p1_with_cpu.txt)
-  - [p1_skip_cpu.txt](/mnt/d/gitrepo/TensaraCudaProblems/p1_skip_cpu.txt)
+  - [p1_with_cpu.txt](p1_with_cpu.txt)
+  - [p1_skip_cpu.txt](p1_skip_cpu.txt)

@@ -1,7 +1,7 @@
 # TensaraCudaProblems
 
-Local CUDA workbench for developing, testing, and benchmarking Tensara-style GPU
-kernel solutions before submitting them to the platform.
+Local CUDA workbench for developing, testing, and benchmarking Tensara-style
+GPU kernel solutions before submitting them to the platform.
 
 The repo is intentionally organized around a simple loop:
 
@@ -13,10 +13,11 @@ The repo is intentionally organized around a simple loop:
 
 ## Scope
 
-This is not a general CUDA library. Each problem file is a self-contained local
-harness for one Tensara problem. The harness code exists to make iteration fast:
-it can launch different kernel variants behind the same exported `solution`
-routine, run CPU-backed verification, and collect local timing data.
+This is not a general CUDA library. Each problem file is a self-contained
+local harness for one Tensara problem. The harness code exists to make
+iteration fast: it can launch different kernel variants behind the same
+exported `solution` routine, run CPU-backed verification, and collect local
+timing data.
 
 Current problem files:
 
@@ -26,8 +27,10 @@ Current problem files:
 
 Detailed correctness and benchmark notes live next to each problem:
 
-- [P1_1D_CONVOLUTIONS_RESULTS.md](/mnt/d/gitrepo/TensaraCudaProblems/P1_1D_CONVOLUTIONS_RESULTS.md)
-- [P3_RESULT_RESULTS.md](/mnt/d/gitrepo/TensaraCudaProblems/P3_RESULT_RESULTS.md)
+- [P1_1D_CONVOLUTIONS_RESULTS.md](P1_1D_CONVOLUTIONS_RESULTS.md)
+- [P3_RESULT_RESULTS.md](P3_RESULT_RESULTS.md)
+- [P4_MVM_RESULTS.md](P4_MVM_RESULTS.md)
+- [P4_MVM_OPTIMIZATION_NOTES.md](P4_MVM_OPTIMIZATION_NOTES.md)
 
 ## Harness Pattern
 
@@ -40,23 +43,24 @@ Each problem follows the same broad structure:
 - A default correctness-oriented run.
 - A heavier `--skip-cpu` benchmark run for larger sizes and launch sweeps.
 
-The exported `solution(...)` function should stay close to what Tensara expects:
-it should launch device work using the provided device pointers, not own the full
-host allocation or verification flow. Local-only testing belongs in the harness
-around it.
+The exported `solution(...)` function should stay close to what Tensara
+expects: it should launch device work using the provided device pointers, not
+own the full host allocation or verification flow. Local-only testing belongs
+in the harness around it.
 
 ## Result Files
 
 Raw run logs are kept as `.txt` files:
 
 - `*_with_cpu.txt`: CPU-backed correctness-oriented runs.
-- `*_skip_cpu.txt`: larger benchmark-oriented runs where expensive CPU checks are
-  skipped.
+- `*_skip_cpu.txt`: larger benchmark-oriented runs where expensive CPU checks
+  are skipped.
 
 The result tables use these status labels:
 
 - `cpu=PASS`: CPU output matched a hard-coded expected answer.
-- `cpu=REF`: CPU output was generated and used as the GPU verification reference.
+- `cpu=REF`: CPU output was generated and used as the GPU verification
+  reference.
 - `cpu=SKIP`: CPU reference generation was skipped.
 - `gpu=PASS`: GPU output matched the expected output or CPU reference.
 - `gpu=SKIP`: GPU verification was skipped.
@@ -64,6 +68,24 @@ The result tables use these status labels:
 The markdown result files summarize the raw logs instead of duplicating every
 row. They are the place to record which variants are correct, which launch
 shapes are promising, and which benchmark rows look noisy or suspicious.
+
+## Current Snapshot
+
+The latest saved logs cover CPU-backed and skip-CPU runs for all current CUDA
+problem files:
+
+- `P1_1D_CONVOLUTIONS.cu`
+  - `bstride_c` is the strongest current heavy-run kernel.
+  - It wins 59 of 66 comparable skip-CPU configurations.
+  - Best large-filter row: `web_2` uses `bstride_c = 1.135 ms`.
+- `P3_RELU.cu`
+  - `float4` is correct on odd shapes and scalar tail cases.
+  - It wins 78 of 83 comparable skip-CPU configurations.
+  - Best Tensara-size row: `8192 x 8192` uses `float4 = 2.983 ms`.
+- `P4_MVM.cu`
+  - `warp` is the strongest current matrix-vector kernel.
+  - It wins 65 of 80 comparable skip-CPU configurations.
+  - Best Tensara-size row: `4096 x 4096` uses `warp = 0.365 ms`.
 
 ## Local Benchmarking Notes
 
@@ -73,8 +95,8 @@ Tensara leaderboard measurements. Treat them as directional data:
 - compare kernel variants under the same harness and input set
 - check odd sizes and tail cases, especially for vectorized kernels
 - rerun suspicious rows before drawing conclusions
-- prefer correctness evidence from CPU-backed runs before trusting benchmark-only
-  results
+- prefer correctness evidence from CPU-backed runs before trusting
+  benchmark-only results
 
 The current local benchmark environment used for the saved result files is an
 NVIDIA GeForce RTX 3050 Laptop GPU.
