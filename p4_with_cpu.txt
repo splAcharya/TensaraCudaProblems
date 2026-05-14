@@ -1,157 +1,235 @@
-group   name            kernel      m         k         block_x grid_x  cpu   gpu   total_ms    kernel_ms
-------------------------------------------------------------------------------------------------------------
-small   small_1         basic       2         3         256     64      PASS  PASS  4.993       4.357
-small   small_2         basic       3         1         256     64      PASS  PASS  0.644       0.006
-small   small_3         basic       1         4         256     64      PASS  PASS  0.451       0.006
-small   small_4         basic       3         4         256     64      PASS  PASS  0.797       0.007
-medium  medium_1        basic       64        64        256     64      REF   PASS  0.463       0.010
-medium  medium_2        basic       255       257       256     64      REF   PASS  0.533       0.034
-medium  medium_3        basic       513       1025      256     64      REF   PASS  1.049       0.133
-medium  medium_4        basic       1024      1024      256     64      REF   PASS  1.933       0.373
-medium  medium_tail     basic       257       258       256     64      REF   PASS  0.639       0.037
-large   large_1         basic       1023      2049      256     64      REF   PASS  2.230       0.260
-large   large_2         basic       1537      2049      256     64      REF   PASS  2.931       0.276
-scale   scale_verify    basic       257       383       64      8       REF   PASS  0.546       0.047
-scale   scale_verify    basic       257       383       64      16      REF   PASS  0.503       0.029
-scale   scale_verify    basic       257       383       64      32      REF   PASS  0.718       0.026
-scale   scale_verify    basic       257       383       64      64      REF   PASS  0.616       0.026
-scale   scale_verify    basic       257       383       64      128     REF   PASS  0.535       0.026
-scale   scale_verify    basic       257       383       128     8       REF   PASS  0.406       0.026
-scale   scale_verify    basic       257       383       128     16      REF   PASS  0.465       0.048
-scale   scale_verify    basic       257       383       128     32      REF   PASS  0.406       0.028
-scale   scale_verify    basic       257       383       128     64      REF   PASS  0.489       0.058
-scale   scale_verify    basic       257       383       128     128     REF   PASS  0.451       0.036
-scale   scale_verify    basic       257       383       256     8       REF   PASS  0.473       0.057
-scale   scale_verify    basic       257       383       256     16      REF   PASS  0.460       0.036
-scale   scale_verify    basic       257       383       256     32      REF   PASS  0.515       0.102
-scale   scale_verify    basic       257       383       256     64      REF   PASS  0.438       0.037
-scale   scale_verify    basic       257       383       256     128     REF   PASS  0.476       0.062
-scale   scale_verify    basic       257       383       512     8       REF   PASS  0.434       0.037
-scale   scale_verify    basic       257       383       512     16      REF   PASS  0.479       0.060
-scale   scale_verify    basic       257       383       512     32      REF   PASS  0.424       0.038
-scale   scale_verify    basic       257       383       512     64      REF   PASS  0.470       0.060
-scale   scale_verify    basic       257       383       512     128     REF   PASS  0.423       0.037
-small   small_1         constant_b  2         3         256     64      PASS  PASS  0.486       0.082
-small   small_2         constant_b  3         1         256     64      PASS  PASS  0.360       0.008
-small   small_3         constant_b  1         4         256     64      PASS  PASS  0.435       0.030
-small   small_4         constant_b  3         4         256     64      PASS  PASS  0.358       0.005
-medium  medium_1        constant_b  64        64        256     64      REF   PASS  0.394       0.010
-medium  medium_2        constant_b  255       257       256     64      REF   PASS  0.488       0.025
-medium  medium_3        constant_b  513       1025      256     64      REF   PASS  0.896       0.121
-medium  medium_4        constant_b  1024      1024      256     64      REF   PASS  1.532       0.359
-medium  medium_tail     constant_b  257       258       256     64      REF   PASS  0.563       0.034
-large   large_1         constant_b  1023      2049      256     64      REF   PASS  2.555       0.246
-large   large_2         constant_b  1537      2049      256     64      REF   PASS  3.172       0.274
-scale   scale_verify    constant_b  257       383       64      8       REF   PASS  0.599       0.047
-scale   scale_verify    constant_b  257       383       64      16      REF   PASS  0.544       0.048
-scale   scale_verify    constant_b  257       383       64      32      REF   PASS  0.507       0.046
-scale   scale_verify    constant_b  257       383       64      64      REF   PASS  0.428       0.025
-scale   scale_verify    constant_b  257       383       64      128     REF   PASS  0.463       0.047
-scale   scale_verify    constant_b  257       383       128     8       REF   PASS  0.438       0.042
-scale   scale_verify    constant_b  257       383       128     16      REF   PASS  0.489       0.046
-scale   scale_verify    constant_b  257       383       128     32      REF   PASS  0.562       0.077
-scale   scale_verify    constant_b  257       383       128     64      REF   PASS  0.505       0.049
-scale   scale_verify    constant_b  257       383       128     128     REF   PASS  0.527       0.033
-scale   scale_verify    constant_b  257       383       256     8       REF   PASS  0.455       0.055
-scale   scale_verify    constant_b  257       383       256     16      REF   PASS  0.530       0.050
-scale   scale_verify    constant_b  257       383       256     32      REF   PASS  0.445       0.031
-scale   scale_verify    constant_b  257       383       256     64      REF   PASS  0.426       0.032
-scale   scale_verify    constant_b  257       383       256     128     REF   PASS  0.402       0.032
-scale   scale_verify    constant_b  257       383       512     8       REF   PASS  0.447       0.033
-scale   scale_verify    constant_b  257       383       512     16      REF   PASS  0.406       0.033
-scale   scale_verify    constant_b  257       383       512     32      REF   PASS  0.388       0.034
-scale   scale_verify    constant_b  257       383       512     64      REF   PASS  0.384       0.034
-scale   scale_verify    constant_b  257       383       512     128     REF   PASS  0.437       0.033
-small   small_1         shared_ab   2         3         256     64      PASS  PASS  0.406       0.054
-small   small_2         shared_ab   3         1         256     64      PASS  PASS  0.412       0.009
-small   small_3         shared_ab   1         4         256     64      PASS  PASS  0.343       0.009
-small   small_4         shared_ab   3         4         256     64      PASS  PASS  0.360       0.010
-medium  medium_1        shared_ab   64        64        256     64      REF   PASS  0.333       0.008
-medium  medium_2        shared_ab   255       257       256     64      REF   PASS  0.380       0.029
-medium  medium_3        shared_ab   513       1025      256     64      REF   PASS  0.968       0.140
-medium  medium_4        shared_ab   1024      1024      256     64      REF   PASS  1.510       0.205
-medium  medium_tail     shared_ab   257       258       256     64      REF   PASS  0.440       0.035
-large   large_1         shared_ab   1023      2049      256     64      REF   PASS  2.265       0.450
-large   large_2         shared_ab   1537      2049      256     64      REF   PASS  3.015       0.690
-scale   scale_verify    shared_ab   257       383       64      8       REF   PASS  0.801       0.217
-scale   scale_verify    shared_ab   257       383       64      16      REF   PASS  0.516       0.095
-scale   scale_verify    shared_ab   257       383       64      32      REF   PASS  0.498       0.054
-scale   scale_verify    shared_ab   257       383       64      64      REF   PASS  0.441       0.035
-scale   scale_verify    shared_ab   257       383       64      128     REF   PASS  0.452       0.048
-scale   scale_verify    shared_ab   257       383       128     8       REF   PASS  0.517       0.155
-scale   scale_verify    shared_ab   257       383       128     16      REF   PASS  0.485       0.081
-scale   scale_verify    shared_ab   257       383       128     32      REF   PASS  0.428       0.048
-scale   scale_verify    shared_ab   257       383       128     64      REF   PASS  0.393       0.030
-scale   scale_verify    shared_ab   257       383       128     128     REF   PASS  0.384       0.022
-scale   scale_verify    shared_ab   257       383       256     8       REF   PASS  0.626       0.211
-scale   scale_verify    shared_ab   257       383       256     16      REF   PASS  0.453       0.099
-scale   scale_verify    shared_ab   257       383       256     32      REF   PASS  0.461       0.078
-scale   scale_verify    shared_ab   257       383       256     64      REF   PASS  0.397       0.035
-scale   scale_verify    shared_ab   257       383       256     128     REF   PASS  0.423       0.031
-scale   scale_verify    shared_ab   257       383       512     8       REF   PASS  0.549       0.179
-scale   scale_verify    shared_ab   257       383       512     16      REF   PASS  0.532       0.094
-scale   scale_verify    shared_ab   257       383       512     32      REF   PASS  0.410       0.054
-scale   scale_verify    shared_ab   257       383       512     64      REF   PASS  0.415       0.049
-scale   scale_verify    shared_ab   257       383       512     128     REF   PASS  0.479       0.039
-small   small_1         warp        2         3         256     64      PASS  PASS  0.607       0.080
-small   small_2         warp        3         1         256     64      PASS  PASS  0.522       0.012
-small   small_3         warp        1         4         256     64      PASS  PASS  0.394       0.010
-small   small_4         warp        3         4         256     64      PASS  PASS  0.461       0.009
-medium  medium_1        warp        64        64        256     64      REF   PASS  0.333       0.006
-medium  medium_2        warp        255       257       256     64      REF   PASS  0.374       0.010
-medium  medium_3        warp        513       1025      256     64      REF   PASS  0.797       0.043
-medium  medium_4        warp        1024      1024      256     64      REF   PASS  1.941       0.053
-medium  medium_tail     warp        257       258       256     64      REF   PASS  0.456       0.012
-large   large_1         warp        1023      2049      256     64      REF   PASS  1.704       0.052
-large   large_2         warp        1537      2049      256     64      REF   PASS  2.525       0.076
-scale   scale_verify    warp        257       383       64      8       REF   PASS  0.677       0.056
-scale   scale_verify    warp        257       383       64      16      REF   PASS  0.563       0.022
-scale   scale_verify    warp        257       383       64      32      REF   PASS  1.067       0.014
-scale   scale_verify    warp        257       383       64      64      REF   PASS  0.670       0.022
-scale   scale_verify    warp        257       383       64      128     REF   PASS  0.818       0.013
-scale   scale_verify    warp        257       383       128     8       REF   PASS  0.652       0.047
-scale   scale_verify    warp        257       383       128     16      REF   PASS  0.434       0.023
-scale   scale_verify    warp        257       383       128     32      REF   PASS  0.517       0.037
-scale   scale_verify    warp        257       383       128     64      REF   PASS  0.457       0.012
-scale   scale_verify    warp        257       383       128     128     REF   PASS  0.463       0.032
-scale   scale_verify    warp        257       383       256     8       REF   PASS  0.456       0.035
-scale   scale_verify    warp        257       383       256     16      REF   PASS  0.412       0.020
-scale   scale_verify    warp        257       383       256     32      REF   PASS  0.499       0.013
-scale   scale_verify    warp        257       383       256     64      REF   PASS  0.448       0.034
-scale   scale_verify    warp        257       383       256     128     REF   PASS  0.514       0.061
-scale   scale_verify    warp        257       383       512     8       REF   PASS  0.442       0.038
-scale   scale_verify    warp        257       383       512     16      REF   PASS  0.566       0.070
-scale   scale_verify    warp        257       383       512     32      REF   PASS  0.395       0.015
-scale   scale_verify    warp        257       383       512     64      REF   PASS  0.466       0.038
-scale   scale_verify    warp        257       383       512     128     REF   PASS  0.434       0.014
+Timing samples: mode=median repeats=5 warmup=1 metric=kernel_ms
+
+group   name            kernel        m         k         block_x grid_x  cpu   gpu   total_ms    kernel_ms
+--------------------------------------------------------------------------------------------------------------
+small   small_1         basic         2         3         256     64      PASS  PASS  4.895       0.005
+small   small_2         basic         3         1         256     64      PASS  PASS  0.634       0.005
+small   small_3         basic         1         4         256     64      PASS  PASS  0.618       0.005
+small   small_4         basic         3         4         256     64      PASS  PASS  0.621       0.006
+medium  medium_1        basic         64        64        256     64      REF   PASS  0.618       0.009
+medium  medium_2        basic         255       257       256     64      REF   PASS  0.781       0.020
+medium  medium_3        basic         513       1025      256     64      REF   PASS  2.109       0.135
+medium  medium_4        basic         1024      1024      256     64      REF   PASS  4.365       0.409
+medium  medium_tail     basic         257       258       256     64      REF   PASS  1.289       0.023
+large   large_1         basic         1023      2049      256     64      REF   PASS  5.075       0.261
+large   large_2         basic         1537      2049      256     64      REF   PASS  5.252       0.278
+scale   scale_verify    basic         257       383       64      8       REF   PASS  1.175       0.026
+scale   scale_verify    basic         257       383       64      16      REF   PASS  1.017       0.024
+scale   scale_verify    basic         257       383       64      32      REF   PASS  1.246       0.042
+scale   scale_verify    basic         257       383       64      64      REF   PASS  1.179       0.025
+scale   scale_verify    basic         257       383       64      128     REF   PASS  0.825       0.025
+scale   scale_verify    basic         257       383       128     8       REF   PASS  1.111       0.024
+scale   scale_verify    basic         257       383       128     16      REF   PASS  1.051       0.024
+scale   scale_verify    basic         257       383       128     32      REF   PASS  0.750       0.023
+scale   scale_verify    basic         257       383       128     64      REF   PASS  1.293       0.034
+scale   scale_verify    basic         257       383       128     128     REF   PASS  1.060       0.034
+scale   scale_verify    basic         257       383       256     8       REF   PASS  1.237       0.034
+scale   scale_verify    basic         257       383       256     16      REF   PASS  0.916       0.035
+scale   scale_verify    basic         257       383       256     32      REF   PASS  0.913       0.035
+scale   scale_verify    basic         257       383       256     64      REF   PASS  0.901       0.036
+scale   scale_verify    basic         257       383       256     128     REF   PASS  0.971       0.037
+scale   scale_verify    basic         257       383       512     8       REF   PASS  0.951       0.037
+scale   scale_verify    basic         257       383       512     16      REF   PASS  0.906       0.037
+scale   scale_verify    basic         257       383       512     32      REF   PASS  0.971       0.037
+scale   scale_verify    basic         257       383       512     64      REF   PASS  0.920       0.037
+scale   scale_verify    basic         257       383       512     128     REF   PASS  0.890       0.037
+small   small_1         constant_b    2         3         256     64      PASS  PASS  0.906       0.005
+small   small_2         constant_b    3         1         256     64      PASS  PASS  0.646       0.005
+small   small_3         constant_b    1         4         256     64      PASS  PASS  0.617       0.005
+small   small_4         constant_b    3         4         256     64      PASS  PASS  0.635       0.005
+medium  medium_1        constant_b    64        64        256     64      REF   PASS  0.623       0.009
+medium  medium_2        constant_b    255       257       256     64      REF   PASS  0.791       0.018
+medium  medium_3        constant_b    513       1025      256     64      REF   PASS  1.901       0.124
+medium  medium_4        constant_b    1024      1024      256     64      REF   PASS  4.937       0.364
+medium  medium_tail     constant_b    257       258       256     64      REF   PASS  1.031       0.044
+large   large_1         constant_b    1023      2049      256     64      REF   PASS  5.258       0.246
+large   large_2         constant_b    1537      2049      256     64      REF   PASS  5.154       0.267
+scale   scale_verify    constant_b    257       383       64      8       REF   PASS  0.976       0.023
+scale   scale_verify    constant_b    257       383       64      16      REF   PASS  1.043       0.023
+scale   scale_verify    constant_b    257       383       64      32      REF   PASS  0.801       0.023
+scale   scale_verify    constant_b    257       383       64      64      REF   PASS  0.784       0.024
+scale   scale_verify    constant_b    257       383       64      128     REF   PASS  0.756       0.025
+scale   scale_verify    constant_b    257       383       128     8       REF   PASS  0.792       0.024
+scale   scale_verify    constant_b    257       383       128     16      REF   PASS  0.917       0.024
+scale   scale_verify    constant_b    257       383       128     32      REF   PASS  0.816       0.024
+scale   scale_verify    constant_b    257       383       128     64      REF   PASS  0.801       0.032
+scale   scale_verify    constant_b    257       383       128     128     REF   PASS  0.810       0.032
+scale   scale_verify    constant_b    257       383       256     8       REF   PASS  0.784       0.032
+scale   scale_verify    constant_b    257       383       256     16      REF   PASS  0.831       0.032
+scale   scale_verify    constant_b    257       383       256     32      REF   PASS  0.852       0.032
+scale   scale_verify    constant_b    257       383       256     64      REF   PASS  0.855       0.032
+scale   scale_verify    constant_b    257       383       256     128     REF   PASS  0.789       0.032
+scale   scale_verify    constant_b    257       383       512     8       REF   PASS  0.885       0.033
+scale   scale_verify    constant_b    257       383       512     16      REF   PASS  0.796       0.032
+scale   scale_verify    constant_b    257       383       512     32      REF   PASS  0.816       0.033
+scale   scale_verify    constant_b    257       383       512     64      REF   PASS  0.853       0.033
+scale   scale_verify    constant_b    257       383       512     128     REF   PASS  0.868       0.032
+small   small_1         shared_ab     2         3         256     64      PASS  PASS  0.716       0.007
+small   small_2         shared_ab     3         1         256     64      PASS  PASS  0.636       0.008
+small   small_3         shared_ab     1         4         256     64      PASS  PASS  0.628       0.008
+small   small_4         shared_ab     3         4         256     64      PASS  PASS  0.658       0.009
+medium  medium_1        shared_ab     64        64        256     64      REF   PASS  0.684       0.008
+medium  medium_2        shared_ab     255       257       256     64      REF   PASS  0.851       0.028
+medium  medium_3        shared_ab     513       1025      256     64      REF   PASS  1.975       0.135
+medium  medium_4        shared_ab     1024      1024      256     64      REF   PASS  2.675       0.204
+medium  medium_tail     shared_ab     257       258       256     64      REF   PASS  1.052       0.034
+large   large_1         shared_ab     1023      2049      256     64      REF   PASS  5.653       0.449
+large   large_2         shared_ab     1537      2049      256     64      REF   PASS  7.997       0.716
+scale   scale_verify    shared_ab     257       383       64      8       REF   PASS  2.435       0.206
+scale   scale_verify    shared_ab     257       383       64      16      REF   PASS  1.584       0.122
+scale   scale_verify    shared_ab     257       383       64      32      REF   PASS  1.338       0.054
+scale   scale_verify    shared_ab     257       383       64      64      REF   PASS  1.224       0.034
+scale   scale_verify    shared_ab     257       383       64      128     REF   PASS  0.965       0.024
+scale   scale_verify    shared_ab     257       383       128     8       REF   PASS  1.935       0.154
+scale   scale_verify    shared_ab     257       383       128     16      REF   PASS  1.379       0.081
+scale   scale_verify    shared_ab     257       383       128     32      REF   PASS  1.246       0.046
+scale   scale_verify    shared_ab     257       383       128     64      REF   PASS  0.785       0.028
+scale   scale_verify    shared_ab     257       383       128     128     REF   PASS  0.992       0.020
+scale   scale_verify    shared_ab     257       383       256     8       REF   PASS  1.719       0.185
+scale   scale_verify    shared_ab     257       383       256     16      REF   PASS  1.201       0.097
+scale   scale_verify    shared_ab     257       383       256     32      REF   PASS  0.917       0.056
+scale   scale_verify    shared_ab     257       383       256     64      REF   PASS  0.810       0.033
+scale   scale_verify    shared_ab     257       383       256     128     REF   PASS  0.753       0.031
+scale   scale_verify    shared_ab     257       383       512     8       REF   PASS  1.704       0.177
+scale   scale_verify    shared_ab     257       383       512     16      REF   PASS  1.162       0.095
+scale   scale_verify    shared_ab     257       383       512     32      REF   PASS  0.957       0.052
+scale   scale_verify    shared_ab     257       383       512     64      REF   PASS  0.885       0.048
+scale   scale_verify    shared_ab     257       383       512     128     REF   PASS  1.137       0.038
+small   small_1         warp          2         3         256     64      PASS  PASS  0.909       0.006
+small   small_2         warp          3         1         256     64      PASS  PASS  0.767       0.006
+small   small_3         warp          1         4         256     64      PASS  PASS  1.053       0.006
+small   small_4         warp          3         4         256     64      PASS  PASS  0.988       0.006
+medium  medium_1        warp          64        64        256     64      REF   PASS  1.096       0.056
+medium  medium_2        warp          255       257       256     64      REF   PASS  0.776       0.009
+medium  medium_3        warp          513       1025      256     64      REF   PASS  1.281       0.016
+medium  medium_4        warp          1024      1024      256     64      REF   PASS  2.257       0.033
+medium  medium_tail     warp          257       258       256     64      REF   PASS  0.897       0.010
+large   large_1         warp          1023      2049      256     64      REF   PASS  2.772       0.053
+large   large_2         warp          1537      2049      256     64      REF   PASS  4.075       0.076
+scale   scale_verify    warp          257       383       64      8       REF   PASS  1.133       0.035
+scale   scale_verify    warp          257       383       64      16      REF   PASS  1.005       0.020
+scale   scale_verify    warp          257       383       64      32      REF   PASS  0.770       0.012
+scale   scale_verify    warp          257       383       64      64      REF   PASS  0.798       0.010
+scale   scale_verify    warp          257       383       64      128     REF   PASS  0.970       0.008
+scale   scale_verify    warp          257       383       128     8       REF   PASS  1.064       0.053
+scale   scale_verify    warp          257       383       128     16      REF   PASS  0.765       0.022
+scale   scale_verify    warp          257       383       128     32      REF   PASS  0.727       0.014
+scale   scale_verify    warp          257       383       128     64      REF   PASS  0.686       0.009
+scale   scale_verify    warp          257       383       128     128     REF   PASS  0.656       0.008
+scale   scale_verify    warp          257       383       256     8       REF   PASS  0.867       0.033
+scale   scale_verify    warp          257       383       256     16      REF   PASS  0.791       0.019
+scale   scale_verify    warp          257       383       256     32      REF   PASS  0.709       0.012
+scale   scale_verify    warp          257       383       256     64      REF   PASS  0.774       0.011
+scale   scale_verify    warp          257       383       256     128     REF   PASS  0.796       0.009
+scale   scale_verify    warp          257       383       512     8       REF   PASS  0.864       0.036
+scale   scale_verify    warp          257       383       512     16      REF   PASS  0.769       0.020
+scale   scale_verify    warp          257       383       512     32      REF   PASS  0.707       0.015
+scale   scale_verify    warp          257       383       512     64      REF   PASS  0.718       0.014
+scale   scale_verify    warp          257       383       512     128     REF   PASS  0.760       0.013
+small   small_1         warp_const_b  2         3         256     64      PASS  PASS  0.807       0.006
+small   small_2         warp_const_b  3         1         256     64      PASS  PASS  0.918       0.005
+small   small_3         warp_const_b  1         4         256     64      PASS  PASS  0.710       0.006
+small   small_4         warp_const_b  3         4         256     64      PASS  PASS  0.879       0.006
+medium  medium_1        warp_const_b  64        64        256     64      REF   PASS  0.665       0.006
+medium  medium_2        warp_const_b  255       257       256     64      REF   PASS  1.027       0.054
+medium  medium_3        warp_const_b  513       1025      256     64      REF   PASS  1.608       0.060
+medium  medium_4        warp_const_b  1024      1024      256     64      REF   PASS  2.758       0.110
+medium  medium_tail     warp_const_b  257       258       256     64      REF   PASS  0.947       0.014
+large   large_1         warp_const_b  1023      2049      256     64      REF   PASS  4.571       0.265
+large   large_2         warp_const_b  1537      2049      256     64      REF   PASS  6.039       0.421
+scale   scale_verify    warp_const_b  257       383       64      8       REF   PASS  1.122       0.062
+scale   scale_verify    warp_const_b  257       383       64      16      REF   PASS  1.036       0.035
+scale   scale_verify    warp_const_b  257       383       64      32      REF   PASS  1.267       0.023
+scale   scale_verify    warp_const_b  257       383       64      64      REF   PASS  1.201       0.017
+scale   scale_verify    warp_const_b  257       383       64      128     REF   PASS  0.837       0.015
+scale   scale_verify    warp_const_b  257       383       128     8       REF   PASS  1.039       0.061
+scale   scale_verify    warp_const_b  257       383       128     16      REF   PASS  0.922       0.034
+scale   scale_verify    warp_const_b  257       383       128     32      REF   PASS  0.799       0.021
+scale   scale_verify    warp_const_b  257       383       128     64      REF   PASS  0.784       0.017
+scale   scale_verify    warp_const_b  257       383       128     128     REF   PASS  1.358       0.015
+scale   scale_verify    warp_const_b  257       383       256     8       REF   PASS  1.043       0.052
+scale   scale_verify    warp_const_b  257       383       256     16      REF   PASS  1.163       0.031
+scale   scale_verify    warp_const_b  257       383       256     32      REF   PASS  0.824       0.019
+scale   scale_verify    warp_const_b  257       383       256     64      REF   PASS  0.784       0.016
+scale   scale_verify    warp_const_b  257       383       256     128     REF   PASS  0.784       0.014
+scale   scale_verify    warp_const_b  257       383       512     8       REF   PASS  0.968       0.047
+scale   scale_verify    warp_const_b  257       383       512     16      REF   PASS  0.942       0.027
+scale   scale_verify    warp_const_b  257       383       512     32      REF   PASS  0.834       0.020
+scale   scale_verify    warp_const_b  257       383       512     64      REF   PASS  1.338       0.019
+scale   scale_verify    warp_const_b  257       383       512     128     REF   PASS  1.127       0.017
+small   small_1         warp_per_row  2         3         256     64      PASS  PASS  0.785       0.005
+small   small_2         warp_per_row  3         1         256     64      PASS  PASS  1.368       0.007
+small   small_3         warp_per_row  1         4         256     64      PASS  PASS  0.695       0.005
+small   small_4         warp_per_row  3         4         256     64      PASS  PASS  0.935       0.006
+medium  medium_1        warp_per_row  64        64        256     64      REF   PASS  0.677       0.006
+medium  medium_2        warp_per_row  255       257       256     64      REF   PASS  0.688       0.006
+medium  medium_3        warp_per_row  513       1025      256     64      REF   PASS  1.367       0.014
+medium  medium_4        warp_per_row  1024      1024      256     64      REF   PASS  1.766       0.029
+medium  medium_tail     warp_per_row  257       258       256     64      REF   PASS  0.747       0.007
+large   large_1         warp_per_row  1023      2049      256     64      REF   PASS  22.596      0.053
+large   large_2         warp_per_row  1537      2049      256     64      REF   PASS  3.878       0.082
+scale   scale_verify    warp_per_row  257       383       64      8       REF   PASS  0.823       0.019
+scale   scale_verify    warp_per_row  257       383       64      16      REF   PASS  0.733       0.013
+scale   scale_verify    warp_per_row  257       383       64      32      REF   PASS  0.843       0.010
+scale   scale_verify    warp_per_row  257       383       64      64      REF   PASS  0.736       0.008
+scale   scale_verify    warp_per_row  257       383       64      128     REF   PASS  0.690       0.007
+scale   scale_verify    warp_per_row  257       383       128     8       REF   PASS  0.707       0.012
+scale   scale_verify    warp_per_row  257       383       128     16      REF   PASS  0.726       0.009
+scale   scale_verify    warp_per_row  257       383       128     32      REF   PASS  0.745       0.008
+scale   scale_verify    warp_per_row  257       383       128     64      REF   PASS  0.749       0.007
+scale   scale_verify    warp_per_row  257       383       128     128     REF   PASS  0.699       0.007
+scale   scale_verify    warp_per_row  257       383       256     8       REF   PASS  0.745       0.010
+scale   scale_verify    warp_per_row  257       383       256     16      REF   PASS  0.765       0.008
+scale   scale_verify    warp_per_row  257       383       256     32      REF   PASS  0.714       0.008
+scale   scale_verify    warp_per_row  257       383       256     64      REF   PASS  0.956       0.007
+scale   scale_verify    warp_per_row  257       383       256     128     REF   PASS  0.980       0.006
+scale   scale_verify    warp_per_row  257       383       512     8       REF   PASS  0.737       0.008
+scale   scale_verify    warp_per_row  257       383       512     16      REF   PASS  0.734       0.008
+scale   scale_verify    warp_per_row  257       383       512     32      REF   PASS  0.731       0.006
+scale   scale_verify    warp_per_row  257       383       512     64      REF   PASS  0.700       0.008
+scale   scale_verify    warp_per_row  257       383       512     128     REF   PASS  0.646       0.007
 
 Scaling Heatmaps (kernel_ms, lower is better)
 ============================================================
 
-scale_verify / basic  best=(64, 32) -> 0.026 ms
+scale_verify / basic  best=(128, 32) -> 0.023 ms
 block\grid8         16        32        64        128
-64        0.047     0.029     0.026     0.026     0.026
-128       0.026     0.048     0.028     0.058     0.036
-256       0.057     0.036     0.102     0.037     0.062
-512       0.037     0.060     0.038     0.060     0.037
+64        0.026     0.024     0.042     0.025     0.025
+128       0.024     0.024     0.023     0.034     0.034
+256       0.034     0.035     0.035     0.036     0.037
+512       0.037     0.037     0.037     0.037     0.037
 
-scale_verify / constant_b  best=(64, 64) -> 0.025 ms
+scale_verify / constant_b  best=(64, 8) -> 0.023 ms
 block\grid8         16        32        64        128
-64        0.047     0.048     0.046     0.025     0.047
-128       0.042     0.046     0.077     0.049     0.033
-256       0.055     0.050     0.031     0.032     0.032
-512       0.033     0.033     0.034     0.034     0.033
+64        0.023     0.023     0.023     0.024     0.025
+128       0.024     0.024     0.024     0.032     0.032
+256       0.032     0.032     0.032     0.032     0.032
+512       0.033     0.032     0.033     0.033     0.032
 
-scale_verify / shared_ab  best=(128, 128) -> 0.022 ms
+scale_verify / shared_ab  best=(128, 128) -> 0.020 ms
 block\grid8         16        32        64        128
-64        0.217     0.095     0.054     0.035     0.048
-128       0.155     0.081     0.048     0.030     0.022
-256       0.211     0.099     0.078     0.035     0.031
-512       0.179     0.094     0.054     0.049     0.039
+64        0.206     0.122     0.054     0.034     0.024
+128       0.154     0.081     0.046     0.028     0.020
+256       0.185     0.097     0.056     0.033     0.031
+512       0.177     0.095     0.052     0.048     0.038
 
-scale_verify / warp  best=(128, 64) -> 0.012 ms
+scale_verify / warp  best=(64, 128) -> 0.008 ms
 block\grid8         16        32        64        128
-64        0.056     0.022     0.014     0.022     0.013
-128       0.047     0.023     0.037     0.012     0.032
-256       0.035     0.020     0.013     0.034     0.061
-512       0.038     0.070     0.015     0.038     0.014
+64        0.035     0.020     0.012     0.010     0.008
+128       0.053     0.022     0.014     0.009     0.008
+256       0.033     0.019     0.012     0.011     0.009
+512       0.036     0.020     0.015     0.014     0.013
+
+scale_verify / warp_const_b  best=(256, 128) -> 0.014 ms
+block\grid8         16        32        64        128
+64        0.062     0.035     0.023     0.017     0.015
+128       0.061     0.034     0.021     0.017     0.015
+256       0.052     0.031     0.019     0.016     0.014
+512       0.047     0.027     0.020     0.019     0.017
+
+scale_verify / warp_per_row  best=(256, 128) -> 0.006 ms
+block\grid8         16        32        64        128
+64        0.019     0.013     0.010     0.008     0.007
+128       0.012     0.009     0.008     0.007     0.007
+256       0.010     0.008     0.008     0.007     0.006
+512       0.008     0.008     0.006     0.008     0.007

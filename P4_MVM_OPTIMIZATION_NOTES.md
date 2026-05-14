@@ -2,11 +2,14 @@
 
 ## Current State
 
-- Current kernels: `basic`, `constant_b`, `shared_ab`, and `warp`.
+- Current kernels: `basic`, `constant_b`, `shared_ab`, `warp`,
+  `warp_const_b`, and `warp_per_row`.
 - Latest local logs:
   - `p4_with_cpu.txt`
   - `p4_skip_cpu.txt`
-- The `warp` kernel is currently the strongest performer.
+- The `warp_per_row` kernel is currently the strongest performer in the
+  skip-CPU log.
+- The original `warp` kernel remains very close on Tensara-size rows.
 - Tensara submission improved from about `1.27 ms` to about `0.45 ms`.
 
 ## Follow-Up Ideas
@@ -22,6 +25,25 @@ Ideas:
 - Use read-only cache loads for `B`.
 - Load tiles of `B` once per block and apply them to multiple rows.
 - Compare whether explicit shared-memory tiling beats cache behavior.
+
+### Constant Memory Negative Result
+
+The `warp_const_b` experiment keeps the `warp` mapping but reads `B` from
+constant memory. It is slower than `warp` because each lane reads a different
+`B` address:
+
+```text
+lane 0 -> B[col + 0]
+lane 1 -> B[col + 1]
+...
+lane 31 -> B[col + 31]
+```
+
+That is a coalesced global-memory pattern, but not a constant-memory broadcast
+pattern. Constant memory is still useful for row-per-thread mappings where all
+lanes read the same `B[col]`, but it is not a promising direction for the
+current warp-level layout. Keep `warp_const_b` as a display/negative-result
+variant.
 
 ### Compute Multiple Rows Per Block
 
@@ -55,6 +77,9 @@ lane 0 writes the output
 ```
 
 This removes the need for cross-warp shared-memory accumulation for one row.
+
+Status: implemented as `warp_per_row`, verified by the CPU-backed harness,
+and best on most skip-CPU benchmark configurations.
 
 ### Sweep Rows Per Block And Warps Per Row
 

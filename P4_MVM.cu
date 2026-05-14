@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -19,6 +20,8 @@ extern "C" void solution(const float* input_a, const float* input_b,
 // CPU reference is available for correctness verification.
 static constexpr bool kCpuReferenceImplemented = true;
 static constexpr size_t kConstantInputBElements = 8192;
+static constexpr int kDefaultTimingRepeats = 5;
+static constexpr int kTimingWarmupIterations = 1;
 static constexpr int kProfileWarmupIterations = 5;
 static constexpr int kProfileIterations = 50;
 
@@ -39,10 +42,19 @@ enum class KernelVariant {
   kConstantB,
   kSharedAB,
   kWarp,
+  kWarpConstB,
+  kWarpPerRow,
+};
+
+enum class TimingMode {
+  kMedian,
+  kBest,
 };
 
 static LaunchConfig g_launch_config{256, 64};
 static KernelVariant g_kernel_variant = KernelVariant::kBasic;
+static TimingMode g_timing_mode = TimingMode::kMedian;
+static int g_timing_repeats = kDefaultTimingRepeats;
 static bool g_kernel_arg_set = false;
 static Timing g_last_timing;
 
@@ -56,12 +68,39 @@ static const char* current_kernel_name() {
       return "shared_ab";
     case KernelVariant::kWarp:
       return "warp";
+    case KernelVariant::kWarpConstB:
+      return "warp_const_b";
+    case KernelVariant::kWarpPerRow:
+      return "warp_per_row";
   }
   return "unknown";
 }
 
 static bool kernel_enabled(KernelVariant variant) {
   return !g_kernel_arg_set || g_kernel_variant == variant;
+}
+
+static bool uses_constant_b(KernelVariant variant) {
+  return variant == KernelVariant::kConstantB ||
+         variant == KernelVariant::kWarpConstB;
+}
+
+static const char* timing_mode_name() {
+  switch (g_timing_mode) {
+    case TimingMode::kMedian:
+      return "median";
+    case TimingMode::kBest:
+      return "best";
+  }
+  return "unknown";
+}
+
+static float select_timing_sample(std::vector<float> samples) {
+  std::sort(samples.begin(), samples.end());
+  if (g_timing_mode == TimingMode::kBest) {
+    return samples.front();
+  }
+  return samples[samples.size() / 2];
 }
 
 static bool parse_kernel_arg(const std::string& arg) {
@@ -91,11 +130,67 @@ static bool parse_kernel_arg(const std::string& arg) {
     g_kernel_arg_set = true;
     return true;
   }
+  if (value == "warp-const-b" || value == "warp_const_b" ||
+      value == "warp-constant-b") {
+    g_kernel_variant = KernelVariant::kWarpConstB;
+    g_kernel_arg_set = true;
+    return true;
+  }
+  if (value == "warp-per-row" || value == "warp_per_row" ||
+      value == "warp-row") {
+    g_kernel_variant = KernelVariant::kWarpPerRow;
+    g_kernel_arg_set = true;
+    return true;
+  }
 
   std::cerr << "Unknown kernel: " << value
             << " (use --kernel=basic, --kernel=constant-b, "
-            << "--kernel=shared-ab, or --kernel=warp)\n";
+            << "--kernel=shared-ab, --kernel=warp, "
+            << "--kernel=warp-const-b, or --kernel=warp-per-row)\n";
   return false;
+}
+
+static bool parse_timing_arg(const std::string& arg) {
+  const std::string prefix = "--timing=";
+  if (arg.rfind(prefix, 0) != 0) {
+    return false;
+  }
+
+  const std::string value = arg.substr(prefix.size());
+  if (value == "median") {
+    g_timing_mode = TimingMode::kMedian;
+    return true;
+  }
+  if (value == "best" || value == "min") {
+    g_timing_mode = TimingMode::kBest;
+    return true;
+  }
+
+  std::cerr << "Unknown timing mode: " << value
+            << " (use --timing=median or --timing=best)\n";
+  return false;
+}
+
+static bool parse_timing_repeats_arg(const std::string& arg) {
+  const std::string prefix = "--timing-repeats=";
+  if (arg.rfind(prefix, 0) != 0) {
+    return false;
+  }
+
+  const std::string value = arg.substr(prefix.size());
+  try {
+    size_t end = 0;
+    const int repeats = std::stoi(value, &end);
+    if (end != value.size() || repeats < 1) {
+      throw std::invalid_argument("bad repeats");
+    }
+    g_timing_repeats = repeats;
+    return true;
+  } catch (const std::exception&) {
+    std::cerr << "Invalid timing repeat count: " << value
+              << " (use an integer >= 1)\n";
+    return false;
+  }
 }
 
 static bool cuda_runtime_ready() {
@@ -261,17 +356,17 @@ struct TestResult {
 
 static void print_results_table(const std::vector<TestResult>& results) {
   std::cout << std::left << std::setw(8) << "group" << std::setw(16) << "name"
-            << std::setw(12) << "kernel" << std::setw(10) << "m"
+            << std::setw(14) << "kernel" << std::setw(10) << "m"
             << std::setw(10) << "k" << std::setw(8) << "block_x"
             << std::setw(8) << "grid_x" << std::setw(6) << "cpu"
             << std::setw(6) << "gpu" << std::setw(12) << "total_ms"
             << std::setw(12) << "kernel_ms" << '\n';
-  std::cout << std::string(108, '-') << '\n';
+  std::cout << std::string(110, '-') << '\n';
   std::cout << std::fixed << std::setprecision(3);
 
   for (const auto& r : results) {
     std::cout << std::left << std::setw(8) << r.group << std::setw(16)
-              << r.name << std::setw(12) << r.kernel << std::setw(10) << r.m
+              << r.name << std::setw(14) << r.kernel << std::setw(10) << r.m
               << std::setw(10) << r.k << std::setw(8) << r.block_x
               << std::setw(8) << r.grid_x << std::setw(6) << r.cpu
               << std::setw(6) << r.gpu << std::setw(12) << r.total_ms
@@ -364,6 +459,34 @@ static void print_scale_heatmaps(const std::vector<TestResult>& results) {
   }
 }
 
+static void collect_kernel_timing_samples(const float* d_input_a,
+                                          const float* d_input_b,
+                                          float* d_output_c, size_t bytes_c,
+                                          size_t m, size_t k,
+                                          cudaEvent_t kernel_start,
+                                          cudaEvent_t kernel_stop,
+                                          std::vector<float>& samples) {
+  for (int i = 0; i < kTimingWarmupIterations; ++i) {
+    CUDA_CHECK(cudaMemset(d_output_c, 0, bytes_c));
+    solution(d_input_a, d_input_b, d_output_c, m, k);
+  }
+  CUDA_CHECK(cudaDeviceSynchronize());
+
+  samples.clear();
+  samples.reserve(g_timing_repeats);
+  for (int i = 0; i < g_timing_repeats; ++i) {
+    CUDA_CHECK(cudaMemset(d_output_c, 0, bytes_c));
+    CUDA_CHECK(cudaEventRecord(kernel_start));
+    solution(d_input_a, d_input_b, d_output_c, m, k);
+    CUDA_CHECK(cudaEventRecord(kernel_stop));
+    CUDA_CHECK(cudaEventSynchronize(kernel_stop));
+
+    float kernel_ms = 0.0f;
+    CUDA_CHECK(cudaEventElapsedTime(&kernel_ms, kernel_start, kernel_stop));
+    samples.push_back(kernel_ms);
+  }
+}
+
 static void run_solution_host_global_b(const std::vector<float>& input_a,
                                        const std::vector<float>& input_b,
                                        std::vector<float>& output_c, size_t m,
@@ -395,10 +518,10 @@ static void run_solution_host_global_b(const std::vector<float>& input_a,
                         cudaMemcpyHostToDevice));
   CUDA_CHECK(cudaMemset(d_output_c, 0, bytes_c));
 
-  CUDA_CHECK(cudaEventRecord(kernel_start));
-  solution(d_input_a, d_input_b, d_output_c, m, k);
-  CUDA_CHECK(cudaEventRecord(kernel_stop));
-  CUDA_CHECK(cudaEventSynchronize(kernel_stop));
+  std::vector<float> kernel_samples;
+  collect_kernel_timing_samples(d_input_a, d_input_b, d_output_c, bytes_c, m,
+                                k, kernel_start, kernel_stop,
+                                kernel_samples);
 
   CUDA_CHECK(cudaMemcpy(output_c.data(), d_output_c, bytes_c,
                         cudaMemcpyDeviceToHost));
@@ -406,11 +529,9 @@ static void run_solution_host_global_b(const std::vector<float>& input_a,
   CUDA_CHECK(cudaEventSynchronize(total_stop));
 
   float total_ms = 0.0f;
-  float kernel_ms = 0.0f;
   CUDA_CHECK(cudaEventElapsedTime(&total_ms, total_start, total_stop));
-  CUDA_CHECK(cudaEventElapsedTime(&kernel_ms, kernel_start, kernel_stop));
   g_last_timing.total_ms = total_ms;
-  g_last_timing.kernel_ms = kernel_ms;
+  g_last_timing.kernel_ms = select_timing_sample(kernel_samples);
 
   CUDA_CHECK(cudaEventDestroy(total_start));
   CUDA_CHECK(cudaEventDestroy(total_stop));
@@ -426,7 +547,7 @@ static void run_solution_host_constant_b(const std::vector<float>& input_a,
                                          std::vector<float>& output_c,
                                          size_t m, size_t k) {
   if (k > kConstantInputBElements) {
-    std::cerr << "constant_b kernel supports k <= "
+    std::cerr << "constant-memory kernels support k <= "
               << kConstantInputBElements << ", got " << k << '\n';
     std::exit(EXIT_FAILURE);
   }
@@ -455,10 +576,9 @@ static void run_solution_host_constant_b(const std::vector<float>& input_a,
   CUDA_CHECK(cudaMemcpyToSymbol(g_input_b_constant, input_b.data(), bytes_b));
   CUDA_CHECK(cudaMemset(d_output_c, 0, bytes_c));
 
-  CUDA_CHECK(cudaEventRecord(kernel_start));
-  solution(d_input_a, nullptr, d_output_c, m, k);
-  CUDA_CHECK(cudaEventRecord(kernel_stop));
-  CUDA_CHECK(cudaEventSynchronize(kernel_stop));
+  std::vector<float> kernel_samples;
+  collect_kernel_timing_samples(d_input_a, nullptr, d_output_c, bytes_c, m, k,
+                                kernel_start, kernel_stop, kernel_samples);
 
   CUDA_CHECK(cudaMemcpy(output_c.data(), d_output_c, bytes_c,
                         cudaMemcpyDeviceToHost));
@@ -466,11 +586,9 @@ static void run_solution_host_constant_b(const std::vector<float>& input_a,
   CUDA_CHECK(cudaEventSynchronize(total_stop));
 
   float total_ms = 0.0f;
-  float kernel_ms = 0.0f;
   CUDA_CHECK(cudaEventElapsedTime(&total_ms, total_start, total_stop));
-  CUDA_CHECK(cudaEventElapsedTime(&kernel_ms, kernel_start, kernel_stop));
   g_last_timing.total_ms = total_ms;
-  g_last_timing.kernel_ms = kernel_ms;
+  g_last_timing.kernel_ms = select_timing_sample(kernel_samples);
 
   CUDA_CHECK(cudaEventDestroy(total_start));
   CUDA_CHECK(cudaEventDestroy(total_stop));
@@ -488,9 +606,11 @@ static void run_solution_host(const std::vector<float>& input_a,
     case KernelVariant::kBasic:
     case KernelVariant::kSharedAB:
     case KernelVariant::kWarp:
+    case KernelVariant::kWarpPerRow:
       run_solution_host_global_b(input_a, input_b, output_c, m, k);
       break;
     case KernelVariant::kConstantB:
+    case KernelVariant::kWarpConstB:
       run_solution_host_constant_b(input_a, input_b, output_c, m, k);
       break;
   }
@@ -509,9 +629,8 @@ static int run_profile() {
   const size_t bytes_b = k * sizeof(float);
   const size_t bytes_c = m * sizeof(float);
 
-  if (g_kernel_variant == KernelVariant::kConstantB &&
-      k > kConstantInputBElements) {
-    std::cerr << "constant_b kernel supports k <= "
+  if (uses_constant_b(g_kernel_variant) && k > kConstantInputBElements) {
+    std::cerr << "constant-memory kernels support k <= "
               << kConstantInputBElements << ", got " << k << '\n';
     return 1;
   }
@@ -526,7 +645,7 @@ static int run_profile() {
   CUDA_CHECK(cudaMalloc(&d_output_c, bytes_c));
   CUDA_CHECK(cudaMemcpy(d_input_a, input_a.data(), bytes_a,
                         cudaMemcpyHostToDevice));
-  if (g_kernel_variant == KernelVariant::kConstantB) {
+  if (uses_constant_b(g_kernel_variant)) {
     CUDA_CHECK(cudaMemcpyToSymbol(g_input_b_constant, input_b.data(),
                                   bytes_b));
   } else {
@@ -555,7 +674,7 @@ static int run_profile() {
   const float avg_kernel_ms = kernel_ms / kProfileIterations;
   const size_t device_bytes =
       bytes_a + bytes_c +
-      ((g_kernel_variant == KernelVariant::kConstantB) ? 0 : bytes_b);
+      (uses_constant_b(g_kernel_variant) ? 0 : bytes_b);
   const double device_mib =
       static_cast<double>(device_bytes) / (1024.0 * 1024.0);
 
@@ -563,7 +682,7 @@ static int run_profile() {
             << "profile scope=kernel-only verify=off"
             << " kernel=" << current_kernel_name()
             << " b_mode="
-            << ((g_kernel_variant == KernelVariant::kConstantB)
+            << (uses_constant_b(g_kernel_variant)
                     ? "constant-preloaded-fixed-b"
                     : "device-pointer")
             << " m=" << m
@@ -595,6 +714,8 @@ static int run_tests(bool skip_cpu_verify) {
       KernelVariant::kConstantB,
       KernelVariant::kSharedAB,
       KernelVariant::kWarp,
+      KernelVariant::kWarpConstB,
+      KernelVariant::kWarpPerRow,
   };
 
   const std::vector<TestCase> tests = {
@@ -840,6 +961,10 @@ static int run_tests(bool skip_cpu_verify) {
 
   g_kernel_variant = KernelVariant::kBasic;
   g_launch_config = default_launch;
+  std::cout << "Timing samples: mode=" << timing_mode_name()
+            << " repeats=" << g_timing_repeats
+            << " warmup=" << kTimingWarmupIterations
+            << " metric=kernel_ms\n\n";
   print_results_table(results);
   print_scale_heatmaps(results);
   return all_ok ? 0 : 1;
@@ -927,7 +1052,6 @@ __global__ void device_mvm_shared_ab(const float* input_a,
   extern __shared__ float smem[];
   float *tile_a = smem;
   float *tile_b = tile_a + blockDim.x;
-  float *block_res  = tile_b + blockDim.x;
 
   size_t num_tiles =  (k + blockDim.x - 1) / blockDim.x;
 
@@ -1008,7 +1132,8 @@ __global__ void device_mvm_warp(const float* input_a,
       int row_pos_a = bx;
       int col_pos_a = (tile_id * blockDim.x) + threadIdx.x;
       int load_pos_a = (row_pos_a * k) + col_pos_a;
-      float reg_a = (row_pos_a < m && col_pos_a < k) ? input_a[load_pos_a] : 0.0f;
+      float reg_a =
+          (row_pos_a < m && col_pos_a < k) ? input_a[load_pos_a] : 0.0f;
 
       int load_pos_b = (tile_id * blockDim.x) + threadIdx.x;
       float reg_b = (load_pos_b < k) ? input_b[load_pos_b] : 0.0f;
@@ -1017,7 +1142,7 @@ __global__ void device_mvm_warp(const float* input_a,
 
     //warp shuffle
     for (size_t lane_offset = 16; lane_offset > 0; lane_offset /= 2)
-      rsum += __shfl_down_sync(0xffffffffffff, rsum ,lane_offset);
+      rsum += __shfl_down_sync(0xffffffffu, rsum, lane_offset);
 
     if (lane_id == 0)
       atomicAdd(&block_res, rsum);
@@ -1031,6 +1156,144 @@ __global__ void device_mvm_warp(const float* input_a,
     }
 
     __syncthreads();
+  }
+}
+
+// Warp-level input_a/constant input_b GPU kernel.
+//
+// input_a: device pointer to a row-major matrix with shape (m, k),
+//          stored as input_a[row * k + col]
+// output_c: device pointer to a vector with shape (m)
+// m: number of matrix rows and output elements
+// k: number of matrix columns and vector elements
+__global__ void device_mvm_warp_const_b(const float* input_a,
+                                        float* output_c, size_t m,
+                                        size_t k) {
+  size_t total_blocks = m;
+  size_t grid_stride = gridDim.x;
+  size_t num_tiles = (k + blockDim.x - 1) / blockDim.x;
+  __shared__ float block_res;
+  size_t lane_id = threadIdx.x % 32;
+
+  block_res = 0.0f;
+  __syncthreads();
+
+  for (size_t bx = blockIdx.x; bx < total_blocks; bx += grid_stride) {
+    float rsum = 0.0f;
+
+    for (size_t tile_id = 0; tile_id < num_tiles; ++tile_id) {
+      const int row_pos_a = static_cast<int>(bx);
+      const int col_pos_a =
+          static_cast<int>(tile_id * blockDim.x + threadIdx.x);
+      const int load_pos_a =
+          static_cast<int>(row_pos_a * k) + col_pos_a;
+      const float reg_a =
+          (row_pos_a < static_cast<int>(m) && col_pos_a < static_cast<int>(k))
+              ? input_a[load_pos_a]
+              : 0.0f;
+
+      const int load_pos_b =
+          static_cast<int>(tile_id * blockDim.x + threadIdx.x);
+      const float reg_b =
+          (load_pos_b < static_cast<int>(k))
+              ? g_input_b_constant[load_pos_b]
+              : 0.0f;
+      rsum += reg_a * reg_b;
+    }
+
+    for (size_t lane_offset = 16; lane_offset > 0; lane_offset /= 2) {
+      rsum += __shfl_down_sync(0xffffffffu, rsum, lane_offset);
+    }
+
+    if (lane_id == 0) {
+      atomicAdd(&block_res, rsum);
+    }
+
+    __syncthreads();
+
+    if (threadIdx.x == 0 && bx < m) {
+      output_c[bx] = block_res;
+      block_res = 0.0f;
+    }
+
+    __syncthreads();
+  }
+}
+
+// One-warp-per-output-row GPU kernel.
+//
+// input_a: device pointer to a row-major matrix with shape (m, k),
+//          stored as input_a[row * k + col]
+// input_b: device pointer to a vector with shape (k)
+// output_c: device pointer to a vector with shape (m)
+// m: number of matrix rows and output elements
+// k: number of matrix columns and vector elements
+//
+// Intended mapping:
+// - one warp owns one output row
+// - one block owns blockDim.x / 32 output rows
+// - lanes in a warp walk columns as col = lane, lane + 32, ...
+__global__ void device_mvm_warp_per_row(const float* input_a,
+                                        const float* input_b,
+                                        float* output_c, size_t m,
+                                        size_t k) {
+  // Total warps required for output size: one warp per output cell.
+  const size_t total_warps = m;
+
+  // For each thread owning one output cell:
+  //   grid_stride = blockDim.x * gridDim.x
+  //
+  // For each block owning one output cell:
+  //   grid_stride = gridDim.x
+  //
+  // For each warp owning one output cell:
+  //   warps_per_block = blockDim.x / warpSize
+  //   grid_stride = warps_per_block * gridDim.x
+  //
+  // Example launch config: gridDim.x = 64, blockDim.x = 64
+  //   warps_per_block = 64 / 32 = 2
+  //   warps_per_grid = 2 * 64 = 128
+  const size_t warps_per_block = blockDim.x / warpSize;
+  const size_t grid_stride = warps_per_block * gridDim.x;
+  const size_t warp_lid = threadIdx.x / warpSize;
+  const size_t warp_gid = warps_per_block * blockIdx.x + warp_lid;
+
+  // Example: threadIdx.x 17 and 45 map to lane 17 and lane 13.
+  const size_t lane_id = threadIdx.x % warpSize;
+  const size_t total_tiles = (k + warpSize - 1) / warpSize;
+
+  // Grid-stride loop at warp level.
+  for (size_t wx = warp_gid; wx < total_warps; wx += grid_stride) {
+    float rsum = 0.0f;
+
+    // Warp-stride loop: each iteration covers one warp-sized column tile.
+    for (size_t tile_id = 0; tile_id < total_tiles; ++tile_id) {
+      // Load A register: one warp owns one output cell from m * k by k * 1.
+      const size_t row_pos_a = wx;
+
+      // Each warp pulls 32 contiguous A and B elements at a time.
+      const size_t col_pos_a = tile_id * warpSize + lane_id;
+      const size_t ld_pos_a = row_pos_a * k + col_pos_a;
+      const float reg_a =
+          (row_pos_a < m && col_pos_a < k) ? input_a[ld_pos_a] : 0.0f;
+
+      // Load B register from the 1D vector.
+      const size_t row_pos_b = tile_id * warpSize + lane_id;
+      const float reg_b = (row_pos_b < k) ? input_b[row_pos_b] : 0.0f;
+
+      // Lane-local partial sum.
+      rsum += reg_a * reg_b;
+    }
+
+    // Accumulate lane partial sums into lane 0.
+    for (size_t lane_offset = 16; lane_offset > 0; lane_offset /= 2) {
+      rsum += __shfl_down_sync(0xffffffffu, rsum, lane_offset);
+    }
+
+    // At this point only lane 0 has the full row result.
+    if (lane_id == 0 && wx < m) {
+      output_c[wx] = rsum;
+    }
   }
 }
 
@@ -1058,6 +1321,14 @@ extern "C" void solution(const float* input_a, const float* input_b,
       device_mvm_warp<<<grid_shape, block_shape>>>(input_a, input_b, output_c,
                                                    m, k);
       break;
+    case KernelVariant::kWarpConstB:
+      device_mvm_warp_const_b<<<grid_shape, block_shape>>>(input_a, output_c,
+                                                           m, k);
+      break;
+    case KernelVariant::kWarpPerRow:
+      device_mvm_warp_per_row<<<grid_shape, block_shape>>>(input_a, input_b,
+                                                           output_c, m, k);
+      break;
   }
 
   CUDA_CHECK(cudaGetLastError());
@@ -1078,9 +1349,18 @@ int main(int argc, char** argv) {
       if (!parse_kernel_arg(argv[i])) {
         return 1;
       }
+    } else if (std::string(argv[i]).rfind("--timing=", 0) == 0) {
+      if (!parse_timing_arg(argv[i])) {
+        return 1;
+      }
+    } else if (std::string(argv[i]).rfind("--timing-repeats=", 0) == 0) {
+      if (!parse_timing_repeats_arg(argv[i])) {
+        return 1;
+      }
     } else {
       std::cerr << "Unknown argument: " << argv[i]
-                << " (supported: --skip-cpu, --profile, --kernel=...)\n";
+                << " (supported: --skip-cpu, --profile, --kernel=..., "
+                << "--timing=..., --timing-repeats=...)\n";
       return 1;
     }
   }
