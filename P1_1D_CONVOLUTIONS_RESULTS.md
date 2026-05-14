@@ -1,6 +1,7 @@
 # `P1_1D_CONVOLUTIONS.cu` Results
 
-Updated summary based on the current local harness structure:
+Updated summary based on the current local harness structure with in-harness
+median timing:
 
 - CPU-backed correctness run: [p1_with_cpu.txt](p1_with_cpu.txt)
 - Heavier benchmark run: [p1_skip_cpu.txt](p1_skip_cpu.txt)
@@ -18,6 +19,8 @@ Updated summary based on the current local harness structure:
 
 - GPU: NVIDIA GeForce RTX 3050 Laptop GPU
 - Default launch: `block_x=256`, `grid_x=32`
+- Timing: each row reports median `kernel_ms` from `5` timed samples after
+  `1` warmup launch.
 - Scaling sweep:
   - `block_x in [32, 64, 128, 256, 512]`
   - `grid_x in [8, 16, 32, 64]`
@@ -70,7 +73,8 @@ refactored harness.
 From [p1_skip_cpu.txt](/mnt/d/gitrepo/TensaraCudaProblems/p1_skip_cpu.txt):
 
 - `bstride_c` remains the strongest overall kernel on the heavy runs,
-  winning 59 of 66 comparable skip-CPU configurations.
+  winning 58 of 66 comparable skip-CPU configurations.
+- `basic` wins 4 configurations, `bstride` wins 1, and there are 3 ties.
 - Constant memory still helps most when the filter is large and heavily reused.
 - The odd-size benchmark rows behave consistently with the even-size rows; the
   new odd cases did not expose a correctness-looking performance collapse.
@@ -78,33 +82,33 @@ From [p1_skip_cpu.txt](/mnt/d/gitrepo/TensaraCudaProblems/p1_skip_cpu.txt):
 Representative default-launch rows:
 
 - `web_1 (N=32768, K=8191)`:
-  - `basic 1.502 ms`
-  - `basic_c 1.430 ms`
-  - `tiled 1.897 ms`
-  - `tiled_c 1.141 ms`
-  - `bstride 1.450 ms`
-  - `bstride_c 0.734 ms`
+  - `basic 1.089 ms`
+  - `basic_c 1.018 ms`
+  - `tiled 1.402 ms`
+  - `tiled_c 0.850 ms`
+  - `bstride 1.083 ms`
+  - `bstride_c 0.552 ms`
 - `web_2 (N=65536, K=8191)`:
-  - `basic 3.021 ms`
-  - `basic_c 2.176 ms`
-  - `tiled 2.964 ms`
-  - `tiled_c 1.818 ms`
-  - `bstride 2.245 ms`
-  - `bstride_c 1.135 ms`
+  - `basic 2.212 ms`
+  - `basic_c 2.127 ms`
+  - `tiled 2.855 ms`
+  - `tiled_c 1.712 ms`
+  - `bstride 2.179 ms`
+  - `bstride_c 1.104 ms`
 - `odd_3 (N=262147, K=383)`:
-  - `basic 0.466 ms`
-  - `basic_c 0.424 ms`
-  - `tiled 0.600 ms`
-  - `tiled_c 0.374 ms`
-  - `bstride 0.464 ms`
-  - `bstride_c 0.232 ms`
+  - `basic 0.452 ms`
+  - `basic_c 0.432 ms`
+  - `tiled 0.582 ms`
+  - `tiled_c 0.365 ms`
+  - `bstride 0.431 ms`
+  - `bstride_c 0.226 ms`
 - `tile_5 (N=2097152, K=511)`:
-  - `basic 6.283 ms`
-  - `basic_c 5.878 ms`
-  - `tiled 8.291 ms`
-  - `tiled_c 5.150 ms`
-  - `bstride 5.999 ms`
-  - `bstride_c 3.127 ms`
+  - `basic 4.820 ms`
+  - `basic_c 4.582 ms`
+  - `tiled 6.108 ms`
+  - `tiled_c 3.860 ms`
+  - `bstride 4.550 ms`
+  - `bstride_c 2.369 ms`
 
 ## What Seems To Matter
 
@@ -120,19 +124,18 @@ Representative default-launch rows:
 
 From the heatmaps in [p1_skip_cpu.txt](p1_skip_cpu.txt):
 
-- `web_1 / basic`: best `1.063 ms` at `(512, 64)`
-- `web_1 / basic`: best `1.074 ms` at `(512, 64)`
-- `web_1 / basic_c`: best `0.908 ms` at `(512, 64)`
-- `web_1 / tiled`: best `1.285 ms` at `(512, 64)`
-- `web_1 / tiled_c`: best `0.711 ms` at `(512, 64)`
-- `web_1 / bstride`: best `1.085 ms` at `(256, 64)`
-- `web_1 / bstride_c`: best `0.543 ms` at `(512, 64)`
-- `web_2 / basic`: best `2.142 ms` at `(512, 32)`
-- `web_2 / basic_c`: best `1.979 ms` at `(512, 64)`
-- `web_2 / tiled`: best `2.518 ms` at `(512, 64)`
-- `web_2 / tiled_c`: best `1.456 ms` at `(512, 64)`
-- `web_2 / bstride`: best `2.150 ms` at `(512, 64)`
-- `web_2 / bstride_c`: best `1.080 ms` at `(512, 64)`
+- `web_1 / basic`: best `1.070 ms` at `(512, 32)`
+- `web_1 / basic_c`: best `0.906 ms` at `(512, 64)`
+- `web_1 / tiled`: best `1.242 ms` at `(512, 64)`
+- `web_1 / tiled_c`: best `0.709 ms` at `(512, 64)`
+- `web_1 / bstride`: best `1.074 ms` at `(512, 64)`
+- `web_1 / bstride_c`: best `0.542 ms` at `(512, 64)`
+- `web_2 / basic`: best `2.149 ms` at `(512, 64)`
+- `web_2 / basic_c`: best `1.976 ms` at `(512, 64)`
+- `web_2 / tiled`: best `2.582 ms` at `(512, 64)`
+- `web_2 / tiled_c`: best `1.471 ms` at `(512, 64)`
+- `web_2 / bstride`: best `2.169 ms` at `(512, 64)`
+- `web_2 / bstride_c`: best `1.085 ms` at `(512, 64)`
 
 The useful high-level takeaway is unchanged: larger blocks with
 moderate-to-high grid counts work well, and `bstride_c` is still the best tuned

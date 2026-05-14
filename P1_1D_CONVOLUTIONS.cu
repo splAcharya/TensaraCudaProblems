@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 #include <unistd.h>
@@ -27,6 +28,8 @@ enum class KernelKind {
 static KernelKind g_kernel_kind = KernelKind::Basic;
 static bool g_kernel_arg_set = false;
 
+static constexpr int kDefaultTimingRepeats = 5;
+static constexpr int kTimingWarmupIterations = 1;
 static constexpr int kProfileWarmupIterations = 5;
 static constexpr int kProfileIterations = 50;
 
@@ -37,6 +40,14 @@ struct Timing {
 
 static Timing g_last_timing;
 static bool g_print_timing = true;
+
+enum class TimingMode {
+  kMedian,
+  kBest,
+};
+
+static TimingMode g_timing_mode = TimingMode::kMedian;
+static int g_timing_repeats = kDefaultTimingRepeats;
 
 struct LaunchConfig {
   int block_x = 256;
@@ -88,6 +99,24 @@ static bool kernel_supports_filter(KernelKind kind, size_t K) {
   return K <= kMaxConstantFilterSize;
 }
 
+static const char* timing_mode_name() {
+  switch (g_timing_mode) {
+    case TimingMode::kMedian:
+      return "median";
+    case TimingMode::kBest:
+      return "best";
+  }
+  return "unknown";
+}
+
+static float select_timing_sample(std::vector<float> samples) {
+  std::sort(samples.begin(), samples.end());
+  if (g_timing_mode == TimingMode::kBest) {
+    return samples.front();
+  }
+  return samples[samples.size() / 2];
+}
+
 static bool parse_kernel_arg(const std::string& arg) {
   const std::string prefix = "--kernel=";
   if (arg.rfind(prefix, 0) != 0) {
@@ -130,6 +159,49 @@ static bool parse_kernel_arg(const std::string& arg) {
             << " --kernel=block-stride-stub,"
             << " --kernel=block-stride-const)\n";
   return false;
+}
+
+static bool parse_timing_arg(const std::string& arg) {
+  const std::string prefix = "--timing=";
+  if (arg.rfind(prefix, 0) != 0) {
+    return false;
+  }
+
+  const std::string value = arg.substr(prefix.size());
+  if (value == "median") {
+    g_timing_mode = TimingMode::kMedian;
+    return true;
+  }
+  if (value == "best" || value == "min") {
+    g_timing_mode = TimingMode::kBest;
+    return true;
+  }
+
+  std::cerr << "Unknown timing mode: " << value
+            << " (use --timing=median or --timing=best)\n";
+  return false;
+}
+
+static bool parse_timing_repeats_arg(const std::string& arg) {
+  const std::string prefix = "--timing-repeats=";
+  if (arg.rfind(prefix, 0) != 0) {
+    return false;
+  }
+
+  const std::string value = arg.substr(prefix.size());
+  try {
+    size_t end = 0;
+    const int repeats = std::stoi(value, &end);
+    if (end != value.size() || repeats < 1) {
+      throw std::invalid_argument("bad repeats");
+    }
+    g_timing_repeats = repeats;
+    return true;
+  } catch (const std::exception&) {
+    std::cerr << "Invalid timing repeat count: " << value
+              << " (use an integer >= 1)\n";
+    return false;
+  }
 }
 
 static bool cuda_runtime_ready() {
@@ -363,6 +435,33 @@ static void print_scale_heatmaps(const std::vector<TestResult>& results) {
   }
 }
 
+static void collect_kernel_timing_samples(const float* d_A, const float* d_B,
+                                          float* d_C, size_t bytes_c,
+                                          size_t N, size_t K,
+                                          cudaEvent_t kernel_start,
+                                          cudaEvent_t kernel_stop,
+                                          std::vector<float>& samples) {
+  for (int i = 0; i < kTimingWarmupIterations; ++i) {
+    CUDA_CHECK(cudaMemset(d_C, 0, bytes_c));
+    solution(d_A, d_B, d_C, N, K);
+  }
+  CUDA_CHECK(cudaDeviceSynchronize());
+
+  samples.clear();
+  samples.reserve(g_timing_repeats);
+  for (int i = 0; i < g_timing_repeats; ++i) {
+    CUDA_CHECK(cudaMemset(d_C, 0, bytes_c));
+    CUDA_CHECK(cudaEventRecord(kernel_start));
+    solution(d_A, d_B, d_C, N, K);
+    CUDA_CHECK(cudaEventRecord(kernel_stop));
+    CUDA_CHECK(cudaEventSynchronize(kernel_stop));
+
+    float kernel_ms = 0.0f;
+    CUDA_CHECK(cudaEventElapsedTime(&kernel_ms, kernel_start, kernel_stop));
+    samples.push_back(kernel_ms);
+  }
+}
+
 static void run_solution_host(const std::vector<float>& A,
                               const std::vector<float>& B,
                               std::vector<float>& C) {
@@ -404,10 +503,9 @@ static void run_solution_host(const std::vector<float>& A,
   }
   CUDA_CHECK(cudaMemset(d_C, 0, outN * sizeof(float)));
 
-  CUDA_CHECK(cudaEventRecord(kernel_start));
-  solution(d_A, d_B, d_C, N, K);
-  CUDA_CHECK(cudaEventRecord(kernel_stop));
-  CUDA_CHECK(cudaEventSynchronize(kernel_stop));
+  std::vector<float> kernel_samples;
+  collect_kernel_timing_samples(d_A, d_B, d_C, outN * sizeof(float), N, K,
+                                kernel_start, kernel_stop, kernel_samples);
 
   CUDA_CHECK(
       cudaMemcpy(C.data(), d_C, outN * sizeof(float), cudaMemcpyDeviceToHost));
@@ -415,13 +513,12 @@ static void run_solution_host(const std::vector<float>& A,
   CUDA_CHECK(cudaEventSynchronize(total_stop));
 
   float total_ms = 0.0f;
-  float kernel_ms = 0.0f;
   CUDA_CHECK(cudaEventElapsedTime(&total_ms, total_start, total_stop));
-  CUDA_CHECK(cudaEventElapsedTime(&kernel_ms, kernel_start, kernel_stop));
   g_last_timing.total_ms = total_ms;
-  g_last_timing.kernel_ms = kernel_ms;
+  g_last_timing.kernel_ms = select_timing_sample(kernel_samples);
   if (g_print_timing) {
-    std::cerr << "total_ms=" << total_ms << " kernel_ms=" << kernel_ms << '\n';
+    std::cerr << "total_ms=" << total_ms
+              << " kernel_ms=" << g_last_timing.kernel_ms << '\n';
   }
 
   CUDA_CHECK(cudaEventDestroy(total_start));
@@ -844,6 +941,10 @@ static int run_tests(bool skip_cpu_verify) {
     }
   }
   g_launch_config = default_launch;
+  std::cout << "Timing samples: mode=" << timing_mode_name()
+            << " repeats=" << g_timing_repeats
+            << " warmup=" << kTimingWarmupIterations
+            << " metric=kernel_ms\n\n";
   print_results_table(results);
   print_scale_heatmaps(results);
   return all_ok ? 0 : 1;
@@ -1209,9 +1310,18 @@ int main(int argc, char** argv) {
       if (!parse_kernel_arg(argv[i])) {
         return 1;
       }
+    } else if (std::string(argv[i]).rfind("--timing=", 0) == 0) {
+      if (!parse_timing_arg(argv[i])) {
+        return 1;
+      }
+    } else if (std::string(argv[i]).rfind("--timing-repeats=", 0) == 0) {
+      if (!parse_timing_repeats_arg(argv[i])) {
+        return 1;
+      }
     } else {
       std::cerr << "Unknown argument: " << argv[i]
-                << " (supported: --skip-cpu, --profile, --kernel=...)\n";
+                << " (supported: --skip-cpu, --profile, --kernel=..., "
+                << "--timing=..., --timing-repeats=...)\n";
       return 1;
     }
   }

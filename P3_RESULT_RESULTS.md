@@ -1,6 +1,7 @@
 # `P3_RELU.cu` Results
 
-Updated summary based on the current two-variant ReLU harness:
+Updated summary based on the current two-variant ReLU harness with in-harness
+median timing:
 
 - CPU-backed correctness run: [p3_with_cpu.txt](p3_with_cpu.txt)
 - Heavier benchmark run: [p3_skip_cpu.txt](p3_skip_cpu.txt)
@@ -14,6 +15,8 @@ Updated summary based on the current two-variant ReLU harness:
 
 - GPU: NVIDIA GeForce RTX 3050 Laptop GPU
 - Default launch: `block_x=256`, `grid_x=64`
+- Timing: each row reports median `kernel_ms` from `5` timed samples after
+  `1` warmup launch.
 - Scaling sweep:
   - `block_x in [64, 128, 256, 512]`
   - `grid_x in [8, 16, 32, 64, 128]`
@@ -70,42 +73,42 @@ From [p3_skip_cpu.txt](/mnt/d/gitrepo/TensaraCudaProblems/p3_skip_cpu.txt):
   scalar remainder path is not obviously hurting the kernel.
 - The scaling sweeps consistently show a small but repeatable `float4`
   advantage.
-- In the refreshed skip-CPU log, `float4` wins 78 of 83 comparable
-  configurations.
+- In the refreshed skip-CPU log, `float4` wins 82 of 83 comparable
+  configurations. `basic` wins 1 configuration.
 
 Representative default-launch rows:
 
 - `tensara_1 (4096 x 4096)`:
-  - `basic 0.792 ms`
-  - `float4 0.756 ms`
+  - `basic 0.794 ms`
+  - `float4 0.753 ms`
 - `tensara_2 (6144 x 4096)`:
-  - `basic 1.193 ms`
-  - `float4 1.123 ms`
+  - `basic 1.186 ms`
+  - `float4 1.124 ms`
 - `tensara_3 (4096 x 7168)`:
-  - `basic 1.383 ms`
-  - `float4 1.314 ms`
+  - `basic 1.378 ms`
+  - `float4 1.310 ms`
 - `tensara_4 (4096 x 8192)`:
-  - `basic 1.587 ms`
-  - `float4 1.500 ms`
+  - `basic 1.580 ms`
+  - `float4 1.496 ms`
 - `tensara_5 (8192 x 8192)`:
-  - `basic 3.180 ms`
-  - `float4 2.983 ms`
+  - `basic 3.171 ms`
+  - `float4 3.005 ms`
 - `tail_1 (2049 x 2049)`:
-  - `basic 0.202 ms`
+  - `basic 0.200 ms`
   - `float4 0.195 ms`
 - `tail_2 (3073 x 4097)`:
-  - `basic 0.591 ms`
-  - `float4 0.572 ms`
+  - `basic 0.589 ms`
+  - `float4 0.567 ms`
 - `tail_3 (4097 x 8193)`:
-  - `basic 1.577 ms`
-  - `float4 1.524 ms`
+  - `basic 1.581 ms`
+  - `float4 1.508 ms`
 
 ## Rerun Note
 
 The current skip-CPU run is clean:
 
-- `tensara_5 (8192 x 8192)` reports `float4 = 2.983 ms`
-- `shape_4 (8192 x 8192)` reports `float4 = 3.006 ms`
+- `tensara_5 (8192 x 8192)` reports `float4 = 3.005 ms`
+- `shape_4 (8192 x 8192)` reports `float4 = 2.998 ms`
 
 The earlier `shape_4 / float4` outlier is not present in this rerun. Because
 `tensara_5` and `shape_4` use the same `8192 x 8192` shape and default launch,
@@ -122,12 +125,12 @@ The safer reading is:
 
 From the heatmaps in [p3_skip_cpu.txt](p3_skip_cpu.txt):
 
-- `scale_sq / basic`: best `0.783 ms` at `(128, 128)`
-- `scale_sq / float4`: best `0.754 ms` at `(512, 16)`
-- `scale_rect_1 / basic`: best `1.171 ms` at `(128, 128)`
-- `scale_rect_1 / float4`: best `1.122 ms` at `(512, 16)`
+- `scale_sq / basic`: best `0.779 ms` at `(512, 32)`
+- `scale_sq / float4`: best `0.751 ms` at `(512, 128)`
+- `scale_rect_1 / basic`: best `1.169 ms` at `(512, 32)`
+- `scale_rect_1 / float4`: best `1.121 ms` at `(512, 128)`
 - `scale_rect_2 / basic`: best `1.556 ms` at `(512, 32)`
-- `scale_rect_2 / float4`: best `1.496 ms` at `(128, 64)`
+- `scale_rect_2 / float4`: best `1.496 ms` at `(512, 16)`
 
 The broad pattern is:
 
