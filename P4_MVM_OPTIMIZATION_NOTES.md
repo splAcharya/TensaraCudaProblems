@@ -26,6 +26,31 @@ Ideas:
 - Load tiles of `B` once per block and apply them to multiple rows.
 - Compare whether explicit shared-memory tiling beats cache behavior.
 
+Note: `__ldg()` read-only cache loads were tested for global `A`/`B` loads and
+did not improve the kernels that matter most. `warp_per_row` was flat to
+slightly slower, and `warp` slowed down. Keep this off unless a future GPU or
+shape changes the result.
+
+### Future: Shared `B` Tile For `warp_per_row`
+
+The `warp_per_row` mapping has several warps per block. With `block_x=256`,
+one block has 8 warps, and each warp computes a different output row. For the
+same column tile, those warps all read the same `B` values.
+
+Future experiment:
+
+```text
+block threads cooperatively load B[tile] into shared memory
+__syncthreads()
+each row-warp accumulates A[row, tile] * shared_B[tile]
+__syncthreads()
+repeat for the next tile
+```
+
+This could reduce repeated global/cache reads of `B` across warps in the same
+block. The risk is extra shared-memory traffic and block-level synchronization.
+It is worth exploring later, but there is no stub in `P4_MVM.cu` yet.
+
 ### Constant Memory Negative Result
 
 The `warp_const_b` experiment keeps the `warp` mapping but reads `B` from

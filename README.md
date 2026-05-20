@@ -24,6 +24,7 @@ Current problem files:
 - `P1_1D_CONVOLUTIONS.cu`: 1D same-padding convolution / cross-correlation.
 - `P3_RELU.cu`: elementwise ReLU over a row-major matrix.
 - `P4_MVM.cu`: matrix-vector multiplication over a row-major matrix.
+- `P5_LEAKY_RELU.cu`: elementwise Leaky ReLU over a row-major matrix.
 
 Detailed correctness and benchmark notes live next to each problem:
 
@@ -31,6 +32,7 @@ Detailed correctness and benchmark notes live next to each problem:
 - [P3_RESULT_RESULTS.md](P3_RESULT_RESULTS.md)
 - [P4_MVM_RESULTS.md](P4_MVM_RESULTS.md)
 - [P4_MVM_OPTIMIZATION_NOTES.md](P4_MVM_OPTIMIZATION_NOTES.md)
+- [P5_LEAKY_RELU_RESULTS.md](P5_LEAKY_RELU_RESULTS.md)
 
 ## Harness Pattern
 
@@ -71,8 +73,8 @@ shapes are promising, and which benchmark rows look noisy or suspicious.
 
 ## Current Snapshot
 
-The latest saved logs cover CPU-backed and skip-CPU runs for all current CUDA
-problem files:
+The latest saved logs cover CPU-backed and skip-CPU runs for P1, P3, P4,
+and P5.
 
 - `P1_1D_CONVOLUTIONS.cu`
   - `bstride_c` is the strongest current heavy-run kernel.
@@ -86,6 +88,10 @@ problem files:
   - `warp` is the strongest current matrix-vector kernel.
   - It wins 65 of 80 comparable skip-CPU configurations.
   - Best Tensara-size row: `4096 x 4096` uses `warp = 0.365 ms`.
+- `P5_LEAKY_RELU.cu`
+  - `float4` and `basic` pass the expanded CPU-backed checks.
+  - `float4` wins all 8 Tensara rows in the latest skip-CPU run.
+  - Best Tensara row: `4096 x 4096` uses `float4 = 0.751 ms`.
 
 ## Local Benchmarking Notes
 

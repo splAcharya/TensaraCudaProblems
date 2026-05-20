@@ -28,6 +28,10 @@
   possible.
 - Default harness runs should be correctness-oriented. Use `--skip-cpu` for
   heavier benchmark-oriented runs.
+- Timing harnesses should use warmup runs and multiple samples. Prefer median
+  `kernel_ms` as the default reported timing, following the P4/P5 pattern.
+  A `--timing=best` or `--timing=min` option is useful as an explicit opt-in,
+  but do not use best-only timing as the default result.
 
 ## Generated Artifacts
 
@@ -36,7 +40,13 @@
 - Do not regenerate or overwrite raw result logs unless the user asks for it or
   provides new run output to sync.
 - When updating markdown summaries, verify the corresponding `.txt` logs first
-  and keep the summary numbers in sync with those logs.
+  and keep the summary numbers in sync with those logs. Include a separate
+  Tensara section that lists the published shapes, best kernel variant, and
+  best block/grid launch shape when launch sweeps are available.
+- Summary markdown should distinguish correctness-backed rows from skip-CPU
+  benchmark rows. Do not present skip-CPU timing rows as correctness evidence
+  unless a matching CPU-backed run or exact test already verified the kernel
+  and shape class.
 
 ## Collaboration
 
@@ -74,5 +84,15 @@
 - Include generated medium and large cases once a CPU reference exists.
 - Include the Tensara problem's published test sizes in benchmark-oriented
   runs.
+- Include diverse input shapes, not only the published Tensara sizes. Cover
+  square, rectangular, tall, wide, odd, and tail-sensitive shapes when the
+  problem dimensions make those cases meaningful.
 - Add launch-configuration sweeps when comparing kernel variants or checking
-  launch-sensitive behavior.
+  launch-sensitive behavior. Use the P3/P4/P5 default sweep:
+  `block_x={64,128,256,512}` and `grid_x={8,16,32,64,128}`. Include both
+  correctness-oriented sweeps on smaller generated cases and heavier
+  `--skip-cpu` sweeps on representative Tensara or large shapes. Keep each
+  sweep row in the raw `.txt` logs.
+- When printing scale sweep results, include enough data to identify the best
+  block/grid pair per kernel and shape. Heatmap-style summaries are preferred
+  when the result table would be hard to scan.
