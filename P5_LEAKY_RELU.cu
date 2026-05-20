@@ -826,15 +826,17 @@ static int run_tests(bool skip_cpu_verify) {
 // alpha: slope used for negative input values
 // output: device pointer to a row-major matrix with shape (m, n)
 // total: number of matrix elements, normally m * n from solution(...)
-__global__ void device_leaky_relu_basic(const float* input, float alpha,
-                                        float* output, size_t total) {
+__global__ void device_leaky_relu_basic(const float* __restrict__ input,
+                                        float alpha,
+                                        float* __restrict__ output,
+                                        size_t total) {
 
   size_t gid_x = (blockIdx.x * blockDim.x) + threadIdx.x;
   size_t grid_stride = (blockDim.x * gridDim.x);
 
   for (size_t gx = gid_x; gx < total; gx += grid_stride)
   {
-    float val = input[gx];
+    float val = __ldg(&input[gx]);
     output[gx] = (val >= 0.0f) ? val : (alpha * val);
   }
 }
@@ -847,8 +849,10 @@ __global__ void device_leaky_relu_basic(const float* input, float alpha,
 // output: device pointer to a row-major matrix with shape (m, n)
 // total: number of matrix elements, normally m * n from solution(...)
 // note: implementation should handle any scalar tail after float4 work
-__global__ void device_leaky_relu_float4(const float* input, float alpha,
-                                         float* output, size_t total) {
+__global__ void device_leaky_relu_float4(const float* __restrict__ input,
+                                         float alpha,
+                                         float* __restrict__ output,
+                                         size_t total) {
 
   const float4 *input_vec = reinterpret_cast<const float4 *>(input);
   float4 *output_vec = reinterpret_cast<float4 *>(output);
@@ -859,7 +863,7 @@ __global__ void device_leaky_relu_float4(const float* input, float alpha,
 
   for (size_t gx = gix; gx < total_vec; gx += grid_stride)
   {
-    float4 ivec = input_vec[gx];
+    float4 ivec = __ldg(&input_vec[gx]);
     ivec.w = (ivec.w >= 0) ? ivec.w : (alpha * ivec.w);
     ivec.x = (ivec.x >= 0) ? ivec.x : (alpha * ivec.x);
     ivec.y = (ivec.y >= 0) ? ivec.y : (alpha * ivec.y);
@@ -876,8 +880,11 @@ __global__ void device_leaky_relu_float4(const float* input, float alpha,
   }
 }
 
-extern "C" void solution(const float* input, float alpha, float* output,
-                         size_t n, size_t m) {
+extern "C" void solution(const float* __restrict__ input,
+                         float alpha,
+                         float* __restrict__ output,
+                         size_t n,
+                         size_t m) {
   const size_t total = n * m;
   dim3 block_shape(g_launch_config.block_x, 1, 1);
   dim3 grid_shape(g_launch_config.grid_x, 1, 1);
