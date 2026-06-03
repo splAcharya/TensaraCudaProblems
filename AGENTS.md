@@ -3,9 +3,9 @@
 ## Project Context
 
 - This repository is a local CUDA workbench for Tensara-style problems.
-- Each problem file is intended to be self-contained: CUDA kernels,
-  a Tensara-compatible `extern "C" solution(...)`, host-side test harness,
-  timing, and optional result summaries.
+- Each problem file should be self-contained: CUDA kernels, a
+  Tensara-compatible `extern "C" solution(...)`, host-side harness, timing,
+  and optional result summaries.
 - The user owns CPU reference and GPU kernel logic. Unless explicitly asked to
   implement logic, Codex should set up files, harnesses, signatures, empty
   stubs, comments, test scaffolding, and variant plumbing only.
@@ -14,6 +14,28 @@
   only launch device work.
 - Use the existing problem files as harness references when adding new problem
   files.
+
+## New Problem Scaffolding
+
+- Fetch the Tensara problem page before creating a new problem file. Use the
+  page data, starter code, or embedded problem definition to confirm the exact
+  `solution(...)` signature and argument order.
+- Add a top-of-file block comment with the problem title, source URL,
+  operation description, input/output shape rules, important notes, and
+  published test sizes.
+- Render formulas as readable multi-line ASCII inside the block comment so
+  they survive plain text display.
+- Add one empty CPU reference stub and one empty basic GPU kernel stub unless
+  the user explicitly asks for implementation logic. Keep stub bodies empty;
+  do not add placeholder loops, zero-fills, or TODO work.
+- Add short shape and argument headers above CPU reference functions, GPU
+  kernels, and stubs.
+- Keep CPU-backed verification disabled while the CPU reference is an empty
+  stub. Enable it only after the CPU reference is implemented.
+- Include small exact tests with hard-coded expected outputs.
+- Include generated medium and large cases once a CPU reference exists.
+- Include the Tensara problem's published test sizes in benchmark-oriented
+  runs.
 
 ## Build And Verification
 
@@ -30,7 +52,7 @@
   heavier benchmark-oriented runs.
 - Timing harnesses should use warmup runs and multiple samples. Prefer median
   `kernel_ms` as the default reported timing, following the P4/P5 pattern.
-  A `--timing=best` or `--timing=min` option is useful as an explicit opt-in,
+- A `--timing=best` or `--timing=min` option is useful as an explicit opt-in,
   but do not use best-only timing as the default result.
 
 ## Generated Artifacts
@@ -40,13 +62,14 @@
 - Do not regenerate or overwrite raw result logs unless the user asks for it or
   provides new run output to sync.
 - When updating markdown summaries, verify the corresponding `.txt` logs first
-  and keep the summary numbers in sync with those logs. Include a separate
-  Tensara section that lists the published shapes, best kernel variant, and
-  best block/grid launch shape when launch sweeps are available.
+  and keep the summary numbers in sync with those logs.
 - Summary markdown should distinguish correctness-backed rows from skip-CPU
   benchmark rows. Do not present skip-CPU timing rows as correctness evidence
   unless a matching CPU-backed run or exact test already verified the kernel
   and shape class.
+- Include a separate Tensara section in summaries that lists published shapes,
+  best kernel variant, and best block/grid launch shape when launch sweeps are
+  available.
 
 ## Collaboration
 
@@ -68,31 +91,21 @@
   documentation.
 - Use ASCII unless the touched file already requires non-ASCII.
 - Keep source files and Markdown files at or below 79 characters per line.
-- Keep comments short and useful. Prefer shape and argument headers above CPU
-  reference functions, GPU kernels, and stubs.
-- For empty CPU reference or GPU kernel stubs, keep function bodies empty. Do
-  not add placeholder logic such as zero-fills or TODO loops. Add short header
-  comments describing inputs, outputs, shapes, and size parameters.
-- Keep CPU-backed verification disabled while the CPU reference is an empty
-  stub. Enable it only after the CPU reference is implemented.
+- Keep comments short and useful.
 - Keep CPU reference implementations separate from GPU kernels and guard
   optional CPU reference verification with a clear flag when useful.
 
 ## Testing Pattern
 
-- Include small exact tests with hard-coded expected outputs.
-- Include generated medium and large cases once a CPU reference exists.
-- Include the Tensara problem's published test sizes in benchmark-oriented
-  runs.
 - Include diverse input shapes, not only the published Tensara sizes. Cover
   square, rectangular, tall, wide, odd, and tail-sensitive shapes when the
   problem dimensions make those cases meaningful.
 - Add launch-configuration sweeps when comparing kernel variants or checking
   launch-sensitive behavior. Use the P3/P4/P5 default sweep:
-  `block_x={64,128,256,512}` and `grid_x={8,16,32,64,128}`. Include both
-  correctness-oriented sweeps on smaller generated cases and heavier
-  `--skip-cpu` sweeps on representative Tensara or large shapes. Keep each
-  sweep row in the raw `.txt` logs.
+  `block_x={64,128,256,512}` and `grid_x={8,16,32,64,128}`.
+- Include both correctness-oriented sweeps on smaller generated cases and
+  heavier `--skip-cpu` sweeps on representative Tensara or large shapes. Keep
+  each sweep row in the raw `.txt` logs.
 - When printing scale sweep results, include enough data to identify the best
   block/grid pair per kernel and shape. Heatmap-style summaries are preferred
   when the result table would be hard to scan.

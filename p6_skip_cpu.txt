@@ -1,0 +1,26 @@
+Timing samples: mode=median repeats=5 warmup=1 metric=kernel_ms
+CPU reference implemented: yes
+GPU kernel implemented: yes
+
+group   name                         H       H_out       K       S       P   block    grid    cpu    gpu    total_ms   kernel_ms
+--------------------------------------------------------------------------------------------------------------------------------
+small   pad_stride_1                 5           5       3       1       1     256      64   SKIP   PASS       3.241       0.007
+small   stride_2                     6           3       2       2       0     256      64   SKIP   PASS       0.711       0.007
+small   wide_pad                     4           5       4       1       2     256      64   SKIP   PASS       0.572       0.007
+small   kernel_1                     4           4       1       1       0     256      64   SKIP   PASS       0.495       0.007
+small   pad_stride_2                 3           3       3       2       2     256      64   SKIP   PASS       0.509       0.007
+small   stride_gap                   7           2       2       3       0     256      64   SKIP   PASS       0.501       0.007
+small   pad_zero_windows             1           6       2       1       3     256      64   SKIP   PASS       0.534       0.006
+small   zero_output                  2           0       5       1       0     256      64   SKIP   PASS       0.000       0.000
+medium  sample                      16           8       3       2       1     256      64   SKIP   SKIP       0.652       0.034
+medium  medium_1                  4096        1024       7       4       3     256      64   SKIP   SKIP       0.631       0.007
+medium  medium_2                 65536       32768       3       2       1     256      64   SKIP   SKIP       0.607       0.009
+medium  medium_3                262144       87382       5       3       2     256      64   SKIP   SKIP       0.716       0.022
+large   large_1                1048576      262144       7       4       3     256      64   SKIP   SKIP       1.750       0.036
+large   large_2                1048583      349528       5       3       2     256      64   SKIP   SKIP       2.037       0.040
+tensara tensara_1              2097152      524288       7       4       3     256      64   SKIP   SKIP       3.184       0.066
+tensara tensara_2              4194304     4194303       2       1       0     256      64   SKIP   SKIP       9.124       0.318
+tensara tensara_3              8388608     4194304       3       2       1     256      64   SKIP   SKIP      12.875       0.311
+tensara tensara_4             16777216     8388608       4       2       1     256      64   SKIP   SKIP      33.634       0.647
+tensara tensara_5             33554432    33554432       3       1       1     256      64   SKIP   SKIP     110.701       2.511
+tensara tensara_6             67108864    22369622       5       3       2     256      64   SKIP   SKIP     126.159       2.186
