@@ -1,5 +1,4 @@
 #include <cuda_runtime.h>
-
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
@@ -67,10 +66,34 @@ enum class TimingMode {
   kBest,
 };
 
+enum class KernelVariant {
+  kBasic,
+  kBasicLdg,
+  kCoopShared,
+};
+
 static LaunchConfig g_launch_config{256, 64};
+static KernelVariant g_kernel_variant = KernelVariant::kBasic;
 static TimingMode g_timing_mode = TimingMode::kMedian;
 static int g_timing_repeats = kDefaultTimingRepeats;
+static bool g_kernel_arg_set = false;
 static Timing g_last_timing;
+
+static const char* current_kernel_name() {
+  switch (g_kernel_variant) {
+    case KernelVariant::kBasic:
+      return "basic";
+    case KernelVariant::kBasicLdg:
+      return "basic_ldg";
+    case KernelVariant::kCoopShared:
+      return "coop_shared";
+  }
+  return "unknown";
+}
+
+static bool kernel_enabled(KernelVariant variant) {
+  return !g_kernel_arg_set || g_kernel_variant == variant;
+}
 
 static const char* timing_mode_name() {
   switch (g_timing_mode) {
@@ -88,6 +111,35 @@ static float select_timing_sample(std::vector<float> samples) {
     return samples.front();
   }
   return samples[samples.size() / 2];
+}
+
+static bool parse_kernel_arg(const std::string& arg) {
+  const std::string prefix = "--kernel=";
+  if (arg.rfind(prefix, 0) != 0) {
+    return false;
+  }
+
+  const std::string value = arg.substr(prefix.size());
+  if (value == "basic") {
+    g_kernel_variant = KernelVariant::kBasic;
+    g_kernel_arg_set = true;
+    return true;
+  }
+  if (value == "basic_ldg") {
+    g_kernel_variant = KernelVariant::kBasicLdg;
+    g_kernel_arg_set = true;
+    return true;
+  }
+  if (value == "coop_shared" || value == "shared") {
+    g_kernel_variant = KernelVariant::kCoopShared;
+    g_kernel_arg_set = true;
+    return true;
+  }
+
+  std::cerr << "Unknown kernel: " << value
+            << " (use --kernel=basic, --kernel=basic_ldg, "
+            << "or --kernel=coop_shared)\n";
+  return false;
 }
 
 static bool parse_timing_arg(const std::string& arg) {
@@ -190,6 +242,7 @@ struct TestCase {
 struct TestResult {
   std::string group;
   std::string name;
+  std::string kernel;
   size_t H = 0;
   size_t H_out = 0;
   int kernel_size = 0;
@@ -440,6 +493,7 @@ static void run_solution_host(const std::vector<float>& input,
 static void print_results_table(const std::vector<TestResult>& results) {
   std::cout << std::left << std::setw(8) << "group"
             << std::setw(18) << "name"
+            << std::setw(12) << "kernel"
             << std::right << std::setw(12) << "H"
             << std::setw(12) << "H_out"
             << std::setw(8) << "K"
@@ -451,11 +505,12 @@ static void print_results_table(const std::vector<TestResult>& results) {
             << std::setw(7) << "gpu"
             << std::setw(12) << "total_ms"
             << std::setw(12) << "kernel_ms" << '\n';
-  std::cout << std::string(128, '-') << '\n';
+  std::cout << std::string(140, '-') << '\n';
 
   for (const auto& res : results) {
     std::cout << std::left << std::setw(8) << res.group
               << std::setw(18) << res.name
+              << std::setw(12) << res.kernel
               << std::right << std::setw(12) << res.H
               << std::setw(12) << res.H_out
               << std::setw(8) << res.kernel_size
@@ -474,6 +529,7 @@ static void print_results_table(const std::vector<TestResult>& results) {
 
 static void print_scale_heatmaps(const std::vector<TestResult>& results) {
   std::vector<std::string> names;
+  std::vector<std::string> kernels;
   std::vector<int> block_sizes;
   std::vector<int> grid_sizes;
 
@@ -483,6 +539,10 @@ static void print_scale_heatmaps(const std::vector<TestResult>& results) {
     }
     if (std::find(names.begin(), names.end(), res.name) == names.end()) {
       names.push_back(res.name);
+    }
+    if (std::find(kernels.begin(), kernels.end(), res.kernel) ==
+        kernels.end()) {
+      kernels.push_back(res.kernel);
     }
     if (std::find(block_sizes.begin(), block_sizes.end(), res.block_x) ==
         block_sizes.end()) {
@@ -499,52 +559,75 @@ static void print_scale_heatmaps(const std::vector<TestResult>& results) {
   }
 
   std::sort(names.begin(), names.end());
+  std::sort(kernels.begin(), kernels.end());
   std::sort(block_sizes.begin(), block_sizes.end());
   std::sort(grid_sizes.begin(), grid_sizes.end());
   std::cout << "\nScale heatmaps: kernel_ms, '-' means no row\n";
 
   for (const auto& name : names) {
-    float best_ms = 0.0f;
-    int best_block = 0;
-    int best_grid = 0;
-    bool have_best = false;
+    for (const auto& kernel : kernels) {
+      float best_ms = 0.0f;
+      int best_block = 0;
+      int best_grid = 0;
+      bool have_best = false;
 
-    for (const auto& res : results) {
-      if (res.group == "scale" && res.name == name && res.gpu != "FAIL" &&
-          (!have_best || res.kernel_ms < best_ms)) {
-        best_ms = res.kernel_ms;
-        best_block = res.block_x;
-        best_grid = res.grid_x;
-        have_best = true;
-      }
-    }
-
-    std::cout << '\n' << name << " best=(" << best_block << ", "
-              << best_grid << ") -> " << best_ms << " ms\n";
-    std::cout << std::left << std::setw(10) << "block\\grid";
-    for (int grid_x : grid_sizes) {
-      std::cout << std::setw(10) << grid_x;
-    }
-    std::cout << '\n';
-
-    for (int block_x : block_sizes) {
-      std::cout << std::left << std::setw(10) << block_x;
-      for (int grid_x : grid_sizes) {
-        bool found = false;
-        for (const auto& res : results) {
-          if (res.group == "scale" && res.name == name &&
-              res.block_x == block_x && res.grid_x == grid_x &&
-              res.gpu != "FAIL") {
-            std::cout << std::setw(10) << res.kernel_ms;
-            found = true;
-            break;
-          }
+      for (const auto& res : results) {
+        if (res.group == "scale" && res.name == name &&
+            res.kernel == kernel && res.gpu != "FAIL" &&
+            (!have_best || res.kernel_ms < best_ms)) {
+          best_ms = res.kernel_ms;
+          best_block = res.block_x;
+          best_grid = res.grid_x;
+          have_best = true;
         }
-        if (!found) {
-          std::cout << std::setw(10) << "-";
+      }
+
+      if (!have_best) {
+        continue;
+      }
+
+      std::cout << '\n' << name << " / " << kernel << " best=("
+                << best_block << ", " << best_grid << ") -> " << best_ms
+                << " ms\n";
+      std::cout << std::left << std::setw(10) << "block\\grid";
+      for (size_t i = 0; i < grid_sizes.size(); ++i) {
+        if (i + 1 == grid_sizes.size()) {
+          std::cout << grid_sizes[i];
+        } else {
+          std::cout << std::setw(10) << grid_sizes[i];
         }
       }
       std::cout << '\n';
+
+      for (int block_x : block_sizes) {
+        std::cout << std::left << std::setw(10) << block_x;
+        for (size_t i = 0; i < grid_sizes.size(); ++i) {
+          const int grid_x = grid_sizes[i];
+          const bool last_grid = i + 1 == grid_sizes.size();
+          bool found = false;
+          for (const auto& res : results) {
+            if (res.group == "scale" && res.name == name &&
+                res.kernel == kernel && res.block_x == block_x &&
+                res.grid_x == grid_x && res.gpu != "FAIL") {
+              if (last_grid) {
+                std::cout << res.kernel_ms;
+              } else {
+                std::cout << std::setw(10) << res.kernel_ms;
+              }
+              found = true;
+              break;
+            }
+          }
+          if (!found) {
+            if (last_grid) {
+              std::cout << "-";
+            } else {
+              std::cout << std::setw(10) << "-";
+            }
+          }
+        }
+        std::cout << '\n';
+      }
     }
   }
 }
@@ -620,6 +703,11 @@ static int run_tests(bool skip_cpu_verify) {
 
   const int block_x_values[] = {64, 128, 256, 512};
   const int grid_x_values[] = {8, 16, 32, 64, 128};
+  const KernelVariant kernel_variants[] = {
+      KernelVariant::kBasic,
+      KernelVariant::kBasicLdg,
+      KernelVariant::kCoopShared,
+  };
 
   const struct {
     const char* name;
@@ -653,6 +741,7 @@ static int run_tests(bool skip_cpu_verify) {
     TestResult res;
     res.group = group;
     res.name = name;
+    res.kernel = current_kernel_name();
     res.H = H;
     res.H_out = H_out;
     res.kernel_size = kernel_size;
@@ -693,45 +782,67 @@ static int run_tests(bool skip_cpu_verify) {
     results.push_back(res);
   };
 
-  for (const auto& tc : small_tests) {
-    run_case(tc.group, tc.name, tc.input, tc.kernel_size, tc.stride,
-             tc.padding, &tc.expected);
-  }
+  for (KernelVariant kernel_variant : kernel_variants) {
+    if (!kernel_enabled(kernel_variant)) {
+      continue;
+    }
+    g_kernel_variant = kernel_variant;
+    g_launch_config = default_launch_config;
 
-  for (const auto& mt : medium_tests) {
-    const auto input = make_avg_pool_input(mt.H);
-    run_case("medium", mt.name, input, mt.kernel_size, mt.stride,
-             mt.padding, nullptr);
-  }
+    for (const auto& tc : small_tests) {
+      run_case(tc.group, tc.name, tc.input, tc.kernel_size, tc.stride,
+               tc.padding, &tc.expected);
+    }
 
-  for (const auto& lt : large_verify_tests) {
-    const auto input = make_avg_pool_input(lt.H);
-    run_case("large", lt.name, input, lt.kernel_size, lt.stride,
-             lt.padding, nullptr);
-  }
+    for (const auto& mt : medium_tests) {
+      const auto input = make_avg_pool_input(mt.H);
+      run_case("medium", mt.name, input, mt.kernel_size, mt.stride,
+               mt.padding, nullptr);
+    }
 
-  if (!skip_cpu_verify) {
-    for (const auto& st : scale_tests) {
-      const auto input = make_avg_pool_input(st.H);
-      for (const int block_x : block_x_values) {
-        for (const int grid_x : grid_x_values) {
-          g_launch_config = LaunchConfig{block_x, grid_x};
-          run_case("scale", st.name, input, st.kernel_size, st.stride,
-                   st.padding, nullptr);
+    for (const auto& lt : large_verify_tests) {
+      const auto input = make_avg_pool_input(lt.H);
+      run_case("large", lt.name, input, lt.kernel_size, lt.stride,
+               lt.padding, nullptr);
+    }
+
+    if (!skip_cpu_verify) {
+      for (const auto& st : scale_tests) {
+        const auto input = make_avg_pool_input(st.H);
+        for (const int block_x : block_x_values) {
+          for (const int grid_x : grid_x_values) {
+            g_launch_config = LaunchConfig{block_x, grid_x};
+            run_case("scale", st.name, input, st.kernel_size, st.stride,
+                     st.padding, nullptr);
+          }
+        }
+      }
+    }
+
+    g_launch_config = default_launch_config;
+
+    if (skip_cpu_verify) {
+      for (const auto& tt : tensara_tests) {
+        const auto input = make_avg_pool_input(tt.H);
+        run_case("tensara", tt.name, input, tt.kernel_size, tt.stride,
+                 tt.padding, nullptr);
+      }
+      for (const auto& tt : tensara_tests) {
+        const auto input = make_avg_pool_input(tt.H);
+        const std::string scale_name = std::string("scale_") + tt.name;
+        for (const int block_x : block_x_values) {
+          for (const int grid_x : grid_x_values) {
+            g_launch_config = LaunchConfig{block_x, grid_x};
+            run_case("scale", scale_name.c_str(), input, tt.kernel_size,
+                     tt.stride, tt.padding, nullptr);
+          }
         }
       }
     }
   }
 
+  g_kernel_variant = KernelVariant::kBasic;
   g_launch_config = default_launch_config;
-
-  if (skip_cpu_verify) {
-    for (const auto& tt : tensara_tests) {
-      const auto input = make_avg_pool_input(tt.H);
-      run_case("tensara", tt.name, input, tt.kernel_size, tt.stride,
-               tt.padding, nullptr);
-    }
-  }
 
   std::cout << "Timing samples: mode=" << timing_mode_name()
             << " repeats=" << g_timing_repeats
@@ -783,9 +894,109 @@ __global__ void avg_pool_1d_basic_kernel(const float* input, int kernel_size,
   }
 }
 
+// Basic GPU kernel with restricted pointers and read-only input loads.
+//
+// input: device vector with length H
+// kernel_size: pooling window length
+// stride: distance between consecutive window starts
+// padding: implicit zero-padding count on each side of input
+// output: device vector with length H_out
+// H: input vector length
+// H_out: output vector length
+__global__ void avg_pool_1d_basic_ldg_kernel(
+    const float* __restrict__ input, int kernel_size, int stride, int padding,
+    float* __restrict__ output, size_t H, size_t H_out) {
+  size_t gix = (blockDim.x * blockIdx.x) + threadIdx.x;
+  size_t grid_stride = (blockDim.x * gridDim.x);
+
+  for (size_t gx = gix; gx < H_out; gx += grid_stride)
+  {
+    //input window start and end
+    size_t ws = gx * stride;
+    size_t we = ws + kernel_size;
+
+    //valid input windows only
+    ws = (ws >= padding) ? (ws - padding) : 0; //left guard
+    we = (we >= padding) ? (we - padding) : 0; //left guard
+    we = (we > H) ? H : we; //right guard
+
+    //compute window sum
+    float wsum = 0.0f;
+    for (size_t i = ws; i < we; ++i)
+      wsum += __ldg(&input[i]);
+
+    output[gx] = wsum / kernel_size;
+  }
+}
+
+// Cooperative shared-memory GPU kernel stub.
+//
+// input: device vector with length H
+// kernel_size: pooling window length
+// stride: distance between consecutive window starts
+// padding: implicit zero-padding count on each side of input
+// output: device vector with length H_out
+// H: input vector length
+// H_out: output vector length
+__global__ void avg_pool_1d_coop_shared_kernel(
+    const float* __restrict__ input, int kernel_size, int stride, int padding,
+    float* __restrict__ output, size_t H, size_t H_out) {
+  //shared memory to hold up that many elements, size passed in dynamically
+  extern __shared__ float smem_input[];
+
+  size_t total_blocks = (H_out + blockDim.x - 1) / blockDim.x;
+
+  //grid stride @ block level
+  for (size_t bx = blockIdx.x; bx < total_blocks; bx += gridDim.x)
+  {
+    //output cells range owned by a block = blockDim.x
+    //compute the output cell, start end end range for this block
+    size_t op_start = bx * blockDim.x;
+    size_t op_end = op_start + blockDim.x - 1;
+
+    //need to compute which portion of input cells are required for a block to process
+    size_t input_start = op_start * stride; //ech output elements starts/skip over stride num of elemnts
+    //the last output cell start with a certain stride and spans over kenrl_Size worh of elements
+    size_t input_end = (op_end * stride) + kernel_size;
+    size_t total_input_elements = input_end - input_start;
+
+    //populate shared memory cooperativetly
+    for (size_t lx = threadIdx.x; lx < total_input_elements; lx += blockDim.x)
+    {
+      long long load_idx =
+          static_cast<long long>(input_start + lx) - padding;
+      smem_input[lx] =
+          (0 <= load_idx && load_idx < static_cast<long long>(H))
+              ? input[load_idx]
+              : 0.0f;
+    }
+
+    //sync
+    __syncthreads();
+
+    //perform average pooling on shared memory
+    float sum = 0.0f;
+    size_t local_ws = threadIdx.x * stride;
+    size_t local_we = local_ws + kernel_size;
+    for (size_t i = local_ws; i < local_we; ++i)
+      sum += smem_input[i];
+
+    //update output
+    size_t out_idx = (bx * blockDim.x) + threadIdx.x;
+
+    if (out_idx < H_out)
+      output[out_idx] = sum / kernel_size;
+
+    //make sure current grid is entirely processed, before
+    //moving to next grid
+    __syncthreads();
+  }
+}
+
 extern "C" void solution(const float* input, int kernel_size, int stride,
                          int padding, float* output, size_t H) {
   const size_t H_out = avg_pool_output_size(H, kernel_size, stride, padding);
+
   if (H_out == 0) {
     return;
   }
@@ -793,8 +1004,27 @@ extern "C" void solution(const float* input, int kernel_size, int stride,
   dim3 block_shape(g_launch_config.block_x, 1, 1);
   dim3 grid_shape(g_launch_config.grid_x, 1, 1);
 
-  avg_pool_1d_basic_kernel<<<grid_shape, block_shape>>>(
-      input, kernel_size, stride, padding, output, H, H_out);
+  switch (g_kernel_variant) {
+    case KernelVariant::kBasic: {
+      avg_pool_1d_basic_kernel<<<grid_shape, block_shape>>>(
+          input, kernel_size, stride, padding, output, H, H_out);
+      break;
+    }
+    case KernelVariant::kBasicLdg: {
+      avg_pool_1d_basic_ldg_kernel<<<grid_shape, block_shape>>>(
+          input, kernel_size, stride, padding, output, H, H_out);
+      break;
+    }
+    case KernelVariant::kCoopShared: {
+      size_t output_cells_per_block = block_shape.x - 1;
+      size_t input_cells_per_block =
+          output_cells_per_block * stride + kernel_size;
+      size_t smem_bytes = input_cells_per_block * sizeof(float);
+      avg_pool_1d_coop_shared_kernel<<<grid_shape, block_shape, smem_bytes>>>(
+          input, kernel_size, stride, padding, output, H, H_out);
+      break;
+    }
+  }
 
   CUDA_CHECK(cudaGetLastError());
 }
@@ -808,6 +1038,10 @@ int main(int argc, char** argv) {
     const std::string arg = argv[i];
     if (arg == "--skip-cpu") {
       skip_cpu_verify = true;
+    } else if (arg.rfind("--kernel=", 0) == 0) {
+      if (!parse_kernel_arg(arg)) {
+        return 1;
+      }
     } else if (arg.rfind("--timing=", 0) == 0) {
       if (!parse_timing_arg(arg)) {
         return 1;
@@ -818,7 +1052,7 @@ int main(int argc, char** argv) {
       }
     } else {
       std::cerr << "Unknown argument: " << arg
-                << " (supported: --skip-cpu, --timing=..., "
+                << " (supported: --skip-cpu, --kernel=..., --timing=..., "
                 << "--timing-repeats=...)\n";
       return 1;
     }
