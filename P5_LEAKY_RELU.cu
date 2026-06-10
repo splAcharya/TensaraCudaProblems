@@ -586,18 +586,19 @@ static int run_tests(bool skip_cpu_verify) {
 
   const struct {
     const char* name;
+    const char* scale_name;
     size_t rows;
     size_t cols;
     float alpha;
   } tensara_tests[] = {
-      {"tensara_1", 4096, 4096, 0.01f},
-      {"tensara_2", 4096, 4096, 0.05f},
-      {"tensara_3", 4096, 4096, 0.1f},
-      {"tensara_4", 4096, 4096, 0.2f},
-      {"tensara_5", 6144, 4096, 0.01f},
-      {"tensara_6", 6144, 4096, 0.05f},
-      {"tensara_7", 6144, 4096, 0.1f},
-      {"tensara_8", 6144, 4096, 0.2f},
+      {"tensara_1", "scale_tensara_1", 4096, 4096, 0.01f},
+      {"tensara_2", "scale_tensara_2", 4096, 4096, 0.05f},
+      {"tensara_3", "scale_tensara_3", 4096, 4096, 0.1f},
+      {"tensara_4", "scale_tensara_4", 4096, 4096, 0.2f},
+      {"tensara_5", "scale_tensara_5", 6144, 4096, 0.01f},
+      {"tensara_6", "scale_tensara_6", 6144, 4096, 0.05f},
+      {"tensara_7", "scale_tensara_7", 6144, 4096, 0.1f},
+      {"tensara_8", "scale_tensara_8", 6144, 4096, 0.2f},
   };
 
   const struct {
@@ -795,6 +796,9 @@ static int run_tests(bool skip_cpu_verify) {
     if (skip_cpu_verify) {
       for (const auto& tt : tensara_tests) {
         run_sized("tensara", tt.name, tt.rows, tt.cols, tt.alpha);
+      }
+      for (const auto& tt : tensara_tests) {
+        run_scaling(tt.scale_name, tt.rows, tt.cols, tt.alpha);
       }
       for (const auto& st : shape_tests) {
         run_sized("shape", st.name, st.rows, st.cols, st.alpha);

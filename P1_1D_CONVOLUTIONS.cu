@@ -735,11 +735,12 @@ static int run_tests(bool skip_cpu_verify) {
   };
   const struct {
     const char* name;
+    const char* scale_name;
     size_t N;
     size_t K;
-  } web_tests[] = {
-      {"web_1", 1u << 15, 8191},
-      {"web_2", 1u << 16, 8191},
+  } tensara_tests[] = {
+      {"tensara_1", "scale_tensara_1", 1u << 15, 8191},
+      {"tensara_2", "scale_tensara_2", 1u << 16, 8191},
   };
   const struct {
     const char* name;
@@ -750,8 +751,8 @@ static int run_tests(bool skip_cpu_verify) {
       {"odd_2", 32769, 127},
       {"odd_3", 262147, 383},
   };
-  const int scale_block_sizes[] = {32, 64, 128, 256, 512};
-  const int scale_grid_sizes[] = {8, 16, 32, 64};
+  const int scale_block_sizes[] = {64, 128, 256, 512};
+  const int scale_grid_sizes[] = {8, 16, 32, 64, 128};
   auto run_sized = [&](const char* group, const char* name, size_t N,
                        size_t K) {
     g_launch_config = default_launch;
@@ -930,14 +931,14 @@ static int run_tests(bool skip_cpu_verify) {
     for (const auto& lt : tile_tests) {
       run_sized("tile", lt.name, lt.N, lt.K);
     }
-    for (const auto& wt : web_tests) {
-      run_sized("web", wt.name, wt.N, wt.K);
+    for (const auto& tt : tensara_tests) {
+      run_sized("tensara", tt.name, tt.N, tt.K);
     }
     for (const auto& ot : odd_tests) {
       run_sized("odd", ot.name, ot.N, ot.K);
     }
-    for (const auto& wt : web_tests) {
-      run_scaling(wt.name, wt.N, wt.K);
+    for (const auto& tt : tensara_tests) {
+      run_scaling(tt.scale_name, tt.N, tt.K);
     }
   }
   g_launch_config = default_launch;

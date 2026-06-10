@@ -281,17 +281,17 @@ struct TestResult {
 };
 
 static void print_results_table(const std::vector<TestResult>& results) {
-  std::cout << std::left << std::setw(8) << "group" << std::setw(14) << "name"
+  std::cout << std::left << std::setw(8) << "group" << std::setw(18) << "name"
             << std::setw(14) << "kernel" << std::setw(10) << "rows"
             << std::setw(10) << "cols" << std::setw(8) << "block_x"
             << std::setw(8) << "grid_x" << std::setw(6) << "cpu"
             << std::setw(6) << "gpu" << std::setw(12) << "total_ms"
             << std::setw(12) << "kernel_ms" << '\n';
-  std::cout << std::string(108, '-') << '\n';
+  std::cout << std::string(112, '-') << '\n';
   std::cout << std::fixed << std::setprecision(3);
 
   for (const auto& r : results) {
-    std::cout << std::left << std::setw(8) << r.group << std::setw(14)
+    std::cout << std::left << std::setw(8) << r.group << std::setw(18)
               << r.name << std::setw(14) << r.kernel << std::setw(10)
               << r.rows << std::setw(10) << r.cols << std::setw(8)
               << r.block_x << std::setw(8) << r.grid_x << std::setw(6)
@@ -573,14 +573,15 @@ static int run_tests(bool skip_cpu_verify) {
 
   const struct {
     const char* name;
+    const char* scale_name;
     size_t rows;
     size_t cols;
   } tensara_tests[] = {
-      {"tensara_1", 4096, 4096},
-      {"tensara_2", 6144, 4096},
-      {"tensara_3", 4096, 7168},
-      {"tensara_4", 4096, 8192},
-      {"tensara_5", 8192, 8192},
+      {"tensara_1", "scale_tensara_1", 4096, 4096},
+      {"tensara_2", "scale_tensara_2", 6144, 4096},
+      {"tensara_3", "scale_tensara_3", 4096, 7168},
+      {"tensara_4", "scale_tensara_4", 4096, 8192},
+      {"tensara_5", "scale_tensara_5", 8192, 8192},
   };
 
   const struct {
@@ -761,6 +762,9 @@ static int run_tests(bool skip_cpu_verify) {
     if (skip_cpu_verify) {
       for (const auto& tt : tensara_tests) {
         run_sized("tensara", tt.name, tt.rows, tt.cols);
+      }
+      for (const auto& tt : tensara_tests) {
+        run_scaling(tt.scale_name, tt.rows, tt.cols);
       }
       for (const auto& st : shape_tests) {
         run_sized("shape", st.name, st.rows, st.cols);

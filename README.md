@@ -25,14 +25,15 @@ Current problem files:
 - `P3_RELU.cu`: elementwise ReLU over a row-major matrix.
 - `P4_MVM.cu`: matrix-vector multiplication over a row-major matrix.
 - `P5_LEAKY_RELU.cu`: elementwise Leaky ReLU over a row-major matrix.
+- `P6_AVG_POOL_1D.cu`: 1D average pooling over a vector.
 
 Detailed correctness and benchmark notes live next to each problem:
 
 - [P1_1D_CONVOLUTIONS_RESULTS.md](P1_1D_CONVOLUTIONS_RESULTS.md)
 - [P3_RESULT_RESULTS.md](P3_RESULT_RESULTS.md)
 - [P4_MVM_RESULTS.md](P4_MVM_RESULTS.md)
-- [P4_MVM_OPTIMIZATION_NOTES.md](P4_MVM_OPTIMIZATION_NOTES.md)
 - [P5_LEAKY_RELU_RESULTS.md](P5_LEAKY_RELU_RESULTS.md)
+- [P6_AVG_POOL_1D_RESULTS.md](P6_AVG_POOL_1D_RESULTS.md)
 
 ## Harness Pattern
 
@@ -74,24 +75,28 @@ shapes are promising, and which benchmark rows look noisy or suspicious.
 ## Current Snapshot
 
 The latest saved logs cover CPU-backed and skip-CPU runs for P1, P3, P4,
-and P5.
+P5, and P6.
 
 - `P1_1D_CONVOLUTIONS.cu`
   - `bstride_c` is the strongest current heavy-run kernel.
-  - It wins 59 of 66 comparable skip-CPU configurations.
-  - Best large-filter row: `web_2` uses `bstride_c = 1.135 ms`.
+  - It wins 60 of 66 comparable skip-CPU configurations.
+  - Best Tensara sweep row: `tensara_1` uses `bstride_c = 0.483 ms`.
 - `P3_RELU.cu`
   - `float4` is correct on odd shapes and scalar tail cases.
-  - It wins 78 of 83 comparable skip-CPU configurations.
-  - Best Tensara-size row: `8192 x 8192` uses `float4 = 2.983 ms`.
+  - It wins 178 of 183 comparable skip-CPU configurations.
+  - Best Tensara sweep row: `4096 x 4096` uses `float4 = 0.750 ms`.
 - `P4_MVM.cu`
-  - `warp` is the strongest current matrix-vector kernel.
-  - It wins 65 of 80 comparable skip-CPU configurations.
-  - Best Tensara-size row: `4096 x 4096` uses `warp = 0.365 ms`.
+  - `warp_per_row` is the strongest current matrix-vector kernel.
+  - It wins 132 of 180 comparable skip-CPU configurations.
+  - Best Tensara sweep row: `4096 x 4096` uses `warp_per_row = 0.362 ms`.
 - `P5_LEAKY_RELU.cu`
   - `float4` and `basic` pass the expanded CPU-backed checks.
-  - `float4` wins all 8 Tensara rows in the latest skip-CPU run.
-  - Best Tensara row: `4096 x 4096` uses `float4 = 0.751 ms`.
+  - `float4` wins 240 of 245 comparable skip-CPU configurations.
+  - Best Tensara sweep row: `4096 x 4096` uses `float4 = 0.751 ms`.
+- `P6_AVG_POOL_1D.cu`
+  - `basic_ldg` is the strongest current average-pooling kernel overall.
+  - It wins 104 of 140 comparable skip-CPU configurations.
+  - Best Tensara sweep row: `tensara_1` uses `basic_ldg = 0.062 ms`.
 
 ## Local Benchmarking Notes
 

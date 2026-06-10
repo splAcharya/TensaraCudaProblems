@@ -769,14 +769,15 @@ static int run_tests(bool skip_cpu_verify) {
 
   const struct {
     const char* name;
+    const char* scale_name;
     size_t m;
     size_t k;
   } tensara_tests[] = {
-      {"tensara_1", 4096, 4096},
-      {"tensara_2", 6144, 4096},
-      {"tensara_3", 7168, 4096},
-      {"tensara_4", 8192, 4096},
-      {"tensara_5", 9216, 4096},
+      {"tensara_1", "scale_tensara_1", 4096, 4096},
+      {"tensara_2", "scale_tensara_2", 6144, 4096},
+      {"tensara_3", "scale_tensara_3", 7168, 4096},
+      {"tensara_4", "scale_tensara_4", 8192, 4096},
+      {"tensara_5", "scale_tensara_5", 9216, 4096},
   };
 
   const struct {
@@ -949,6 +950,9 @@ static int run_tests(bool skip_cpu_verify) {
     if (skip_cpu_verify) {
       for (const auto& tt : tensara_tests) {
         run_sized("tensara", tt.name, tt.m, tt.k);
+      }
+      for (const auto& tt : tensara_tests) {
+        run_scaling(tt.scale_name, tt.m, tt.k);
       }
       for (const auto& st : shape_tests) {
         run_sized("shape", st.name, st.m, st.k);

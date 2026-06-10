@@ -4,371 +4,371 @@ GPU kernel implemented: yes
 
 group   name              kernel                 H       H_out       K       S       P   block    grid    cpu    gpu    total_ms   kernel_ms
 --------------------------------------------------------------------------------------------------------------------------------------------
-small   pad_stride_1      basic                  5           5       3       1       1     256      64   PASS   PASS       3.933       0.005
-small   stride_2          basic                  6           3       2       2       0     256      64   PASS   PASS       0.582       0.005
-small   wide_pad          basic                  4           5       4       1       2     256      64   PASS   PASS       0.651       0.005
-small   kernel_1          basic                  4           4       1       1       0     256      64   PASS   PASS       0.568       0.005
-small   pad_stride_2      basic                  3           3       3       2       2     256      64   PASS   PASS       0.558       0.007
-small   stride_gap        basic                  7           2       2       3       0     256      64   PASS   PASS       0.573       0.006
-small   pad_zero_windows  basic                  1           6       2       1       3     256      64   PASS   PASS       0.659       0.006
+small   pad_stride_1      basic                  5           5       3       1       1     256      64   PASS   PASS      16.110       0.007
+small   stride_2          basic                  6           3       2       2       0     256      64   PASS   PASS       0.556       0.006
+small   wide_pad          basic                  4           5       4       1       2     256      64   PASS   PASS       0.515       0.006
+small   kernel_1          basic                  4           4       1       1       0     256      64   PASS   PASS       0.809       0.005
+small   pad_stride_2      basic                  3           3       3       2       2     256      64   PASS   PASS       0.729       0.005
+small   stride_gap        basic                  7           2       2       3       0     256      64   PASS   PASS       0.563       0.005
+small   pad_zero_windows  basic                  1           6       2       1       3     256      64   PASS   PASS       0.541       0.005
 small   zero_output       basic                  2           0       5       1       0     256      64   PASS   PASS       0.000       0.000
-medium  sample            basic                 16           8       3       2       1     256      64    REF   PASS       0.494       0.005
-medium  medium_1          basic               4096        1024       7       4       3     256      64    REF   PASS       0.519       0.006
-medium  medium_2          basic              65536       32768       3       2       1     256      64    REF   PASS       0.587       0.007
-medium  medium_3          basic             262144       87382       5       3       2     256      64    REF   PASS       1.158       0.012
-large   large_1           basic            1048576      262144       7       4       3     256      64    REF   PASS       1.906       0.037
-large   large_2           basic            1048583      349528       5       3       2     256      64    REF   PASS       2.435       0.040
-scale   scale_tiny        basic                 33          33       3       1       1      64       8    REF   PASS       0.958       0.005
-scale   scale_tiny        basic                 33          33       3       1       1      64      16    REF   PASS       0.518       0.006
-scale   scale_tiny        basic                 33          33       3       1       1      64      32    REF   PASS       0.515       0.005
-scale   scale_tiny        basic                 33          33       3       1       1      64      64    REF   PASS       0.464       0.005
-scale   scale_tiny        basic                 33          33       3       1       1      64     128    REF   PASS       0.613       0.007
-scale   scale_tiny        basic                 33          33       3       1       1     128       8    REF   PASS       0.900       0.015
-scale   scale_tiny        basic                 33          33       3       1       1     128      16    REF   PASS       0.687       0.006
-scale   scale_tiny        basic                 33          33       3       1       1     128      32    REF   PASS       0.481       0.006
-scale   scale_tiny        basic                 33          33       3       1       1     128      64    REF   PASS       0.519       0.006
-scale   scale_tiny        basic                 33          33       3       1       1     128     128    REF   PASS       0.484       0.006
-scale   scale_tiny        basic                 33          33       3       1       1     256       8    REF   PASS       0.478       0.006
-scale   scale_tiny        basic                 33          33       3       1       1     256      16    REF   PASS       0.480       0.006
-scale   scale_tiny        basic                 33          33       3       1       1     256      32    REF   PASS       0.486       0.006
-scale   scale_tiny        basic                 33          33       3       1       1     256      64    REF   PASS       0.466       0.006
-scale   scale_tiny        basic                 33          33       3       1       1     256     128    REF   PASS       0.505       0.006
-scale   scale_tiny        basic                 33          33       3       1       1     512       8    REF   PASS       0.563       0.005
-scale   scale_tiny        basic                 33          33       3       1       1     512      16    REF   PASS       0.516       0.005
-scale   scale_tiny        basic                 33          33       3       1       1     512      32    REF   PASS       0.503       0.006
-scale   scale_tiny        basic                 33          33       3       1       1     512      64    REF   PASS       0.623       0.005
-scale   scale_tiny        basic                 33          33       3       1       1     512     128    REF   PASS       0.531       0.006
-scale   scale_stride_gap  basic                513         103       4       5       2      64       8    REF   PASS       0.710       0.006
-scale   scale_stride_gap  basic                513         103       4       5       2      64      16    REF   PASS       0.749       0.006
-scale   scale_stride_gap  basic                513         103       4       5       2      64      32    REF   PASS       0.485       0.007
-scale   scale_stride_gap  basic                513         103       4       5       2      64      64    REF   PASS       0.461       0.006
-scale   scale_stride_gap  basic                513         103       4       5       2      64     128    REF   PASS       0.458       0.006
-scale   scale_stride_gap  basic                513         103       4       5       2     128       8    REF   PASS       0.446       0.006
-scale   scale_stride_gap  basic                513         103       4       5       2     128      16    REF   PASS       0.466       0.006
-scale   scale_stride_gap  basic                513         103       4       5       2     128      32    REF   PASS       0.433       0.006
-scale   scale_stride_gap  basic                513         103       4       5       2     128      64    REF   PASS       0.472       0.006
-scale   scale_stride_gap  basic                513         103       4       5       2     128     128    REF   PASS       0.478       0.006
-scale   scale_stride_gap  basic                513         103       4       5       2     256       8    REF   PASS       0.515       0.006
-scale   scale_stride_gap  basic                513         103       4       5       2     256      16    REF   PASS       0.462       0.006
-scale   scale_stride_gap  basic                513         103       4       5       2     256      32    REF   PASS       0.490       0.006
-scale   scale_stride_gap  basic                513         103       4       5       2     256      64    REF   PASS       0.558       0.005
-scale   scale_stride_gap  basic                513         103       4       5       2     256     128    REF   PASS       0.498       0.006
-scale   scale_stride_gap  basic                513         103       4       5       2     512       8    REF   PASS       0.437       0.006
-scale   scale_stride_gap  basic                513         103       4       5       2     512      16    REF   PASS       0.519       0.008
-scale   scale_stride_gap  basic                513         103       4       5       2     512      32    REF   PASS       0.465       0.006
-scale   scale_stride_gap  basic                513         103       4       5       2     512      64    REF   PASS       0.515       0.006
-scale   scale_stride_gap  basic                513         103       4       5       2     512     128    REF   PASS       0.497       0.006
-scale   scale_tail        basic               4097        1025       7       4       3      64       8    REF   PASS       0.526       0.007
-scale   scale_tail        basic               4097        1025       7       4       3      64      16    REF   PASS       0.464       0.006
-scale   scale_tail        basic               4097        1025       7       4       3      64      32    REF   PASS       0.465       0.006
-scale   scale_tail        basic               4097        1025       7       4       3      64      64    REF   PASS       0.465       0.005
-scale   scale_tail        basic               4097        1025       7       4       3      64     128    REF   PASS       0.441       0.006
-scale   scale_tail        basic               4097        1025       7       4       3     128       8    REF   PASS       0.467       0.006
-scale   scale_tail        basic               4097        1025       7       4       3     128      16    REF   PASS       0.509       0.007
-scale   scale_tail        basic               4097        1025       7       4       3     128      32    REF   PASS       0.639       0.005
-scale   scale_tail        basic               4097        1025       7       4       3     128      64    REF   PASS       0.499       0.006
-scale   scale_tail        basic               4097        1025       7       4       3     128     128    REF   PASS       0.496       0.006
-scale   scale_tail        basic               4097        1025       7       4       3     256       8    REF   PASS       0.473       0.007
-scale   scale_tail        basic               4097        1025       7       4       3     256      16    REF   PASS       0.552       0.006
-scale   scale_tail        basic               4097        1025       7       4       3     256      32    REF   PASS       0.491       0.022
-scale   scale_tail        basic               4097        1025       7       4       3     256      64    REF   PASS       0.484       0.006
-scale   scale_tail        basic               4097        1025       7       4       3     256     128    REF   PASS       0.533       0.007
-scale   scale_tail        basic               4097        1025       7       4       3     512       8    REF   PASS       0.501       0.006
-scale   scale_tail        basic               4097        1025       7       4       3     512      16    REF   PASS       0.562       0.005
+medium  sample            basic                 16           8       3       2       1     256      64    REF   PASS       0.656       0.006
+medium  medium_1          basic               4096        1024       7       4       3     256      64    REF   PASS       0.595       0.006
+medium  medium_2          basic              65536       32768       3       2       1     256      64    REF   PASS       0.646       0.008
+medium  medium_3          basic             262144       87382       5       3       2     256      64    REF   PASS       0.842       0.013
+large   large_1           basic            1048576      262144       7       4       3     256      64    REF   PASS       2.039       0.036
+large   large_2           basic            1048583      349528       5       3       2     256      64    REF   PASS       4.156       0.040
+scale   scale_tiny        basic                 33          33       3       1       1      64       8    REF   PASS       0.835       0.006
+scale   scale_tiny        basic                 33          33       3       1       1      64      16    REF   PASS       0.516       0.006
+scale   scale_tiny        basic                 33          33       3       1       1      64      32    REF   PASS       0.474       0.006
+scale   scale_tiny        basic                 33          33       3       1       1      64      64    REF   PASS       0.534       0.005
+scale   scale_tiny        basic                 33          33       3       1       1      64     128    REF   PASS       0.521       0.006
+scale   scale_tiny        basic                 33          33       3       1       1     128       8    REF   PASS       0.500       0.006
+scale   scale_tiny        basic                 33          33       3       1       1     128      16    REF   PASS       0.455       0.006
+scale   scale_tiny        basic                 33          33       3       1       1     128      32    REF   PASS       0.446       0.006
+scale   scale_tiny        basic                 33          33       3       1       1     128      64    REF   PASS       0.427       0.007
+scale   scale_tiny        basic                 33          33       3       1       1     128     128    REF   PASS       0.446       0.006
+scale   scale_tiny        basic                 33          33       3       1       1     256       8    REF   PASS       0.444       0.006
+scale   scale_tiny        basic                 33          33       3       1       1     256      16    REF   PASS       0.479       0.006
+scale   scale_tiny        basic                 33          33       3       1       1     256      32    REF   PASS       0.432       0.006
+scale   scale_tiny        basic                 33          33       3       1       1     256      64    REF   PASS       0.421       0.007
+scale   scale_tiny        basic                 33          33       3       1       1     256     128    REF   PASS       0.462       0.007
+scale   scale_tiny        basic                 33          33       3       1       1     512       8    REF   PASS       0.446       0.005
+scale   scale_tiny        basic                 33          33       3       1       1     512      16    REF   PASS       0.426       0.006
+scale   scale_tiny        basic                 33          33       3       1       1     512      32    REF   PASS       0.437       0.005
+scale   scale_tiny        basic                 33          33       3       1       1     512      64    REF   PASS       0.693       0.006
+scale   scale_tiny        basic                 33          33       3       1       1     512     128    REF   PASS       0.452       0.005
+scale   scale_stride_gap  basic                513         103       4       5       2      64       8    REF   PASS       0.790       0.006
+scale   scale_stride_gap  basic                513         103       4       5       2      64      16    REF   PASS       0.437       0.006
+scale   scale_stride_gap  basic                513         103       4       5       2      64      32    REF   PASS       0.429       0.005
+scale   scale_stride_gap  basic                513         103       4       5       2      64      64    REF   PASS       0.431       0.005
+scale   scale_stride_gap  basic                513         103       4       5       2      64     128    REF   PASS       0.416       0.006
+scale   scale_stride_gap  basic                513         103       4       5       2     128       8    REF   PASS       0.412       0.005
+scale   scale_stride_gap  basic                513         103       4       5       2     128      16    REF   PASS       0.752       0.006
+scale   scale_stride_gap  basic                513         103       4       5       2     128      32    REF   PASS       0.854       0.005
+scale   scale_stride_gap  basic                513         103       4       5       2     128      64    REF   PASS       0.889       0.008
+scale   scale_stride_gap  basic                513         103       4       5       2     128     128    REF   PASS       0.503       0.007
+scale   scale_stride_gap  basic                513         103       4       5       2     256       8    REF   PASS       0.712       0.009
+scale   scale_stride_gap  basic                513         103       4       5       2     256      16    REF   PASS       1.059       0.015
+scale   scale_stride_gap  basic                513         103       4       5       2     256      32    REF   PASS       0.592       0.007
+scale   scale_stride_gap  basic                513         103       4       5       2     256      64    REF   PASS       0.936       0.009
+scale   scale_stride_gap  basic                513         103       4       5       2     256     128    REF   PASS       0.485       0.006
+scale   scale_stride_gap  basic                513         103       4       5       2     512       8    REF   PASS       0.461       0.006
+scale   scale_stride_gap  basic                513         103       4       5       2     512      16    REF   PASS       0.475       0.005
+scale   scale_stride_gap  basic                513         103       4       5       2     512      32    REF   PASS       0.469       0.005
+scale   scale_stride_gap  basic                513         103       4       5       2     512      64    REF   PASS       0.445       0.006
+scale   scale_stride_gap  basic                513         103       4       5       2     512     128    REF   PASS       0.444       0.006
+scale   scale_tail        basic               4097        1025       7       4       3      64       8    REF   PASS       0.487       0.007
+scale   scale_tail        basic               4097        1025       7       4       3      64      16    REF   PASS       0.451       0.006
+scale   scale_tail        basic               4097        1025       7       4       3      64      32    REF   PASS       0.468       0.005
+scale   scale_tail        basic               4097        1025       7       4       3      64      64    REF   PASS       0.440       0.006
+scale   scale_tail        basic               4097        1025       7       4       3      64     128    REF   PASS       0.466       0.006
+scale   scale_tail        basic               4097        1025       7       4       3     128       8    REF   PASS       0.487       0.006
+scale   scale_tail        basic               4097        1025       7       4       3     128      16    REF   PASS       0.748       0.006
+scale   scale_tail        basic               4097        1025       7       4       3     128      32    REF   PASS       0.482       0.006
+scale   scale_tail        basic               4097        1025       7       4       3     128      64    REF   PASS       0.470       0.006
+scale   scale_tail        basic               4097        1025       7       4       3     128     128    REF   PASS       0.476       0.006
+scale   scale_tail        basic               4097        1025       7       4       3     256       8    REF   PASS       0.467       0.006
+scale   scale_tail        basic               4097        1025       7       4       3     256      16    REF   PASS       0.565       0.006
+scale   scale_tail        basic               4097        1025       7       4       3     256      32    REF   PASS       0.710       0.006
+scale   scale_tail        basic               4097        1025       7       4       3     256      64    REF   PASS       0.578       0.006
+scale   scale_tail        basic               4097        1025       7       4       3     256     128    REF   PASS       0.483       0.006
+scale   scale_tail        basic               4097        1025       7       4       3     512       8    REF   PASS       0.521       0.005
+scale   scale_tail        basic               4097        1025       7       4       3     512      16    REF   PASS       0.503       0.006
 scale   scale_tail        basic               4097        1025       7       4       3     512      32    REF   PASS       0.493       0.006
-scale   scale_tail        basic               4097        1025       7       4       3     512      64    REF   PASS       0.570       0.019
-scale   scale_tail        basic               4097        1025       7       4       3     512     128    REF   PASS       0.496       0.006
-scale   scale_kernel_1    basic               1024        1024       1       1       0      64       8    REF   PASS       0.604       0.006
-scale   scale_kernel_1    basic               1024        1024       1       1       0      64      16    REF   PASS       0.487       0.008
-scale   scale_kernel_1    basic               1024        1024       1       1       0      64      32    REF   PASS       0.498       0.006
-scale   scale_kernel_1    basic               1024        1024       1       1       0      64      64    REF   PASS       0.523       0.006
-scale   scale_kernel_1    basic               1024        1024       1       1       0      64     128    REF   PASS       0.546       0.005
-scale   scale_kernel_1    basic               1024        1024       1       1       0     128       8    REF   PASS       0.537       0.006
-scale   scale_kernel_1    basic               1024        1024       1       1       0     128      16    REF   PASS       0.447       0.006
-scale   scale_kernel_1    basic               1024        1024       1       1       0     128      32    REF   PASS       0.510       0.006
-scale   scale_kernel_1    basic               1024        1024       1       1       0     128      64    REF   PASS       0.451       0.006
-scale   scale_kernel_1    basic               1024        1024       1       1       0     128     128    REF   PASS       0.448       0.006
-scale   scale_kernel_1    basic               1024        1024       1       1       0     256       8    REF   PASS       0.466       0.006
-scale   scale_kernel_1    basic               1024        1024       1       1       0     256      16    REF   PASS       0.497       0.006
-scale   scale_kernel_1    basic               1024        1024       1       1       0     256      32    REF   PASS       0.502       0.022
-scale   scale_kernel_1    basic               1024        1024       1       1       0     256      64    REF   PASS       0.537       0.006
-scale   scale_kernel_1    basic               1024        1024       1       1       0     256     128    REF   PASS       0.534       0.006
-scale   scale_kernel_1    basic               1024        1024       1       1       0     512       8    REF   PASS       0.465       0.006
-scale   scale_kernel_1    basic               1024        1024       1       1       0     512      16    REF   PASS       0.485       0.006
-scale   scale_kernel_1    basic               1024        1024       1       1       0     512      32    REF   PASS       0.451       0.006
-scale   scale_kernel_1    basic               1024        1024       1       1       0     512      64    REF   PASS       0.457       0.006
-scale   scale_kernel_1    basic               1024        1024       1       1       0     512     128    REF   PASS       0.527       0.007
-small   pad_stride_1      basic_ldg              5           5       3       1       1     256      64   PASS   PASS       0.714       0.007
-small   stride_2          basic_ldg              6           3       2       2       0     256      64   PASS   PASS       0.469       0.006
-small   wide_pad          basic_ldg              4           5       4       1       2     256      64   PASS   PASS       0.487       0.006
-small   kernel_1          basic_ldg              4           4       1       1       0     256      64   PASS   PASS       0.523       0.005
-small   pad_stride_2      basic_ldg              3           3       3       2       2     256      64   PASS   PASS       0.478       0.005
-small   stride_gap        basic_ldg              7           2       2       3       0     256      64   PASS   PASS       0.516       0.005
-small   pad_zero_windows  basic_ldg              1           6       2       1       3     256      64   PASS   PASS       0.456       0.006
+scale   scale_tail        basic               4097        1025       7       4       3     512      64    REF   PASS       0.460       0.007
+scale   scale_tail        basic               4097        1025       7       4       3     512     128    REF   PASS       0.454       0.007
+scale   scale_kernel_1    basic               1024        1024       1       1       0      64       8    REF   PASS       0.483       0.022
+scale   scale_kernel_1    basic               1024        1024       1       1       0      64      16    REF   PASS       0.443       0.006
+scale   scale_kernel_1    basic               1024        1024       1       1       0      64      32    REF   PASS       0.465       0.006
+scale   scale_kernel_1    basic               1024        1024       1       1       0      64      64    REF   PASS       0.444       0.006
+scale   scale_kernel_1    basic               1024        1024       1       1       0      64     128    REF   PASS       0.420       0.006
+scale   scale_kernel_1    basic               1024        1024       1       1       0     128       8    REF   PASS       0.449       0.006
+scale   scale_kernel_1    basic               1024        1024       1       1       0     128      16    REF   PASS       0.437       0.005
+scale   scale_kernel_1    basic               1024        1024       1       1       0     128      32    REF   PASS       0.475       0.006
+scale   scale_kernel_1    basic               1024        1024       1       1       0     128      64    REF   PASS       0.477       0.006
+scale   scale_kernel_1    basic               1024        1024       1       1       0     128     128    REF   PASS       0.438       0.005
+scale   scale_kernel_1    basic               1024        1024       1       1       0     256       8    REF   PASS       0.482       0.006
+scale   scale_kernel_1    basic               1024        1024       1       1       0     256      16    REF   PASS       0.503       0.005
+scale   scale_kernel_1    basic               1024        1024       1       1       0     256      32    REF   PASS       0.458       0.005
+scale   scale_kernel_1    basic               1024        1024       1       1       0     256      64    REF   PASS       0.486       0.006
+scale   scale_kernel_1    basic               1024        1024       1       1       0     256     128    REF   PASS       0.469       0.006
+scale   scale_kernel_1    basic               1024        1024       1       1       0     512       8    REF   PASS       0.497       0.006
+scale   scale_kernel_1    basic               1024        1024       1       1       0     512      16    REF   PASS       0.444       0.005
+scale   scale_kernel_1    basic               1024        1024       1       1       0     512      32    REF   PASS       0.491       0.006
+scale   scale_kernel_1    basic               1024        1024       1       1       0     512      64    REF   PASS       0.437       0.006
+scale   scale_kernel_1    basic               1024        1024       1       1       0     512     128    REF   PASS       0.493       0.007
+small   pad_stride_1      basic_ldg              5           5       3       1       1     256      64   PASS   PASS       0.534       0.006
+small   stride_2          basic_ldg              6           3       2       2       0     256      64   PASS   PASS       0.602       0.006
+small   wide_pad          basic_ldg              4           5       4       1       2     256      64   PASS   PASS       0.490       0.007
+small   kernel_1          basic_ldg              4           4       1       1       0     256      64   PASS   PASS       0.769       0.006
+small   pad_stride_2      basic_ldg              3           3       3       2       2     256      64   PASS   PASS       0.464       0.006
+small   stride_gap        basic_ldg              7           2       2       3       0     256      64   PASS   PASS       0.494       0.007
+small   pad_zero_windows  basic_ldg              1           6       2       1       3     256      64   PASS   PASS       0.548       0.007
 small   zero_output       basic_ldg              2           0       5       1       0     256      64   PASS   PASS       0.000       0.000
-medium  sample            basic_ldg             16           8       3       2       1     256      64    REF   PASS       0.521       0.005
-medium  medium_1          basic_ldg           4096        1024       7       4       3     256      64    REF   PASS       0.517       0.006
-medium  medium_2          basic_ldg          65536       32768       3       2       1     256      64    REF   PASS       0.661       0.007
-medium  medium_3          basic_ldg         262144       87382       5       3       2     256      64    REF   PASS       0.735       0.011
-large   large_1           basic_ldg        1048576      262144       7       4       3     256      64    REF   PASS       1.820       0.038
-large   large_2           basic_ldg        1048583      349528       5       3       2     256      64    REF   PASS       2.046       0.039
-scale   scale_tiny        basic_ldg             33          33       3       1       1      64       8    REF   PASS       0.980       0.006
-scale   scale_tiny        basic_ldg             33          33       3       1       1      64      16    REF   PASS       0.545       0.006
-scale   scale_tiny        basic_ldg             33          33       3       1       1      64      32    REF   PASS       0.506       0.006
-scale   scale_tiny        basic_ldg             33          33       3       1       1      64      64    REF   PASS       0.455       0.006
-scale   scale_tiny        basic_ldg             33          33       3       1       1      64     128    REF   PASS       0.719       0.006
-scale   scale_tiny        basic_ldg             33          33       3       1       1     128       8    REF   PASS       1.149       0.006
-scale   scale_tiny        basic_ldg             33          33       3       1       1     128      16    REF   PASS       0.842       0.005
-scale   scale_tiny        basic_ldg             33          33       3       1       1     128      32    REF   PASS       0.495       0.007
-scale   scale_tiny        basic_ldg             33          33       3       1       1     128      64    REF   PASS       0.470       0.006
-scale   scale_tiny        basic_ldg             33          33       3       1       1     128     128    REF   PASS       0.444       0.006
-scale   scale_tiny        basic_ldg             33          33       3       1       1     256       8    REF   PASS       0.675       0.005
-scale   scale_tiny        basic_ldg             33          33       3       1       1     256      16    REF   PASS       0.465       0.006
-scale   scale_tiny        basic_ldg             33          33       3       1       1     256      32    REF   PASS       0.421       0.006
-scale   scale_tiny        basic_ldg             33          33       3       1       1     256      64    REF   PASS       0.693       0.006
-scale   scale_tiny        basic_ldg             33          33       3       1       1     256     128    REF   PASS       0.498       0.006
-scale   scale_tiny        basic_ldg             33          33       3       1       1     512       8    REF   PASS       0.557       0.006
-scale   scale_tiny        basic_ldg             33          33       3       1       1     512      16    REF   PASS       0.488       0.005
-scale   scale_tiny        basic_ldg             33          33       3       1       1     512      32    REF   PASS       0.511       0.005
-scale   scale_tiny        basic_ldg             33          33       3       1       1     512      64    REF   PASS       0.453       0.006
-scale   scale_tiny        basic_ldg             33          33       3       1       1     512     128    REF   PASS       0.479       0.006
-scale   scale_stride_gap  basic_ldg            513         103       4       5       2      64       8    REF   PASS       0.451       0.006
-scale   scale_stride_gap  basic_ldg            513         103       4       5       2      64      16    REF   PASS       0.479       0.005
-scale   scale_stride_gap  basic_ldg            513         103       4       5       2      64      32    REF   PASS       0.603       0.007
-scale   scale_stride_gap  basic_ldg            513         103       4       5       2      64      64    REF   PASS       0.490       0.020
-scale   scale_stride_gap  basic_ldg            513         103       4       5       2      64     128    REF   PASS       0.466       0.006
-scale   scale_stride_gap  basic_ldg            513         103       4       5       2     128       8    REF   PASS       0.442       0.006
-scale   scale_stride_gap  basic_ldg            513         103       4       5       2     128      16    REF   PASS       0.444       0.006
-scale   scale_stride_gap  basic_ldg            513         103       4       5       2     128      32    REF   PASS       0.452       0.006
-scale   scale_stride_gap  basic_ldg            513         103       4       5       2     128      64    REF   PASS       0.466       0.006
-scale   scale_stride_gap  basic_ldg            513         103       4       5       2     128     128    REF   PASS       0.490       0.006
-scale   scale_stride_gap  basic_ldg            513         103       4       5       2     256       8    REF   PASS       0.596       0.006
-scale   scale_stride_gap  basic_ldg            513         103       4       5       2     256      16    REF   PASS       0.670       0.008
-scale   scale_stride_gap  basic_ldg            513         103       4       5       2     256      32    REF   PASS       0.649       0.005
-scale   scale_stride_gap  basic_ldg            513         103       4       5       2     256      64    REF   PASS       0.503       0.006
-scale   scale_stride_gap  basic_ldg            513         103       4       5       2     256     128    REF   PASS       0.548       0.005
-scale   scale_stride_gap  basic_ldg            513         103       4       5       2     512       8    REF   PASS       0.467       0.006
-scale   scale_stride_gap  basic_ldg            513         103       4       5       2     512      16    REF   PASS       0.489       0.006
-scale   scale_stride_gap  basic_ldg            513         103       4       5       2     512      32    REF   PASS       0.438       0.006
-scale   scale_stride_gap  basic_ldg            513         103       4       5       2     512      64    REF   PASS       0.525       0.009
-scale   scale_stride_gap  basic_ldg            513         103       4       5       2     512     128    REF   PASS       0.489       0.007
-scale   scale_tail        basic_ldg           4097        1025       7       4       3      64       8    REF   PASS       0.582       0.007
-scale   scale_tail        basic_ldg           4097        1025       7       4       3      64      16    REF   PASS       0.572       0.006
-scale   scale_tail        basic_ldg           4097        1025       7       4       3      64      32    REF   PASS       0.573       0.006
-scale   scale_tail        basic_ldg           4097        1025       7       4       3      64      64    REF   PASS       0.548       0.005
-scale   scale_tail        basic_ldg           4097        1025       7       4       3      64     128    REF   PASS       0.590       0.007
-scale   scale_tail        basic_ldg           4097        1025       7       4       3     128       8    REF   PASS       0.534       0.006
-scale   scale_tail        basic_ldg           4097        1025       7       4       3     128      16    REF   PASS       0.769       0.005
-scale   scale_tail        basic_ldg           4097        1025       7       4       3     128      32    REF   PASS       0.548       0.005
-scale   scale_tail        basic_ldg           4097        1025       7       4       3     128      64    REF   PASS       0.543       0.006
-scale   scale_tail        basic_ldg           4097        1025       7       4       3     128     128    REF   PASS       0.487       0.006
-scale   scale_tail        basic_ldg           4097        1025       7       4       3     256       8    REF   PASS       0.512       0.005
-scale   scale_tail        basic_ldg           4097        1025       7       4       3     256      16    REF   PASS       0.482       0.006
-scale   scale_tail        basic_ldg           4097        1025       7       4       3     256      32    REF   PASS       0.533       0.005
-scale   scale_tail        basic_ldg           4097        1025       7       4       3     256      64    REF   PASS       0.471       0.006
-scale   scale_tail        basic_ldg           4097        1025       7       4       3     256     128    REF   PASS       0.602       0.007
-scale   scale_tail        basic_ldg           4097        1025       7       4       3     512       8    REF   PASS       0.518       0.006
-scale   scale_tail        basic_ldg           4097        1025       7       4       3     512      16    REF   PASS       0.552       0.006
-scale   scale_tail        basic_ldg           4097        1025       7       4       3     512      32    REF   PASS       0.467       0.006
-scale   scale_tail        basic_ldg           4097        1025       7       4       3     512      64    REF   PASS       0.543       0.014
-scale   scale_tail        basic_ldg           4097        1025       7       4       3     512     128    REF   PASS       0.481       0.006
-scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0      64       8    REF   PASS       0.486       0.007
-scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0      64      16    REF   PASS       0.471       0.006
-scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0      64      32    REF   PASS       0.473       0.006
-scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0      64      64    REF   PASS       0.565       0.006
-scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0      64     128    REF   PASS       0.482       0.008
-scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     128       8    REF   PASS       0.464       0.005
-scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     128      16    REF   PASS       0.456       0.005
-scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     128      32    REF   PASS       0.777       0.006
-scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     128      64    REF   PASS       0.473       0.006
-scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     128     128    REF   PASS       0.674       0.006
-scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     256       8    REF   PASS       0.469       0.008
-scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     256      16    REF   PASS       0.515       0.006
-scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     256      32    REF   PASS       0.548       0.006
-scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     256      64    REF   PASS       0.541       0.006
-scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     256     128    REF   PASS       0.460       0.007
-scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     512       8    REF   PASS       0.461       0.006
-scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     512      16    REF   PASS       0.456       0.006
-scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     512      32    REF   PASS       0.456       0.006
-scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     512      64    REF   PASS       0.447       0.007
-scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     512     128    REF   PASS       0.538       0.007
-small   pad_stride_1      coop_shared            5           5       3       1       1     256      64   PASS   PASS       0.561       0.006
-small   stride_2          coop_shared            6           3       2       2       0     256      64   PASS   PASS       0.517       0.006
-small   wide_pad          coop_shared            4           5       4       1       2     256      64   PASS   PASS       0.462       0.006
-small   kernel_1          coop_shared            4           4       1       1       0     256      64   PASS   PASS       0.543       0.007
-small   pad_stride_2      coop_shared            3           3       3       2       2     256      64   PASS   PASS       0.509       0.005
-small   stride_gap        coop_shared            7           2       2       3       0     256      64   PASS   PASS       0.483       0.006
-small   pad_zero_windows  coop_shared            1           6       2       1       3     256      64   PASS   PASS       0.959       0.006
+medium  sample            basic_ldg             16           8       3       2       1     256      64    REF   PASS       0.494       0.006
+medium  medium_1          basic_ldg           4096        1024       7       4       3     256      64    REF   PASS       0.545       0.008
+medium  medium_2          basic_ldg          65536       32768       3       2       1     256      64    REF   PASS       0.842       0.009
+medium  medium_3          basic_ldg         262144       87382       5       3       2     256      64    REF   PASS       0.843       0.011
+large   large_1           basic_ldg        1048576      262144       7       4       3     256      64    REF   PASS       1.508       0.037
+large   large_2           basic_ldg        1048583      349528       5       3       2     256      64    REF   PASS       1.616       0.038
+scale   scale_tiny        basic_ldg             33          33       3       1       1      64       8    REF   PASS       0.684       0.005
+scale   scale_tiny        basic_ldg             33          33       3       1       1      64      16    REF   PASS       0.531       0.007
+scale   scale_tiny        basic_ldg             33          33       3       1       1      64      32    REF   PASS       0.490       0.006
+scale   scale_tiny        basic_ldg             33          33       3       1       1      64      64    REF   PASS       0.471       0.006
+scale   scale_tiny        basic_ldg             33          33       3       1       1      64     128    REF   PASS       0.457       0.005
+scale   scale_tiny        basic_ldg             33          33       3       1       1     128       8    REF   PASS       0.493       0.007
+scale   scale_tiny        basic_ldg             33          33       3       1       1     128      16    REF   PASS       0.780       0.009
+scale   scale_tiny        basic_ldg             33          33       3       1       1     128      32    REF   PASS       0.668       0.007
+scale   scale_tiny        basic_ldg             33          33       3       1       1     128      64    REF   PASS       0.531       0.007
+scale   scale_tiny        basic_ldg             33          33       3       1       1     128     128    REF   PASS       0.667       0.008
+scale   scale_tiny        basic_ldg             33          33       3       1       1     256       8    REF   PASS       0.628       0.007
+scale   scale_tiny        basic_ldg             33          33       3       1       1     256      16    REF   PASS       0.466       0.006
+scale   scale_tiny        basic_ldg             33          33       3       1       1     256      32    REF   PASS       0.449       0.006
+scale   scale_tiny        basic_ldg             33          33       3       1       1     256      64    REF   PASS       0.447       0.006
+scale   scale_tiny        basic_ldg             33          33       3       1       1     256     128    REF   PASS       0.456       0.006
+scale   scale_tiny        basic_ldg             33          33       3       1       1     512       8    REF   PASS       0.437       0.006
+scale   scale_tiny        basic_ldg             33          33       3       1       1     512      16    REF   PASS       0.438       0.005
+scale   scale_tiny        basic_ldg             33          33       3       1       1     512      32    REF   PASS       0.450       0.006
+scale   scale_tiny        basic_ldg             33          33       3       1       1     512      64    REF   PASS       0.457       0.006
+scale   scale_tiny        basic_ldg             33          33       3       1       1     512     128    REF   PASS       0.452       0.005
+scale   scale_stride_gap  basic_ldg            513         103       4       5       2      64       8    REF   PASS       0.414       0.005
+scale   scale_stride_gap  basic_ldg            513         103       4       5       2      64      16    REF   PASS       0.469       0.005
+scale   scale_stride_gap  basic_ldg            513         103       4       5       2      64      32    REF   PASS       0.478       0.006
+scale   scale_stride_gap  basic_ldg            513         103       4       5       2      64      64    REF   PASS       0.443       0.006
+scale   scale_stride_gap  basic_ldg            513         103       4       5       2      64     128    REF   PASS       0.484       0.006
+scale   scale_stride_gap  basic_ldg            513         103       4       5       2     128       8    REF   PASS       0.477       0.006
+scale   scale_stride_gap  basic_ldg            513         103       4       5       2     128      16    REF   PASS       0.434       0.006
+scale   scale_stride_gap  basic_ldg            513         103       4       5       2     128      32    REF   PASS       0.436       0.006
+scale   scale_stride_gap  basic_ldg            513         103       4       5       2     128      64    REF   PASS       0.791       0.006
+scale   scale_stride_gap  basic_ldg            513         103       4       5       2     128     128    REF   PASS       0.430       0.006
+scale   scale_stride_gap  basic_ldg            513         103       4       5       2     256       8    REF   PASS       0.424       0.006
+scale   scale_stride_gap  basic_ldg            513         103       4       5       2     256      16    REF   PASS       0.497       0.006
+scale   scale_stride_gap  basic_ldg            513         103       4       5       2     256      32    REF   PASS       0.416       0.005
+scale   scale_stride_gap  basic_ldg            513         103       4       5       2     256      64    REF   PASS       0.454       0.006
+scale   scale_stride_gap  basic_ldg            513         103       4       5       2     256     128    REF   PASS       0.428       0.005
+scale   scale_stride_gap  basic_ldg            513         103       4       5       2     512       8    REF   PASS       0.440       0.006
+scale   scale_stride_gap  basic_ldg            513         103       4       5       2     512      16    REF   PASS       0.650       0.006
+scale   scale_stride_gap  basic_ldg            513         103       4       5       2     512      32    REF   PASS       0.435       0.006
+scale   scale_stride_gap  basic_ldg            513         103       4       5       2     512      64    REF   PASS       0.506       0.007
+scale   scale_stride_gap  basic_ldg            513         103       4       5       2     512     128    REF   PASS       0.533       0.006
+scale   scale_tail        basic_ldg           4097        1025       7       4       3      64       8    REF   PASS       0.513       0.007
+scale   scale_tail        basic_ldg           4097        1025       7       4       3      64      16    REF   PASS       0.454       0.006
+scale   scale_tail        basic_ldg           4097        1025       7       4       3      64      32    REF   PASS       0.460       0.005
+scale   scale_tail        basic_ldg           4097        1025       7       4       3      64      64    REF   PASS       0.440       0.005
+scale   scale_tail        basic_ldg           4097        1025       7       4       3      64     128    REF   PASS       0.475       0.006
+scale   scale_tail        basic_ldg           4097        1025       7       4       3     128       8    REF   PASS       0.449       0.006
+scale   scale_tail        basic_ldg           4097        1025       7       4       3     128      16    REF   PASS       0.443       0.006
+scale   scale_tail        basic_ldg           4097        1025       7       4       3     128      32    REF   PASS       0.437       0.005
+scale   scale_tail        basic_ldg           4097        1025       7       4       3     128      64    REF   PASS       0.420       0.006
+scale   scale_tail        basic_ldg           4097        1025       7       4       3     128     128    REF   PASS       0.426       0.006
+scale   scale_tail        basic_ldg           4097        1025       7       4       3     256       8    REF   PASS       0.461       0.006
+scale   scale_tail        basic_ldg           4097        1025       7       4       3     256      16    REF   PASS       0.433       0.005
+scale   scale_tail        basic_ldg           4097        1025       7       4       3     256      32    REF   PASS       0.456       0.006
+scale   scale_tail        basic_ldg           4097        1025       7       4       3     256      64    REF   PASS       0.436       0.006
+scale   scale_tail        basic_ldg           4097        1025       7       4       3     256     128    REF   PASS       0.528       0.007
+scale   scale_tail        basic_ldg           4097        1025       7       4       3     512       8    REF   PASS       0.473       0.007
+scale   scale_tail        basic_ldg           4097        1025       7       4       3     512      16    REF   PASS       0.449       0.006
+scale   scale_tail        basic_ldg           4097        1025       7       4       3     512      32    REF   PASS       0.436       0.006
+scale   scale_tail        basic_ldg           4097        1025       7       4       3     512      64    REF   PASS       0.457       0.006
+scale   scale_tail        basic_ldg           4097        1025       7       4       3     512     128    REF   PASS       0.450       0.006
+scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0      64       8    REF   PASS       0.441       0.006
+scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0      64      16    REF   PASS       0.434       0.005
+scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0      64      32    REF   PASS       0.587       0.006
+scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0      64      64    REF   PASS       0.442       0.006
+scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0      64     128    REF   PASS       0.423       0.006
+scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     128       8    REF   PASS       0.417       0.005
+scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     128      16    REF   PASS       0.424       0.007
+scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     128      32    REF   PASS       0.430       0.006
+scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     128      64    REF   PASS       0.470       0.006
+scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     128     128    REF   PASS       0.750       0.005
+scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     256       8    REF   PASS       0.847       0.007
+scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     256      16    REF   PASS       0.685       0.006
+scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     256      32    REF   PASS       0.686       0.007
+scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     256      64    REF   PASS       0.544       0.005
+scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     256     128    REF   PASS       0.538       0.005
+scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     512       8    REF   PASS       0.473       0.005
+scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     512      16    REF   PASS       0.486       0.005
+scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     512      32    REF   PASS       0.473       0.006
+scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     512      64    REF   PASS       0.488       0.006
+scale   scale_kernel_1    basic_ldg           1024        1024       1       1       0     512     128    REF   PASS       0.449       0.005
+small   pad_stride_1      coop_shared            5           5       3       1       1     256      64   PASS   PASS       0.565       0.005
+small   stride_2          coop_shared            6           3       2       2       0     256      64   PASS   PASS       0.460       0.005
+small   wide_pad          coop_shared            4           5       4       1       2     256      64   PASS   PASS       0.506       0.006
+small   kernel_1          coop_shared            4           4       1       1       0     256      64   PASS   PASS       0.462       0.006
+small   pad_stride_2      coop_shared            3           3       3       2       2     256      64   PASS   PASS       0.621       0.006
+small   stride_gap        coop_shared            7           2       2       3       0     256      64   PASS   PASS       0.986       0.006
+small   pad_zero_windows  coop_shared            1           6       2       1       3     256      64   PASS   PASS       0.490       0.005
 small   zero_output       coop_shared            2           0       5       1       0     256      64   PASS   PASS       0.000       0.000
-medium  sample            coop_shared           16           8       3       2       1     256      64    REF   PASS       0.491       0.006
-medium  medium_1          coop_shared         4096        1024       7       4       3     256      64    REF   PASS       0.514       0.007
-medium  medium_2          coop_shared        65536       32768       3       2       1     256      64    REF   PASS       0.578       0.007
-medium  medium_3          coop_shared       262144       87382       5       3       2     256      64    REF   PASS       0.788       0.013
-large   large_1           coop_shared      1048576      262144       7       4       3     256      64    REF   PASS       1.962       0.051
-large   large_2           coop_shared      1048583      349528       5       3       2     256      64    REF   PASS       2.465       0.052
-scale   scale_tiny        coop_shared           33          33       3       1       1      64       8    REF   PASS       0.974       0.005
-scale   scale_tiny        coop_shared           33          33       3       1       1      64      16    REF   PASS       0.565       0.006
-scale   scale_tiny        coop_shared           33          33       3       1       1      64      32    REF   PASS       0.497       0.006
-scale   scale_tiny        coop_shared           33          33       3       1       1      64      64    REF   PASS       0.491       0.006
-scale   scale_tiny        coop_shared           33          33       3       1       1      64     128    REF   PASS       0.570       0.006
-scale   scale_tiny        coop_shared           33          33       3       1       1     128       8    REF   PASS       0.513       0.022
-scale   scale_tiny        coop_shared           33          33       3       1       1     128      16    REF   PASS       0.514       0.006
-scale   scale_tiny        coop_shared           33          33       3       1       1     128      32    REF   PASS       0.475       0.007
-scale   scale_tiny        coop_shared           33          33       3       1       1     128      64    REF   PASS       0.475       0.006
-scale   scale_tiny        coop_shared           33          33       3       1       1     128     128    REF   PASS       0.542       0.007
-scale   scale_tiny        coop_shared           33          33       3       1       1     256       8    REF   PASS       0.503       0.006
-scale   scale_tiny        coop_shared           33          33       3       1       1     256      16    REF   PASS       0.710       0.035
-scale   scale_tiny        coop_shared           33          33       3       1       1     256      32    REF   PASS       0.545       0.006
-scale   scale_tiny        coop_shared           33          33       3       1       1     256      64    REF   PASS       0.775       0.006
-scale   scale_tiny        coop_shared           33          33       3       1       1     256     128    REF   PASS       0.543       0.006
-scale   scale_tiny        coop_shared           33          33       3       1       1     512       8    REF   PASS       0.476       0.006
-scale   scale_tiny        coop_shared           33          33       3       1       1     512      16    REF   PASS       0.453       0.007
-scale   scale_tiny        coop_shared           33          33       3       1       1     512      32    REF   PASS       0.484       0.006
+medium  sample            coop_shared           16           8       3       2       1     256      64    REF   PASS       0.498       0.005
+medium  medium_1          coop_shared         4096        1024       7       4       3     256      64    REF   PASS       0.495       0.006
+medium  medium_2          coop_shared        65536       32768       3       2       1     256      64    REF   PASS       0.648       0.009
+medium  medium_3          coop_shared       262144       87382       5       3       2     256      64    REF   PASS       0.770       0.013
+large   large_1           coop_shared      1048576      262144       7       4       3     256      64    REF   PASS       1.839       0.050
+large   large_2           coop_shared      1048583      349528       5       3       2     256      64    REF   PASS       2.006       0.052
+scale   scale_tiny        coop_shared           33          33       3       1       1      64       8    REF   PASS       0.873       0.007
+scale   scale_tiny        coop_shared           33          33       3       1       1      64      16    REF   PASS       0.644       0.006
+scale   scale_tiny        coop_shared           33          33       3       1       1      64      32    REF   PASS       0.494       0.005
+scale   scale_tiny        coop_shared           33          33       3       1       1      64      64    REF   PASS       0.473       0.006
+scale   scale_tiny        coop_shared           33          33       3       1       1      64     128    REF   PASS       0.458       0.006
+scale   scale_tiny        coop_shared           33          33       3       1       1     128       8    REF   PASS       0.442       0.006
+scale   scale_tiny        coop_shared           33          33       3       1       1     128      16    REF   PASS       0.491       0.006
+scale   scale_tiny        coop_shared           33          33       3       1       1     128      32    REF   PASS       0.465       0.006
+scale   scale_tiny        coop_shared           33          33       3       1       1     128      64    REF   PASS       0.443       0.006
+scale   scale_tiny        coop_shared           33          33       3       1       1     128     128    REF   PASS       0.507       0.006
+scale   scale_tiny        coop_shared           33          33       3       1       1     256       8    REF   PASS       0.471       0.006
+scale   scale_tiny        coop_shared           33          33       3       1       1     256      16    REF   PASS       0.480       0.005
+scale   scale_tiny        coop_shared           33          33       3       1       1     256      32    REF   PASS       0.440       0.005
+scale   scale_tiny        coop_shared           33          33       3       1       1     256      64    REF   PASS       0.452       0.007
+scale   scale_tiny        coop_shared           33          33       3       1       1     256     128    REF   PASS       0.445       0.006
+scale   scale_tiny        coop_shared           33          33       3       1       1     512       8    REF   PASS       0.449       0.006
+scale   scale_tiny        coop_shared           33          33       3       1       1     512      16    REF   PASS       0.438       0.006
+scale   scale_tiny        coop_shared           33          33       3       1       1     512      32    REF   PASS       0.427       0.006
 scale   scale_tiny        coop_shared           33          33       3       1       1     512      64    REF   PASS       0.453       0.006
-scale   scale_tiny        coop_shared           33          33       3       1       1     512     128    REF   PASS       0.547       0.006
-scale   scale_stride_gap  coop_shared          513         103       4       5       2      64       8    REF   PASS       0.505       0.008
-scale   scale_stride_gap  coop_shared          513         103       4       5       2      64      16    REF   PASS       0.490       0.007
-scale   scale_stride_gap  coop_shared          513         103       4       5       2      64      32    REF   PASS       0.452       0.007
-scale   scale_stride_gap  coop_shared          513         103       4       5       2      64      64    REF   PASS       0.715       0.007
-scale   scale_stride_gap  coop_shared          513         103       4       5       2      64     128    REF   PASS       0.492       0.007
-scale   scale_stride_gap  coop_shared          513         103       4       5       2     128       8    REF   PASS       0.529       0.007
-scale   scale_stride_gap  coop_shared          513         103       4       5       2     128      16    REF   PASS       0.474       0.007
-scale   scale_stride_gap  coop_shared          513         103       4       5       2     128      32    REF   PASS       0.481       0.007
-scale   scale_stride_gap  coop_shared          513         103       4       5       2     128      64    REF   PASS       0.554       0.008
-scale   scale_stride_gap  coop_shared          513         103       4       5       2     128     128    REF   PASS       0.486       0.007
-scale   scale_stride_gap  coop_shared          513         103       4       5       2     256       8    REF   PASS       0.491       0.007
-scale   scale_stride_gap  coop_shared          513         103       4       5       2     256      16    REF   PASS       0.479       0.006
-scale   scale_stride_gap  coop_shared          513         103       4       5       2     256      32    REF   PASS       0.472       0.006
-scale   scale_stride_gap  coop_shared          513         103       4       5       2     256      64    REF   PASS       0.489       0.006
-scale   scale_stride_gap  coop_shared          513         103       4       5       2     256     128    REF   PASS       0.459       0.007
-scale   scale_stride_gap  coop_shared          513         103       4       5       2     512       8    REF   PASS       0.444       0.006
-scale   scale_stride_gap  coop_shared          513         103       4       5       2     512      16    REF   PASS       0.442       0.006
-scale   scale_stride_gap  coop_shared          513         103       4       5       2     512      32    REF   PASS       0.480       0.008
-scale   scale_stride_gap  coop_shared          513         103       4       5       2     512      64    REF   PASS       0.546       0.006
-scale   scale_stride_gap  coop_shared          513         103       4       5       2     512     128    REF   PASS       0.528       0.007
-scale   scale_tail        coop_shared         4097        1025       7       4       3      64       8    REF   PASS       0.553       0.008
-scale   scale_tail        coop_shared         4097        1025       7       4       3      64      16    REF   PASS       0.477       0.007
-scale   scale_tail        coop_shared         4097        1025       7       4       3      64      32    REF   PASS       0.458       0.006
-scale   scale_tail        coop_shared         4097        1025       7       4       3      64      64    REF   PASS       0.451       0.006
-scale   scale_tail        coop_shared         4097        1025       7       4       3      64     128    REF   PASS       0.465       0.006
-scale   scale_tail        coop_shared         4097        1025       7       4       3     128       8    REF   PASS       0.485       0.007
-scale   scale_tail        coop_shared         4097        1025       7       4       3     128      16    REF   PASS       0.493       0.007
-scale   scale_tail        coop_shared         4097        1025       7       4       3     128      32    REF   PASS       0.483       0.007
-scale   scale_tail        coop_shared         4097        1025       7       4       3     128      64    REF   PASS       0.473       0.006
-scale   scale_tail        coop_shared         4097        1025       7       4       3     128     128    REF   PASS       0.463       0.006
-scale   scale_tail        coop_shared         4097        1025       7       4       3     256       8    REF   PASS       0.457       0.007
-scale   scale_tail        coop_shared         4097        1025       7       4       3     256      16    REF   PASS       0.525       0.006
-scale   scale_tail        coop_shared         4097        1025       7       4       3     256      32    REF   PASS       0.617       0.007
-scale   scale_tail        coop_shared         4097        1025       7       4       3     256      64    REF   PASS       0.468       0.007
-scale   scale_tail        coop_shared         4097        1025       7       4       3     256     128    REF   PASS       0.600       0.008
-scale   scale_tail        coop_shared         4097        1025       7       4       3     512       8    REF   PASS       0.495       0.007
-scale   scale_tail        coop_shared         4097        1025       7       4       3     512      16    REF   PASS       0.492       0.006
-scale   scale_tail        coop_shared         4097        1025       7       4       3     512      32    REF   PASS       0.480       0.007
-scale   scale_tail        coop_shared         4097        1025       7       4       3     512      64    REF   PASS       0.463       0.007
-scale   scale_tail        coop_shared         4097        1025       7       4       3     512     128    REF   PASS       0.456       0.007
-scale   scale_kernel_1    coop_shared         1024        1024       1       1       0      64       8    REF   PASS       0.481       0.006
-scale   scale_kernel_1    coop_shared         1024        1024       1       1       0      64      16    REF   PASS       0.699       0.007
-scale   scale_kernel_1    coop_shared         1024        1024       1       1       0      64      32    REF   PASS       0.503       0.006
-scale   scale_kernel_1    coop_shared         1024        1024       1       1       0      64      64    REF   PASS       0.502       0.006
-scale   scale_kernel_1    coop_shared         1024        1024       1       1       0      64     128    REF   PASS       0.452       0.005
-scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     128       8    REF   PASS       0.476       0.006
-scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     128      16    REF   PASS       0.469       0.007
-scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     128      32    REF   PASS       0.472       0.008
-scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     128      64    REF   PASS       0.496       0.007
-scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     128     128    REF   PASS       0.457       0.007
-scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     256       8    REF   PASS       0.453       0.006
-scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     256      16    REF   PASS       0.569       0.006
-scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     256      32    REF   PASS       0.485       0.006
-scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     256      64    REF   PASS       0.533       0.007
-scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     256     128    REF   PASS       0.469       0.006
-scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     512       8    REF   PASS       0.467       0.007
-scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     512      16    REF   PASS       0.452       0.006
-scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     512      32    REF   PASS       0.469       0.006
-scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     512      64    REF   PASS       0.473       0.007
-scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     512     128    REF   PASS       0.497       0.006
+scale   scale_tiny        coop_shared           33          33       3       1       1     512     128    REF   PASS       0.445       0.006
+scale   scale_stride_gap  coop_shared          513         103       4       5       2      64       8    REF   PASS       0.459       0.006
+scale   scale_stride_gap  coop_shared          513         103       4       5       2      64      16    REF   PASS       0.444       0.006
+scale   scale_stride_gap  coop_shared          513         103       4       5       2      64      32    REF   PASS       0.418       0.006
+scale   scale_stride_gap  coop_shared          513         103       4       5       2      64      64    REF   PASS       0.435       0.006
+scale   scale_stride_gap  coop_shared          513         103       4       5       2      64     128    REF   PASS       0.454       0.006
+scale   scale_stride_gap  coop_shared          513         103       4       5       2     128       8    REF   PASS       0.521       0.006
+scale   scale_stride_gap  coop_shared          513         103       4       5       2     128      16    REF   PASS       0.506       0.008
+scale   scale_stride_gap  coop_shared          513         103       4       5       2     128      32    REF   PASS       0.520       0.006
+scale   scale_stride_gap  coop_shared          513         103       4       5       2     128      64    REF   PASS       0.518       0.006
+scale   scale_stride_gap  coop_shared          513         103       4       5       2     128     128    REF   PASS       0.866       0.007
+scale   scale_stride_gap  coop_shared          513         103       4       5       2     256       8    REF   PASS       0.569       0.006
+scale   scale_stride_gap  coop_shared          513         103       4       5       2     256      16    REF   PASS       0.473       0.006
+scale   scale_stride_gap  coop_shared          513         103       4       5       2     256      32    REF   PASS       0.484       0.006
+scale   scale_stride_gap  coop_shared          513         103       4       5       2     256      64    REF   PASS       0.474       0.006
+scale   scale_stride_gap  coop_shared          513         103       4       5       2     256     128    REF   PASS       0.474       0.006
+scale   scale_stride_gap  coop_shared          513         103       4       5       2     512       8    REF   PASS       0.452       0.006
+scale   scale_stride_gap  coop_shared          513         103       4       5       2     512      16    REF   PASS       0.530       0.006
+scale   scale_stride_gap  coop_shared          513         103       4       5       2     512      32    REF   PASS       0.527       0.007
+scale   scale_stride_gap  coop_shared          513         103       4       5       2     512      64    REF   PASS       0.584       0.006
+scale   scale_stride_gap  coop_shared          513         103       4       5       2     512     128    REF   PASS       0.660       0.007
+scale   scale_tail        coop_shared         4097        1025       7       4       3      64       8    REF   PASS       0.614       0.008
+scale   scale_tail        coop_shared         4097        1025       7       4       3      64      16    REF   PASS       0.523       0.006
+scale   scale_tail        coop_shared         4097        1025       7       4       3      64      32    REF   PASS       0.460       0.006
+scale   scale_tail        coop_shared         4097        1025       7       4       3      64      64    REF   PASS       0.484       0.006
+scale   scale_tail        coop_shared         4097        1025       7       4       3      64     128    REF   PASS       0.494       0.006
+scale   scale_tail        coop_shared         4097        1025       7       4       3     128       8    REF   PASS       0.514       0.007
+scale   scale_tail        coop_shared         4097        1025       7       4       3     128      16    REF   PASS       0.500       0.007
+scale   scale_tail        coop_shared         4097        1025       7       4       3     128      32    REF   PASS       0.634       0.007
+scale   scale_tail        coop_shared         4097        1025       7       4       3     128      64    REF   PASS       0.509       0.009
+scale   scale_tail        coop_shared         4097        1025       7       4       3     128     128    REF   PASS       0.562       0.006
+scale   scale_tail        coop_shared         4097        1025       7       4       3     256       8    REF   PASS       0.477       0.006
+scale   scale_tail        coop_shared         4097        1025       7       4       3     256      16    REF   PASS       0.449       0.007
+scale   scale_tail        coop_shared         4097        1025       7       4       3     256      32    REF   PASS       0.669       0.006
+scale   scale_tail        coop_shared         4097        1025       7       4       3     256      64    REF   PASS       0.516       0.006
+scale   scale_tail        coop_shared         4097        1025       7       4       3     256     128    REF   PASS       0.513       0.006
+scale   scale_tail        coop_shared         4097        1025       7       4       3     512       8    REF   PASS       0.555       0.006
+scale   scale_tail        coop_shared         4097        1025       7       4       3     512      16    REF   PASS       0.504       0.006
+scale   scale_tail        coop_shared         4097        1025       7       4       3     512      32    REF   PASS       0.523       0.006
+scale   scale_tail        coop_shared         4097        1025       7       4       3     512      64    REF   PASS       0.455       0.007
+scale   scale_tail        coop_shared         4097        1025       7       4       3     512     128    REF   PASS       0.500       0.007
+scale   scale_kernel_1    coop_shared         1024        1024       1       1       0      64       8    REF   PASS       0.482       0.005
+scale   scale_kernel_1    coop_shared         1024        1024       1       1       0      64      16    REF   PASS       0.495       0.007
+scale   scale_kernel_1    coop_shared         1024        1024       1       1       0      64      32    REF   PASS       0.522       0.005
+scale   scale_kernel_1    coop_shared         1024        1024       1       1       0      64      64    REF   PASS       0.440       0.005
+scale   scale_kernel_1    coop_shared         1024        1024       1       1       0      64     128    REF   PASS       0.498       0.005
+scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     128       8    REF   PASS       0.480       0.005
+scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     128      16    REF   PASS       0.593       0.005
+scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     128      32    REF   PASS       0.484       0.006
+scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     128      64    REF   PASS       0.488       0.006
+scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     128     128    REF   PASS       0.541       0.006
+scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     256       8    REF   PASS       0.774       0.006
+scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     256      16    REF   PASS       0.632       0.008
+scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     256      32    REF   PASS       0.487       0.006
+scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     256      64    REF   PASS       0.533       0.005
+scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     256     128    REF   PASS       0.466       0.006
+scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     512       8    REF   PASS       0.528       0.005
+scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     512      16    REF   PASS       0.448       0.006
+scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     512      32    REF   PASS       0.564       0.008
+scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     512      64    REF   PASS       0.494       0.006
+scale   scale_kernel_1    coop_shared         1024        1024       1       1       0     512     128    REF   PASS       0.515       0.006
 
 Scale heatmaps: kernel_ms, '-' means no row
 
-scale_kernel_1 / basic best=(64, 128) -> 0.005 ms
+scale_kernel_1 / basic best=(128, 16) -> 0.005 ms
 block\grid8         16        32        64        128
-64        0.006     0.008     0.006     0.006     0.005
-128       0.006     0.006     0.006     0.006     0.006
-256       0.006     0.006     0.022     0.006     0.006
-512       0.006     0.006     0.006     0.006     0.007
+64        0.022     0.006     0.006     0.006     0.006
+128       0.006     0.005     0.006     0.006     0.005
+256       0.006     0.005     0.005     0.006     0.006
+512       0.006     0.005     0.006     0.006     0.007
 
-scale_kernel_1 / basic_ldg best=(128, 8) -> 0.005 ms
+scale_kernel_1 / basic_ldg best=(64, 16) -> 0.005 ms
 block\grid8         16        32        64        128
-64        0.007     0.006     0.006     0.006     0.008
+64        0.006     0.005     0.006     0.006     0.006
+128       0.005     0.007     0.006     0.006     0.005
+256       0.007     0.006     0.007     0.005     0.005
+512       0.005     0.005     0.006     0.006     0.005
+
+scale_kernel_1 / coop_shared best=(64, 8) -> 0.005 ms
+block\grid8         16        32        64        128
+64        0.005     0.007     0.005     0.005     0.005
 128       0.005     0.005     0.006     0.006     0.006
-256       0.008     0.006     0.006     0.006     0.007
-512       0.006     0.006     0.006     0.007     0.007
+256       0.006     0.008     0.006     0.005     0.006
+512       0.005     0.006     0.008     0.006     0.006
 
-scale_kernel_1 / coop_shared best=(64, 128) -> 0.005 ms
+scale_stride_gap / basic best=(64, 32) -> 0.005 ms
 block\grid8         16        32        64        128
-64        0.006     0.007     0.006     0.006     0.005
-128       0.006     0.007     0.008     0.007     0.007
-256       0.006     0.006     0.006     0.007     0.006
-512       0.007     0.006     0.006     0.007     0.006
-
-scale_stride_gap / basic best=(256, 64) -> 0.005 ms
-block\grid8         16        32        64        128
-64        0.006     0.006     0.007     0.006     0.006
-128       0.006     0.006     0.006     0.006     0.006
-256       0.006     0.006     0.006     0.005     0.006
-512       0.006     0.008     0.006     0.006     0.006
-
-scale_stride_gap / basic_ldg best=(64, 16) -> 0.005 ms
-block\grid8         16        32        64        128
-64        0.006     0.005     0.007     0.020     0.006
-128       0.006     0.006     0.006     0.006     0.006
-256       0.006     0.008     0.005     0.006     0.005
-512       0.006     0.006     0.006     0.009     0.007
-
-scale_stride_gap / coop_shared best=(256, 16) -> 0.006 ms
-block\grid8         16        32        64        128
-64        0.008     0.007     0.007     0.007     0.007
-128       0.007     0.007     0.007     0.008     0.007
-256       0.007     0.006     0.006     0.006     0.007
-512       0.006     0.006     0.008     0.006     0.007
-
-scale_tail / basic best=(64, 64) -> 0.005 ms
-block\grid8         16        32        64        128
-64        0.007     0.006     0.006     0.005     0.006
-128       0.006     0.007     0.005     0.006     0.006
-256       0.007     0.006     0.022     0.006     0.007
-512       0.006     0.005     0.006     0.019     0.006
-
-scale_tail / basic_ldg best=(256, 8) -> 0.005 ms
-block\grid8         16        32        64        128
-64        0.007     0.006     0.006     0.005     0.007
-128       0.006     0.005     0.005     0.006     0.006
-256       0.005     0.006     0.005     0.006     0.007
-512       0.006     0.006     0.006     0.014     0.006
-
-scale_tail / coop_shared best=(64, 32) -> 0.006 ms
-block\grid8         16        32        64        128
-64        0.008     0.007     0.006     0.006     0.006
-128       0.007     0.007     0.007     0.006     0.006
-256       0.007     0.006     0.007     0.007     0.008
-512       0.007     0.006     0.007     0.007     0.007
-
-scale_tiny / basic best=(64, 8) -> 0.005 ms
-block\grid8         16        32        64        128
-64        0.005     0.006     0.005     0.005     0.007
-128       0.015     0.006     0.006     0.006     0.006
-256       0.006     0.006     0.006     0.006     0.006
-512       0.005     0.005     0.006     0.005     0.006
-
-scale_tiny / basic_ldg best=(128, 16) -> 0.005 ms
-block\grid8         16        32        64        128
-64        0.006     0.006     0.006     0.006     0.006
-128       0.006     0.005     0.007     0.006     0.006
-256       0.005     0.006     0.006     0.006     0.006
+64        0.006     0.006     0.005     0.005     0.006
+128       0.005     0.006     0.005     0.008     0.007
+256       0.009     0.015     0.007     0.009     0.006
 512       0.006     0.005     0.005     0.006     0.006
 
-scale_tiny / coop_shared best=(64, 8) -> 0.005 ms
+scale_stride_gap / basic_ldg best=(64, 8) -> 0.005 ms
 block\grid8         16        32        64        128
-64        0.005     0.006     0.006     0.006     0.006
-128       0.022     0.006     0.007     0.006     0.007
-256       0.006     0.035     0.006     0.006     0.006
-512       0.006     0.007     0.006     0.006     0.006
+64        0.005     0.005     0.006     0.006     0.006
+128       0.006     0.006     0.006     0.006     0.006
+256       0.006     0.006     0.005     0.006     0.005
+512       0.006     0.006     0.006     0.007     0.006
+
+scale_stride_gap / coop_shared best=(512, 8) -> 0.006 ms
+block\grid8         16        32        64        128
+64        0.006     0.006     0.006     0.006     0.006
+128       0.006     0.008     0.006     0.006     0.007
+256       0.006     0.006     0.006     0.006     0.006
+512       0.006     0.006     0.007     0.006     0.007
+
+scale_tail / basic best=(64, 32) -> 0.005 ms
+block\grid8         16        32        64        128
+64        0.007     0.006     0.005     0.006     0.006
+128       0.006     0.006     0.006     0.006     0.006
+256       0.006     0.006     0.006     0.006     0.006
+512       0.005     0.006     0.006     0.007     0.007
+
+scale_tail / basic_ldg best=(64, 32) -> 0.005 ms
+block\grid8         16        32        64        128
+64        0.007     0.006     0.005     0.005     0.006
+128       0.006     0.006     0.005     0.006     0.006
+256       0.006     0.005     0.006     0.006     0.007
+512       0.007     0.006     0.006     0.006     0.006
+
+scale_tail / coop_shared best=(64, 16) -> 0.006 ms
+block\grid8         16        32        64        128
+64        0.008     0.006     0.006     0.006     0.006
+128       0.007     0.007     0.007     0.009     0.006
+256       0.006     0.007     0.006     0.006     0.006
+512       0.006     0.006     0.006     0.007     0.007
+
+scale_tiny / basic best=(64, 64) -> 0.005 ms
+block\grid8         16        32        64        128
+64        0.006     0.006     0.006     0.005     0.006
+128       0.006     0.006     0.006     0.007     0.006
+256       0.006     0.006     0.006     0.007     0.007
+512       0.005     0.006     0.005     0.006     0.005
+
+scale_tiny / basic_ldg best=(64, 8) -> 0.005 ms
+block\grid8         16        32        64        128
+64        0.005     0.007     0.006     0.006     0.005
+128       0.007     0.009     0.007     0.007     0.008
+256       0.007     0.006     0.006     0.006     0.006
+512       0.006     0.005     0.006     0.006     0.005
+
+scale_tiny / coop_shared best=(64, 32) -> 0.005 ms
+block\grid8         16        32        64        128
+64        0.007     0.006     0.005     0.006     0.006
+128       0.006     0.006     0.006     0.006     0.006
+256       0.006     0.005     0.005     0.007     0.006
+512       0.006     0.006     0.006     0.006     0.006
