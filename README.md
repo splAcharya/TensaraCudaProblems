@@ -26,6 +26,7 @@ Current problem files:
 - `P4_MVM.cu`: matrix-vector multiplication over a row-major matrix.
 - `P5_LEAKY_RELU.cu`: elementwise Leaky ReLU over a row-major matrix.
 - `P6_AVG_POOL_1D.cu`: 1D average pooling over a vector.
+- `P7_GELU.cu`: elementwise GELU over a row-major matrix.
 
 Detailed correctness and benchmark notes live next to each problem:
 
@@ -34,6 +35,7 @@ Detailed correctness and benchmark notes live next to each problem:
 - [P4_MVM_RESULTS.md](P4_MVM_RESULTS.md)
 - [P5_LEAKY_RELU_RESULTS.md](P5_LEAKY_RELU_RESULTS.md)
 - [P6_AVG_POOL_1D_RESULTS.md](P6_AVG_POOL_1D_RESULTS.md)
+- [P7_GELU_RESULTS.md](P7_GELU_RESULTS.md)
 
 ## Harness Pattern
 
@@ -75,7 +77,7 @@ shapes are promising, and which benchmark rows look noisy or suspicious.
 ## Current Snapshot
 
 The latest saved logs cover CPU-backed and skip-CPU runs for P1, P3, P4,
-P5, and P6.
+P5, P6, and P7.
 
 - `P1_1D_CONVOLUTIONS.cu`
   - `bstride_c` is the strongest current heavy-run kernel.
@@ -97,6 +99,10 @@ P5, and P6.
   - `basic_ldg` is the strongest current average-pooling kernel overall.
   - It wins 104 of 140 comparable skip-CPU configurations.
   - Best Tensara sweep row: `tensara_1` uses `basic_ldg = 0.062 ms`.
+- `P7_GELU.cu`
+  - `float4` and `basic` pass the CPU-backed checks.
+  - `float4` wins 108 of 108 comparable skip-CPU configurations.
+  - Best Tensara sweep row: `4096 x 4096` uses `float4 = 0.752 ms`.
 
 ## Local Benchmarking Notes
 
@@ -110,7 +116,7 @@ Tensara leaderboard measurements. Treat them as directional data:
   benchmark-only results
 
 The current local benchmark environment used for the saved result files is an
-NVIDIA GeForce RTX 3050 Laptop GPU.
+NVIDIA GeForce RTX 3050 Ti Laptop GPU.
 
 ## Development Notes
 
