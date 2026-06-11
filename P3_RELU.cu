@@ -194,6 +194,81 @@ static std::vector<float> cpu_relu(const std::vector<float>& input) {
   return output;
 }
 
+// Basic scalar ReLU GPU kernel.
+//
+// input: device pointer to flattened row-major matrix with shape (total)
+// output: device pointer to flattened row-major matrix with shape (total)
+// total: number of elements, normally rows * cols from solution(...)
+__global__ void device_relu_basic(const float* input, float* output,
+                                  size_t total) {
+  const size_t gix =
+      static_cast<size_t>(blockDim.x) * blockIdx.x + threadIdx.x;
+  const size_t grid_stride = static_cast<size_t>(blockDim.x) * gridDim.x;
+
+  for (size_t gx = gix; gx < total; gx += grid_stride) {
+    float val = input[gx];
+    output[gx] = val < 0 ? 0.0f : val;
+  }
+}
+
+// Vectorized float4 ReLU GPU kernel with scalar tail handling.
+//
+// input: device pointer to flattened row-major matrix with shape (total)
+// output: device pointer to flattened row-major matrix with shape (total)
+// total: number of elements, normally rows * cols from solution(...)
+// total_vec: internal vectorized length, equal to total / 4
+__global__ void device_relu_float4(const float* input, float* output,
+                                   size_t total) {
+
+  //converts arrays to float4 array so each[i] represents block of 4
+  //but can be treated like single unit
+  size_t total_vec = total / 4;
+  const float4 *input_vec = reinterpret_cast<const float4 *>(input);
+  float4 *output_vec = reinterpret_cast<float4 *>(output);
+
+  //each thread processes 4 elements
+  const size_t gix = ((blockDim.x * blockIdx.x) + threadIdx.x);
+
+  //each grid processes 4 elements each
+  const size_t grid_stride = (blockDim.x * gridDim.x);
+
+  for (size_t gx = gix; gx < total_vec; gx += grid_stride)
+  {
+    float4 ivec = input_vec[gx];
+    ivec.w = ivec.w < 0 ? 0.0f : ivec.w;
+    ivec.x = ivec.x < 0 ? 0.0f : ivec.x;
+    ivec.y = ivec.y < 0 ? 0.0f : ivec.y;
+    ivec.z = ivec.z < 0 ? 0.0f : ivec.z;
+    output_vec[gx] = ivec;
+  }
+
+  //tail part
+  size_t tail_start = (total_vec * 4) + gix;
+  for (size_t gx = tail_start; gx < total; gx += grid_stride)
+  {
+    float val = input[gx];
+    output[gx] = val < 0 ? 0.0f : val;
+  }
+}
+
+extern "C" void solution(const float* input, float* output, size_t n,
+                         size_t m) {
+  const size_t total = n * m;
+  dim3 block_shape(g_launch_config.block_x, 1, 1);
+  dim3 grid_shape(g_launch_config.grid_x, 1, 1);
+
+  switch (g_kernel_variant) {
+    case KernelVariant::kBasic:
+      device_relu_basic<<<grid_shape, block_shape>>>(input, output, total);
+      break;
+    case KernelVariant::kFloat4:
+      device_relu_float4<<<grid_shape, block_shape>>>(input, output, total);
+      break;
+  }
+
+  CUDA_CHECK(cudaGetLastError());
+}
+
 static std::vector<float> make_relu_input(size_t rows, size_t cols) {
   const size_t total = rows * cols;
   std::vector<float> input(total, 0.0f);
@@ -787,81 +862,6 @@ static int run_tests(bool skip_cpu_verify) {
   print_results_table(results);
   print_scale_heatmaps(results);
   return all_ok ? 0 : 1;
-}
-
-// Basic scalar ReLU GPU kernel.
-//
-// input: device pointer to flattened row-major matrix with shape (total)
-// output: device pointer to flattened row-major matrix with shape (total)
-// total: number of elements, normally rows * cols from solution(...)
-__global__ void device_relu_basic(const float* input, float* output,
-                                  size_t total) {
-  const size_t gix =
-      static_cast<size_t>(blockDim.x) * blockIdx.x + threadIdx.x;
-  const size_t grid_stride = static_cast<size_t>(blockDim.x) * gridDim.x;
-
-  for (size_t gx = gix; gx < total; gx += grid_stride) {
-    float val = input[gx];
-    output[gx] = val < 0 ? 0.0f : val;
-  }
-}
-
-// Vectorized float4 ReLU GPU kernel with scalar tail handling.
-//
-// input: device pointer to flattened row-major matrix with shape (total)
-// output: device pointer to flattened row-major matrix with shape (total)
-// total: number of elements, normally rows * cols from solution(...)
-// total_vec: internal vectorized length, equal to total / 4
-__global__ void device_relu_float4(const float* input, float* output,
-                                   size_t total) {
-
-  //converts arrays to float4 array so each[i] represents block of 4
-  //but can be treated like single unit
-  size_t total_vec = total / 4;
-  const float4 *input_vec = reinterpret_cast<const float4 *>(input);
-  float4 *output_vec = reinterpret_cast<float4 *>(output);
-
-  //each thread processes 4 elements
-  const size_t gix = ((blockDim.x * blockIdx.x) + threadIdx.x);  
-
-  //each grid processes 4 elements each
-  const size_t grid_stride = (blockDim.x * gridDim.x);
-
-  for (size_t gx = gix; gx < total_vec; gx += grid_stride)
-  {
-    float4 ivec = input_vec[gx];
-    ivec.w = ivec.w < 0 ? 0.0f : ivec.w;
-    ivec.x = ivec.x < 0 ? 0.0f : ivec.x;
-    ivec.y = ivec.y < 0 ? 0.0f : ivec.y;
-    ivec.z = ivec.z < 0 ? 0.0f : ivec.z;
-    output_vec[gx] = ivec;
-  }
-
-  //tail part
-  size_t tail_start = (total_vec * 4) + gix;
-  for (size_t gx = tail_start; gx < total; gx += grid_stride)
-  {
-    float val = input[gx];
-    output[gx] = val < 0 ? 0.0f : val;
-  }
-}
-
-extern "C" void solution(const float* input, float* output, size_t n,
-                         size_t m) {
-  const size_t total = n * m;
-  dim3 block_shape(g_launch_config.block_x, 1, 1);
-  dim3 grid_shape(g_launch_config.grid_x, 1, 1);
-
-  switch (g_kernel_variant) {
-    case KernelVariant::kBasic:
-      device_relu_basic<<<grid_shape, block_shape>>>(input, output, total);
-      break;
-    case KernelVariant::kFloat4:
-      device_relu_float4<<<grid_shape, block_shape>>>(input, output, total);
-      break;
-  }
-
-  CUDA_CHECK(cudaGetLastError());
 }
 
 int main(int argc, char** argv) {

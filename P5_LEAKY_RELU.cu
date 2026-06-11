@@ -201,6 +201,90 @@ static void cpu_leaky_relu(const std::vector<float>& input, float alpha,
     output[i] = (input[i] >= 0.0f) ? input[i] : (alpha * input[i]);
 }
 
+// Basic GPU kernel implementation.
+//
+// input: device pointer to a row-major matrix with shape (m, n),
+//        stored as input[row * n + col]
+// alpha: slope used for negative input values
+// output: device pointer to a row-major matrix with shape (m, n)
+// total: number of matrix elements, normally m * n from solution(...)
+__global__ void device_leaky_relu_basic(const float* __restrict__ input,
+                                        float alpha,
+                                        float* __restrict__ output,
+                                        size_t total) {
+
+  size_t gid_x = (blockIdx.x * blockDim.x) + threadIdx.x;
+  size_t grid_stride = (blockDim.x * gridDim.x);
+
+  for (size_t gx = gid_x; gx < total; gx += grid_stride)
+  {
+    float val = __ldg(&input[gx]);
+    output[gx] = (val >= 0.0f) ? val : (alpha * val);
+  }
+}
+
+// Float4 GPU kernel implementation.
+//
+// input: device pointer to a row-major matrix with shape (m, n),
+//        stored as input[row * n + col]
+// alpha: slope used for negative input values
+// output: device pointer to a row-major matrix with shape (m, n)
+// total: number of matrix elements, normally m * n from solution(...)
+// note: implementation should handle any scalar tail after float4 work
+__global__ void device_leaky_relu_float4(const float* __restrict__ input,
+                                         float alpha,
+                                         float* __restrict__ output,
+                                         size_t total) {
+
+  const float4 *input_vec = reinterpret_cast<const float4 *>(input);
+  float4 *output_vec = reinterpret_cast<float4 *>(output);
+  size_t total_vec = total/4;
+
+  const size_t gix = (blockDim.x * blockIdx.x) + threadIdx.x;
+  const size_t grid_stride = (blockDim.x * gridDim.x);
+
+  for (size_t gx = gix; gx < total_vec; gx += grid_stride)
+  {
+    float4 ivec = __ldg(&input_vec[gx]);
+    ivec.w = (ivec.w >= 0) ? ivec.w : (alpha * ivec.w);
+    ivec.x = (ivec.x >= 0) ? ivec.x : (alpha * ivec.x);
+    ivec.y = (ivec.y >= 0) ? ivec.y : (alpha * ivec.y);
+    ivec.z = (ivec.z >= 0) ? ivec.z : (alpha * ivec.z);
+    output_vec[gx] = ivec;
+  }
+
+  //tail part
+  const size_t tail_start = (total_vec * 4) + gix;
+  for (size_t gx = tail_start; gx < total; gx += grid_stride)
+  {
+    float ival = input[gx];
+    output[gx] = (ival >= 0) ? ival : (alpha * ival);
+  }
+}
+
+extern "C" void solution(const float* __restrict__ input,
+                         float alpha,
+                         float* __restrict__ output,
+                         size_t n,
+                         size_t m) {
+  const size_t total = n * m;
+  dim3 block_shape(g_launch_config.block_x, 1, 1);
+  dim3 grid_shape(g_launch_config.grid_x, 1, 1);
+
+  switch (g_kernel_variant) {
+    case KernelVariant::kBasic:
+      device_leaky_relu_basic<<<grid_shape, block_shape>>>(input, alpha,
+                                                           output, total);
+      break;
+    case KernelVariant::kFloat4:
+      device_leaky_relu_float4<<<grid_shape, block_shape>>>(input, alpha,
+                                                            output, total);
+      break;
+  }
+
+  CUDA_CHECK(cudaGetLastError());
+}
+
 static std::vector<float> make_leaky_relu_input(size_t rows, size_t cols) {
   const size_t total = rows * cols;
   std::vector<float> input(total, 0.0f);
@@ -821,90 +905,6 @@ static int run_tests(bool skip_cpu_verify) {
   print_results_table(results);
   print_scale_heatmaps(results);
   return all_ok ? 0 : 1;
-}
-
-// Basic GPU kernel implementation.
-//
-// input: device pointer to a row-major matrix with shape (m, n),
-//        stored as input[row * n + col]
-// alpha: slope used for negative input values
-// output: device pointer to a row-major matrix with shape (m, n)
-// total: number of matrix elements, normally m * n from solution(...)
-__global__ void device_leaky_relu_basic(const float* __restrict__ input,
-                                        float alpha,
-                                        float* __restrict__ output,
-                                        size_t total) {
-
-  size_t gid_x = (blockIdx.x * blockDim.x) + threadIdx.x;
-  size_t grid_stride = (blockDim.x * gridDim.x);
-
-  for (size_t gx = gid_x; gx < total; gx += grid_stride)
-  {
-    float val = __ldg(&input[gx]);
-    output[gx] = (val >= 0.0f) ? val : (alpha * val);
-  }
-}
-
-// Float4 GPU kernel implementation.
-//
-// input: device pointer to a row-major matrix with shape (m, n),
-//        stored as input[row * n + col]
-// alpha: slope used for negative input values
-// output: device pointer to a row-major matrix with shape (m, n)
-// total: number of matrix elements, normally m * n from solution(...)
-// note: implementation should handle any scalar tail after float4 work
-__global__ void device_leaky_relu_float4(const float* __restrict__ input,
-                                         float alpha,
-                                         float* __restrict__ output,
-                                         size_t total) {
-
-  const float4 *input_vec = reinterpret_cast<const float4 *>(input);
-  float4 *output_vec = reinterpret_cast<float4 *>(output);
-  size_t total_vec = total/4;
-
-  const size_t gix = (blockDim.x * blockIdx.x) + threadIdx.x;
-  const size_t grid_stride = (blockDim.x * gridDim.x);
-
-  for (size_t gx = gix; gx < total_vec; gx += grid_stride)
-  {
-    float4 ivec = __ldg(&input_vec[gx]);
-    ivec.w = (ivec.w >= 0) ? ivec.w : (alpha * ivec.w);
-    ivec.x = (ivec.x >= 0) ? ivec.x : (alpha * ivec.x);
-    ivec.y = (ivec.y >= 0) ? ivec.y : (alpha * ivec.y);
-    ivec.z = (ivec.z >= 0) ? ivec.z : (alpha * ivec.z);
-    output_vec[gx] = ivec;
-  }
-
-  //tail part
-  const size_t tail_start = (total_vec * 4) + gix;
-  for (size_t gx = tail_start; gx < total; gx += grid_stride)
-  {
-    float ival = input[gx];
-    output[gx] = (ival >= 0) ? ival : (alpha * ival);
-  }
-}
-
-extern "C" void solution(const float* __restrict__ input,
-                         float alpha,
-                         float* __restrict__ output,
-                         size_t n,
-                         size_t m) {
-  const size_t total = n * m;
-  dim3 block_shape(g_launch_config.block_x, 1, 1);
-  dim3 grid_shape(g_launch_config.grid_x, 1, 1);
-
-  switch (g_kernel_variant) {
-    case KernelVariant::kBasic:
-      device_leaky_relu_basic<<<grid_shape, block_shape>>>(input, alpha,
-                                                           output, total);
-      break;
-    case KernelVariant::kFloat4:
-      device_leaky_relu_float4<<<grid_shape, block_shape>>>(input, alpha,
-                                                            output, total);
-      break;
-  }
-
-  CUDA_CHECK(cudaGetLastError());
 }
 
 int main(int argc, char** argv) {

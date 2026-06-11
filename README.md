@@ -27,6 +27,7 @@ Current problem files:
 - `P5_LEAKY_RELU.cu`: elementwise Leaky ReLU over a row-major matrix.
 - `P6_AVG_POOL_1D.cu`: 1D average pooling over a vector.
 - `P7_GELU.cu`: elementwise GELU over a row-major matrix.
+- `P8_SIGMOID.cu`: elementwise Sigmoid over a row-major matrix.
 
 Detailed correctness and benchmark notes live next to each problem:
 
@@ -36,6 +37,7 @@ Detailed correctness and benchmark notes live next to each problem:
 - [P5_LEAKY_RELU_RESULTS.md](P5_LEAKY_RELU_RESULTS.md)
 - [P6_AVG_POOL_1D_RESULTS.md](P6_AVG_POOL_1D_RESULTS.md)
 - [P7_GELU_RESULTS.md](P7_GELU_RESULTS.md)
+- [P8_SIGMOID_RESULTS.md](P8_SIGMOID_RESULTS.md)
 
 ## Harness Pattern
 
@@ -77,7 +79,7 @@ shapes are promising, and which benchmark rows look noisy or suspicious.
 ## Current Snapshot
 
 The latest saved logs cover CPU-backed and skip-CPU runs for P1, P3, P4,
-P5, P6, and P7.
+P5, P6, P7, and P8.
 
 - `P1_1D_CONVOLUTIONS.cu`
   - `bstride_c` is the strongest current heavy-run kernel.
@@ -103,6 +105,10 @@ P5, P6, and P7.
   - `float4` and `basic` pass the CPU-backed checks.
   - `float4` wins 108 of 108 comparable skip-CPU configurations.
   - Best Tensara sweep row: `4096 x 4096` uses `float4 = 0.752 ms`.
+- `P8_SIGMOID.cu`
+  - `float4` and `basic` pass the CPU-backed checks.
+  - `float4` wins 5 of 5 published Tensara benchmark rows.
+  - Best Tensara default row: `4096 x 4096` uses `float4 = 0.757 ms`.
 
 ## Local Benchmarking Notes
 

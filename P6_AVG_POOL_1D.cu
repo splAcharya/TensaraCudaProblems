@@ -350,6 +350,177 @@ static void cpu_avg_pool_1d_cannonical(const std::vector<float>& input,
   }
 }
 
+// Basic GPU kernel stub.
+//
+// input: device vector with length H
+// kernel_size: pooling window length
+// stride: distance between consecutive window starts
+// padding: implicit zero-padding count on each side of input
+// output: device vector with length H_out
+// H: input vector length
+// H_out: output vector length
+__global__ void avg_pool_1d_basic_kernel(const float* input, int kernel_size,
+                                         int stride, int padding,
+                                         float* output, size_t H,
+                                         size_t H_out) {
+  size_t gix = (blockDim.x * blockIdx.x) + threadIdx.x;
+  size_t grid_stride = (blockDim.x * gridDim.x);
+
+  for (size_t gx = gix; gx < H_out; gx += grid_stride)
+  {
+    //input window start and end
+    size_t ws = gx * stride;
+    size_t we = ws + kernel_size;
+
+    //valid input windows only
+    ws = (ws >= padding) ? (ws - padding) : 0; //left guard
+    we = (we >= padding) ? (we - padding) : 0; //left guard
+    we = (we > H) ? H : we; //right guard
+
+    //compute window sum
+    float wsum = 0.0f;
+    for (size_t i = ws; i < we; ++i)
+      wsum += input[i];
+
+    output[gx] = wsum / kernel_size;
+  }
+}
+
+// Basic GPU kernel with restricted pointers and read-only input loads.
+//
+// input: device vector with length H
+// kernel_size: pooling window length
+// stride: distance between consecutive window starts
+// padding: implicit zero-padding count on each side of input
+// output: device vector with length H_out
+// H: input vector length
+// H_out: output vector length
+__global__ void avg_pool_1d_basic_ldg_kernel(
+    const float* __restrict__ input, int kernel_size, int stride, int padding,
+    float* __restrict__ output, size_t H, size_t H_out) {
+  size_t gix = (blockDim.x * blockIdx.x) + threadIdx.x;
+  size_t grid_stride = (blockDim.x * gridDim.x);
+
+  for (size_t gx = gix; gx < H_out; gx += grid_stride)
+  {
+    //input window start and end
+    size_t ws = gx * stride;
+    size_t we = ws + kernel_size;
+
+    //valid input windows only
+    ws = (ws >= padding) ? (ws - padding) : 0; //left guard
+    we = (we >= padding) ? (we - padding) : 0; //left guard
+    we = (we > H) ? H : we; //right guard
+
+    //compute window sum
+    float wsum = 0.0f;
+    for (size_t i = ws; i < we; ++i)
+      wsum += __ldg(&input[i]);
+
+    output[gx] = wsum / kernel_size;
+  }
+}
+
+// Cooperative shared-memory GPU kernel stub.
+//
+// input: device vector with length H
+// kernel_size: pooling window length
+// stride: distance between consecutive window starts
+// padding: implicit zero-padding count on each side of input
+// output: device vector with length H_out
+// H: input vector length
+// H_out: output vector length
+__global__ void avg_pool_1d_coop_shared_kernel(
+    const float* __restrict__ input, int kernel_size, int stride, int padding,
+    float* __restrict__ output, size_t H, size_t H_out) {
+  //shared memory to hold up that many elements, size passed in dynamically
+  extern __shared__ float smem_input[];
+
+  size_t total_blocks = (H_out + blockDim.x - 1) / blockDim.x;
+
+  //grid stride @ block level
+  for (size_t bx = blockIdx.x; bx < total_blocks; bx += gridDim.x)
+  {
+    //output cells range owned by a block = blockDim.x
+    //compute the output cell, start end end range for this block
+    size_t op_start = bx * blockDim.x;
+    size_t op_end = op_start + blockDim.x - 1;
+
+    //need to compute which portion of input cells are required for a block to process
+    size_t input_start = op_start * stride; //ech output elements starts/skip over stride num of elemnts
+    //the last output cell start with a certain stride and spans over kenrl_Size worh of elements
+    size_t input_end = (op_end * stride) + kernel_size;
+    size_t total_input_elements = input_end - input_start;
+
+    //populate shared memory cooperativetly
+    for (size_t lx = threadIdx.x; lx < total_input_elements; lx += blockDim.x)
+    {
+      long long load_idx =
+          static_cast<long long>(input_start + lx) - padding;
+      smem_input[lx] =
+          (0 <= load_idx && load_idx < static_cast<long long>(H))
+              ? input[load_idx]
+              : 0.0f;
+    }
+
+    //sync
+    __syncthreads();
+
+    //perform average pooling on shared memory
+    float sum = 0.0f;
+    size_t local_ws = threadIdx.x * stride;
+    size_t local_we = local_ws + kernel_size;
+    for (size_t i = local_ws; i < local_we; ++i)
+      sum += smem_input[i];
+
+    //update output
+    size_t out_idx = (bx * blockDim.x) + threadIdx.x;
+
+    if (out_idx < H_out)
+      output[out_idx] = sum / kernel_size;
+
+    //make sure current grid is entirely processed, before
+    //moving to next grid
+    __syncthreads();
+  }
+}
+
+extern "C" void solution(const float* input, int kernel_size, int stride,
+                         int padding, float* output, size_t H) {
+  const size_t H_out = avg_pool_output_size(H, kernel_size, stride, padding);
+
+  if (H_out == 0) {
+    return;
+  }
+
+  dim3 block_shape(g_launch_config.block_x, 1, 1);
+  dim3 grid_shape(g_launch_config.grid_x, 1, 1);
+
+  switch (g_kernel_variant) {
+    case KernelVariant::kBasic: {
+      avg_pool_1d_basic_kernel<<<grid_shape, block_shape>>>(
+          input, kernel_size, stride, padding, output, H, H_out);
+      break;
+    }
+    case KernelVariant::kBasicLdg: {
+      avg_pool_1d_basic_ldg_kernel<<<grid_shape, block_shape>>>(
+          input, kernel_size, stride, padding, output, H, H_out);
+      break;
+    }
+    case KernelVariant::kCoopShared: {
+      size_t output_cells_per_block = block_shape.x - 1;
+      size_t input_cells_per_block =
+          output_cells_per_block * stride + kernel_size;
+      size_t smem_bytes = input_cells_per_block * sizeof(float);
+      avg_pool_1d_coop_shared_kernel<<<grid_shape, block_shape, smem_bytes>>>(
+          input, kernel_size, stride, padding, output, H, H_out);
+      break;
+    }
+  }
+
+  CUDA_CHECK(cudaGetLastError());
+}
+
 static std::vector<float> make_avg_pool_input(size_t H) {
   std::vector<float> input(H, 0.0f);
   for (size_t i = 0; i < H; ++i) {
@@ -856,177 +1027,6 @@ static int run_tests(bool skip_cpu_verify) {
   print_results_table(results);
   print_scale_heatmaps(results);
   return all_ok ? 0 : 1;
-}
-
-// Basic GPU kernel stub.
-//
-// input: device vector with length H
-// kernel_size: pooling window length
-// stride: distance between consecutive window starts
-// padding: implicit zero-padding count on each side of input
-// output: device vector with length H_out
-// H: input vector length
-// H_out: output vector length
-__global__ void avg_pool_1d_basic_kernel(const float* input, int kernel_size,
-                                         int stride, int padding,
-                                         float* output, size_t H,
-                                         size_t H_out) {
-  size_t gix = (blockDim.x * blockIdx.x) + threadIdx.x;
-  size_t grid_stride = (blockDim.x * gridDim.x);
-
-  for (size_t gx = gix; gx < H_out; gx += grid_stride)
-  {
-    //input window start and end
-    size_t ws = gx * stride;
-    size_t we = ws + kernel_size;
-
-    //valid input windows only
-    ws = (ws >= padding) ? (ws - padding) : 0; //left guard
-    we = (we >= padding) ? (we - padding) : 0; //left guard
-    we = (we > H) ? H : we; //right guard
-
-    //compute window sum
-    float wsum = 0.0f;
-    for (size_t i = ws; i < we; ++i)
-      wsum += input[i];
-
-    output[gx] = wsum / kernel_size;
-  }
-}
-
-// Basic GPU kernel with restricted pointers and read-only input loads.
-//
-// input: device vector with length H
-// kernel_size: pooling window length
-// stride: distance between consecutive window starts
-// padding: implicit zero-padding count on each side of input
-// output: device vector with length H_out
-// H: input vector length
-// H_out: output vector length
-__global__ void avg_pool_1d_basic_ldg_kernel(
-    const float* __restrict__ input, int kernel_size, int stride, int padding,
-    float* __restrict__ output, size_t H, size_t H_out) {
-  size_t gix = (blockDim.x * blockIdx.x) + threadIdx.x;
-  size_t grid_stride = (blockDim.x * gridDim.x);
-
-  for (size_t gx = gix; gx < H_out; gx += grid_stride)
-  {
-    //input window start and end
-    size_t ws = gx * stride;
-    size_t we = ws + kernel_size;
-
-    //valid input windows only
-    ws = (ws >= padding) ? (ws - padding) : 0; //left guard
-    we = (we >= padding) ? (we - padding) : 0; //left guard
-    we = (we > H) ? H : we; //right guard
-
-    //compute window sum
-    float wsum = 0.0f;
-    for (size_t i = ws; i < we; ++i)
-      wsum += __ldg(&input[i]);
-
-    output[gx] = wsum / kernel_size;
-  }
-}
-
-// Cooperative shared-memory GPU kernel stub.
-//
-// input: device vector with length H
-// kernel_size: pooling window length
-// stride: distance between consecutive window starts
-// padding: implicit zero-padding count on each side of input
-// output: device vector with length H_out
-// H: input vector length
-// H_out: output vector length
-__global__ void avg_pool_1d_coop_shared_kernel(
-    const float* __restrict__ input, int kernel_size, int stride, int padding,
-    float* __restrict__ output, size_t H, size_t H_out) {
-  //shared memory to hold up that many elements, size passed in dynamically
-  extern __shared__ float smem_input[];
-
-  size_t total_blocks = (H_out + blockDim.x - 1) / blockDim.x;
-
-  //grid stride @ block level
-  for (size_t bx = blockIdx.x; bx < total_blocks; bx += gridDim.x)
-  {
-    //output cells range owned by a block = blockDim.x
-    //compute the output cell, start end end range for this block
-    size_t op_start = bx * blockDim.x;
-    size_t op_end = op_start + blockDim.x - 1;
-
-    //need to compute which portion of input cells are required for a block to process
-    size_t input_start = op_start * stride; //ech output elements starts/skip over stride num of elemnts
-    //the last output cell start with a certain stride and spans over kenrl_Size worh of elements
-    size_t input_end = (op_end * stride) + kernel_size;
-    size_t total_input_elements = input_end - input_start;
-
-    //populate shared memory cooperativetly
-    for (size_t lx = threadIdx.x; lx < total_input_elements; lx += blockDim.x)
-    {
-      long long load_idx =
-          static_cast<long long>(input_start + lx) - padding;
-      smem_input[lx] =
-          (0 <= load_idx && load_idx < static_cast<long long>(H))
-              ? input[load_idx]
-              : 0.0f;
-    }
-
-    //sync
-    __syncthreads();
-
-    //perform average pooling on shared memory
-    float sum = 0.0f;
-    size_t local_ws = threadIdx.x * stride;
-    size_t local_we = local_ws + kernel_size;
-    for (size_t i = local_ws; i < local_we; ++i)
-      sum += smem_input[i];
-
-    //update output
-    size_t out_idx = (bx * blockDim.x) + threadIdx.x;
-
-    if (out_idx < H_out)
-      output[out_idx] = sum / kernel_size;
-
-    //make sure current grid is entirely processed, before
-    //moving to next grid
-    __syncthreads();
-  }
-}
-
-extern "C" void solution(const float* input, int kernel_size, int stride,
-                         int padding, float* output, size_t H) {
-  const size_t H_out = avg_pool_output_size(H, kernel_size, stride, padding);
-
-  if (H_out == 0) {
-    return;
-  }
-
-  dim3 block_shape(g_launch_config.block_x, 1, 1);
-  dim3 grid_shape(g_launch_config.grid_x, 1, 1);
-
-  switch (g_kernel_variant) {
-    case KernelVariant::kBasic: {
-      avg_pool_1d_basic_kernel<<<grid_shape, block_shape>>>(
-          input, kernel_size, stride, padding, output, H, H_out);
-      break;
-    }
-    case KernelVariant::kBasicLdg: {
-      avg_pool_1d_basic_ldg_kernel<<<grid_shape, block_shape>>>(
-          input, kernel_size, stride, padding, output, H, H_out);
-      break;
-    }
-    case KernelVariant::kCoopShared: {
-      size_t output_cells_per_block = block_shape.x - 1;
-      size_t input_cells_per_block =
-          output_cells_per_block * stride + kernel_size;
-      size_t smem_bytes = input_cells_per_block * sizeof(float);
-      avg_pool_1d_coop_shared_kernel<<<grid_shape, block_shape, smem_bytes>>>(
-          input, kernel_size, stride, padding, output, H, H_out);
-      break;
-    }
-  }
-
-  CUDA_CHECK(cudaGetLastError());
 }
 
 int main(int argc, char** argv) {

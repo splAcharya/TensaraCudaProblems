@@ -10,24 +10,19 @@
 #include <vector>
 
 /*
- * Problem 7: GELU
- * Source: https://tensara.org/problems/gelu
+ * Problem 8: Sigmoid
+ * Source: https://tensara.org/problems/sigmoid
  *
  * Given an input matrix A with shape M x N, compute matrix C with the same
- * shape by applying the Gaussian Error Linear Unit activation elementwise.
+ * shape by applying the Sigmoid activation elementwise.
  *
- *   C[i][j] = GELU(A[i][j])
+ *   C[i][j] = sigmoid(A[i][j])
  *
- * Tensara asks for the tanh approximation:
+ * Sigmoid is defined as:
  *
- *             x /      /  sqrt(2)                         \\
- *   GELU(x) = - | 1 + tanh| -------- * (x + 0.044715*x^3) | |
- *             2 \      \  sqrt(pi)                        / /
- *
- * Equivalent common form:
- *
- *   GELU(x) = 0.5*x *
- *             (1 + tanh(sqrt(2/pi) * (x + 0.044715*x*x*x)))
+ *                1
+ *   sigmoid(x) = ------------
+ *                1 + exp(-x)
  *
  * Input/output shape rules:
  * - input is a row-major float32 matrix with shape M x N.
@@ -37,10 +32,9 @@
  *   m as columns N.
  *
  * Important notes:
- * - Implement the approximation formula above, not the exact normal CDF.
- * - The problem definition verifies with rtol=1e-4 and atol=2e-5.
- * - The static page did not display starter code, but embedded problem data
- *   confirmed the parameter order: input, output, n, m.
+ * - The problem definition verifies with rtol=1e-4 and atol=6e-5.
+ * - The page and embedded problem data confirmed the parameter order:
+ *   input, output, n, m.
  *
  * Published Tensara sizes:
  * - 4096x4096
@@ -73,14 +67,14 @@ struct LaunchConfig {
   int grid_x = 64;
 };
 
-enum class TimingMode {
-  kMedian,
-  kBest,
-};
-
 enum class KernelVariant {
   kBasic,
   kFloat4,
+};
+
+enum class TimingMode {
+  kMedian,
+  kBest,
 };
 
 static LaunchConfig g_launch_config{256, 64};
@@ -223,31 +217,45 @@ struct TestCase {
   std::vector<float> expected;
 };
 
+struct SizedCase {
+  const char* name = "";
+  size_t rows = 0;
+  size_t cols = 0;
+};
+
+struct TestResult {
+  std::string group;
+  std::string name;
+  std::string kernel;
+  size_t rows = 0;
+  size_t cols = 0;
+  int block_x = 0;
+  int grid_x = 0;
+  std::string cpu;
+  std::string gpu;
+  float total_ms = 0.0f;
+  float kernel_ms = 0.0f;
+};
+
+// Shared host/device helper.
+__host__ __device__ __forceinline__ float sigmoid_int(float x)
+{
+  return 1.0f / (1.0f + expf(-x));
+}
+
 // CPU reference implementation.
 //
 // input: row-major matrix flattened with shape (rows * cols)
 // output: row-major matrix flattened with shape (rows * cols)
 // rows: matrix row count M
 // cols: matrix column count N
-static void cpu_gelu_reference(const std::vector<float>& input,
-                               std::vector<float>& output, size_t rows,
-                               size_t cols) {
+static void cpu_sigmoid_reference(const std::vector<float>& input,
+                                  std::vector<float>& output, size_t rows,
+                                  size_t cols) {
   size_t total = rows * cols;
 
-  for (size_t i = 0; i < total; ++i) {
-    float x = input[i];
-    float internal = (0.7978845608f * (x + (0.044715f * x * x * x) ) );
-    output[i] = 0.5f * x * (1.0f + std::tanh(internal));
-  }
-}
-
-
-//shared device helpers
-__device__ float gelu_single(const float x)
-{
-  float x_int = (0.7978845608f * (x + (0.044715f * x * x * x) ) );
-  float y     = 0.5f * x * (1.0f + std::tanh(x_int));
-  return y;
+  for (size_t i = 0; i < total; ++i)
+    output[i] = sigmoid_int(input[i]);
 }
 
 // Basic GPU kernel implementation.
@@ -255,14 +263,13 @@ __device__ float gelu_single(const float x)
 // input: device pointer to row-major matrix with shape (total)
 // output: device pointer to row-major matrix with shape (total)
 // total: number of matrix elements, normally rows * cols from solution(...)
-__global__ void gelu_basic_kernel(const float* input, float* output,
-                                  size_t total) {
-
+__global__ void sigmoid_basic_kernel(const float* input, float* output,
+                                     size_t total) {
   size_t gix = (blockIdx.x * blockDim.x) + threadIdx.x;
   size_t grid_stride = (blockDim.x * gridDim.x);
 
   for (size_t gx = gix; gx < total; gx += grid_stride)
-    output[gx] = gelu_single(input[gx]);
+    output[gx] = sigmoid_int(input[gx]);
 }
 
 // Float4 GPU kernel implementation.
@@ -270,31 +277,28 @@ __global__ void gelu_basic_kernel(const float* input, float* output,
 // input: device pointer to row-major matrix with shape (total)
 // output: device pointer to row-major matrix with shape (total)
 // total: number of matrix elements, normally rows * cols from solution(...)
-__global__ void gelu_float4_kernel(const float* input, float* output,
-                                   size_t total) {
+// note: implementation should handle any scalar tail after float4 work
+__global__ void sigmoid_float4_kernel(const float* input, float* output,
+                                      size_t total) {
 
-  size_t total_f4 = total / 4;
-  const float4 *input_f4 = reinterpret_cast<const float4 *>(input);
-  float4 *output_f4 = reinterpret_cast<float4 *>(output);
   size_t gix = (blockIdx.x * blockDim.x) + threadIdx.x;
+  size_t total_f4 = total / 4;
+  size_t tail_start = gix + (total_f4 * 4); //start from this many elemt apart
   size_t grid_stride = (blockDim.x * gridDim.x);
 
-  //vector part
+  const float4 *input_f4 = reinterpret_cast<const float4 *>(input);
+  float4 *output_f4 = reinterpret_cast<float4 *>(output);
+
   for (size_t gx = gix; gx < total_f4; gx += grid_stride)
   {
-    float4 x_f4 = input_f4[gx];
-    float4 y_f4;
-    y_f4.w = gelu_single(x_f4.w);
-    y_f4.x = gelu_single(x_f4.x);
-    y_f4.y = gelu_single(x_f4.y);
-    y_f4.z = gelu_single(x_f4.z);
-    output_f4[gx] = y_f4;
+    output_f4[gx] = make_float4(sigmoid_int(input_f4[gx].x),
+                                sigmoid_int(input_f4[gx].y),
+                                sigmoid_int(input_f4[gx].z),
+                                sigmoid_int(input_f4[gx].w));
   }
 
-  //scalar/tail part
-  size_t tail_start = (total_f4 * 4) + gix;
   for (size_t gx = tail_start; gx < total; gx += grid_stride)
-    output[gx] = gelu_single(input[gx]);
+    output[gx] = sigmoid_int(input[gx]);
 }
 
 extern "C" void solution(const float* input, float* output, size_t n,
@@ -305,23 +309,24 @@ extern "C" void solution(const float* input, float* output, size_t n,
 
   switch (g_kernel_variant) {
     case KernelVariant::kBasic:
-      gelu_basic_kernel<<<grid_shape, block_shape>>>(input, output, total);
+      sigmoid_basic_kernel<<<grid_shape, block_shape>>>(input, output, total);
       break;
     case KernelVariant::kFloat4:
-      gelu_float4_kernel<<<grid_shape, block_shape>>>(input, output, total);
+      sigmoid_float4_kernel<<<grid_shape, block_shape>>>(input, output,
+                                                         total);
       break;
   }
 
   CUDA_CHECK(cudaGetLastError());
 }
 
-static std::vector<float> make_gelu_input(size_t rows, size_t cols) {
+static std::vector<float> make_sigmoid_input(size_t rows, size_t cols) {
   const size_t total = rows * cols;
   std::vector<float> input(total, 0.0f);
   for (size_t i = 0; i < total; ++i) {
     const int raw =
         static_cast<int>((i * 41 + rows * 13 + cols * 5 + 23) % 257) - 128;
-    input[i] = static_cast<float>(raw) / 32.0f;
+    input[i] = static_cast<float>(raw) / 128.0f;
   }
   return input;
 }
@@ -371,134 +376,29 @@ static bool verify_close(const std::vector<float>& got,
     }
     return false;
   }
-
   if (verbose) {
-    std::cerr << "verify(" << label << "): PASS max_abs=" << max_abs
+    std::cout << "verify(" << label << "): PASS max_abs=" << max_abs
               << " max_i=" << max_i << '\n';
   }
   return true;
 }
 
-struct TestResult {
-  const char* group = "";
-  const char* name = "";
-  const char* kernel = "";
-  size_t rows = 0;
-  size_t cols = 0;
-  int block_x = 0;
-  int grid_x = 0;
-  std::string cpu;
-  std::string gpu;
-  float total_ms = 0.0f;
-  float kernel_ms = 0.0f;
-};
-
 static void print_results_table(const std::vector<TestResult>& results) {
-  std::cout << std::left << std::setw(8) << "group" << std::setw(18) << "name"
-            << std::setw(12) << "kernel" << std::setw(10) << "rows"
-            << std::setw(10) << "cols" << std::setw(8) << "block_x"
-            << std::setw(8) << "grid_x" << std::setw(6) << "cpu"
-            << std::setw(6) << "gpu" << std::setw(12) << "total_ms"
-            << std::setw(12) << "kernel_ms" << '\n';
+  std::cout << std::left << std::setw(8) << "group" << std::setw(18)
+            << "name" << std::setw(12) << "kernel" << std::setw(10)
+            << "rows" << std::setw(10) << "cols" << std::setw(8)
+            << "block_x" << std::setw(8) << "grid_x" << std::setw(6)
+            << "cpu" << std::setw(6) << "gpu" << std::setw(12)
+            << "total_ms" << std::setw(12) << "kernel_ms" << '\n';
   std::cout << std::string(110, '-') << '\n';
-  std::cout << std::fixed << std::setprecision(3);
-
   for (const auto& r : results) {
     std::cout << std::left << std::setw(8) << r.group << std::setw(18)
               << r.name << std::setw(12) << r.kernel << std::setw(10)
               << r.rows << std::setw(10) << r.cols << std::setw(8)
               << r.block_x << std::setw(8) << r.grid_x << std::setw(6)
               << r.cpu << std::setw(6) << r.gpu << std::setw(12)
-              << r.total_ms << std::setw(12) << r.kernel_ms << '\n';
-  }
-}
-
-static void print_scale_heatmaps(const std::vector<TestResult>& results) {
-  if (!kGpuKernelImplemented) {
-    return;
-  }
-
-  std::vector<std::string> names;
-  std::vector<std::string> kernels;
-  std::vector<int> block_sizes;
-  std::vector<int> grid_sizes;
-
-  for (const auto& r : results) {
-    if (r.group != std::string("scale") || r.gpu == "FAIL") {
-      continue;
-    }
-    if (std::find(names.begin(), names.end(), r.name) == names.end()) {
-      names.push_back(r.name);
-    }
-    if (std::find(kernels.begin(), kernels.end(), r.kernel) == kernels.end()) {
-      kernels.push_back(r.kernel);
-    }
-    if (std::find(block_sizes.begin(), block_sizes.end(), r.block_x) ==
-        block_sizes.end()) {
-      block_sizes.push_back(r.block_x);
-    }
-    if (std::find(grid_sizes.begin(), grid_sizes.end(), r.grid_x) ==
-        grid_sizes.end()) {
-      grid_sizes.push_back(r.grid_x);
-    }
-  }
-
-  if (names.empty()) {
-    return;
-  }
-
-  std::sort(block_sizes.begin(), block_sizes.end());
-  std::sort(grid_sizes.begin(), grid_sizes.end());
-
-  std::cout << "\nScaling Heatmaps (kernel_ms, lower is better)\n";
-  std::cout << std::string(60, '=') << '\n';
-  std::cout << std::fixed << std::setprecision(3);
-
-  for (const auto& name : names) {
-    for (const auto& kernel : kernels) {
-      float best_ms = -1.0f;
-      int best_block = 0;
-      int best_grid = 0;
-
-      for (const auto& r : results) {
-        if (r.group == std::string("scale") && r.name == name &&
-            r.kernel == kernel && r.gpu != "FAIL") {
-          if (best_ms < 0.0f || r.kernel_ms < best_ms) {
-            best_ms = r.kernel_ms;
-            best_block = r.block_x;
-            best_grid = r.grid_x;
-          }
-        }
-      }
-
-      std::cout << '\n' << name << " / " << kernel << " best=(" << best_block
-                << ", " << best_grid << ") -> " << best_ms << " ms\n";
-      std::cout << std::left << std::setw(10) << "block\\grid";
-      for (int grid_x : grid_sizes) {
-        std::cout << std::setw(10) << grid_x;
-      }
-      std::cout << '\n';
-
-      for (int block_x : block_sizes) {
-        std::cout << std::left << std::setw(10) << block_x;
-        for (int grid_x : grid_sizes) {
-          bool found = false;
-          for (const auto& r : results) {
-            if (r.group == std::string("scale") && r.name == name &&
-                r.kernel == kernel && r.block_x == block_x &&
-                r.grid_x == grid_x && r.gpu != "FAIL") {
-              std::cout << std::setw(10) << r.kernel_ms;
-              found = true;
-              break;
-            }
-          }
-          if (!found) {
-            std::cout << std::setw(10) << "-";
-          }
-        }
-        std::cout << '\n';
-      }
-    }
+              << std::fixed << std::setprecision(3) << r.total_ms
+              << std::setw(12) << r.kernel_ms << '\n';
   }
 }
 
@@ -515,7 +415,7 @@ static void collect_kernel_timing_samples(const float* d_input,
   CUDA_CHECK(cudaDeviceSynchronize());
 
   samples.clear();
-  samples.reserve(g_timing_repeats);
+  samples.reserve(static_cast<size_t>(g_timing_repeats));
   for (int i = 0; i < g_timing_repeats; ++i) {
     CUDA_CHECK(cudaMemset(d_output, 0, bytes));
     CUDA_CHECK(cudaEventRecord(kernel_start));
@@ -529,129 +429,102 @@ static void collect_kernel_timing_samples(const float* d_input,
   }
 }
 
-static void run_solution_host(const std::vector<float>& input,
-                              std::vector<float>& output, size_t rows,
-                              size_t cols) {
+static std::vector<float> run_gpu_case(const std::vector<float>& input,
+                                       size_t rows, size_t cols) {
+  const size_t total = rows * cols;
+  const size_t bytes = total * sizeof(float);
+  std::vector<float> output(total, 0.0f);
+  float* d_input = nullptr;
+  float* d_output = nullptr;
   cudaEvent_t total_start = nullptr;
   cudaEvent_t total_stop = nullptr;
   cudaEvent_t kernel_start = nullptr;
   cudaEvent_t kernel_stop = nullptr;
+
   CUDA_CHECK(cudaEventCreate(&total_start));
   CUDA_CHECK(cudaEventCreate(&total_stop));
   CUDA_CHECK(cudaEventCreate(&kernel_start));
   CUDA_CHECK(cudaEventCreate(&kernel_stop));
-
-  const size_t total = rows * cols;
-  const size_t bytes = total * sizeof(float);
-
-  float* d_input = nullptr;
-  float* d_output = nullptr;
-
   CUDA_CHECK(cudaEventRecord(total_start));
+
   CUDA_CHECK(cudaMalloc(&d_input, bytes));
   CUDA_CHECK(cudaMalloc(&d_output, bytes));
-  CUDA_CHECK(
-      cudaMemcpy(d_input, input.data(), bytes, cudaMemcpyHostToDevice));
+  CUDA_CHECK(cudaMemcpy(d_input, input.data(), bytes, cudaMemcpyHostToDevice));
   CUDA_CHECK(cudaMemset(d_output, 0, bytes));
 
   std::vector<float> kernel_samples;
   collect_kernel_timing_samples(d_input, d_output, bytes, rows, cols,
                                 kernel_start, kernel_stop, kernel_samples);
+  CUDA_CHECK(cudaMemcpy(output.data(), d_output, bytes,
+                        cudaMemcpyDeviceToHost));
 
-  CUDA_CHECK(
-      cudaMemcpy(output.data(), d_output, bytes, cudaMemcpyDeviceToHost));
   CUDA_CHECK(cudaEventRecord(total_stop));
   CUDA_CHECK(cudaEventSynchronize(total_stop));
-
-  float total_ms = 0.0f;
-  CUDA_CHECK(cudaEventElapsedTime(&total_ms, total_start, total_stop));
-  g_last_timing.total_ms = total_ms;
+  CUDA_CHECK(cudaEventElapsedTime(&g_last_timing.total_ms, total_start,
+                                  total_stop));
   g_last_timing.kernel_ms = select_timing_sample(kernel_samples);
 
+  CUDA_CHECK(cudaFree(d_input));
+  CUDA_CHECK(cudaFree(d_output));
   CUDA_CHECK(cudaEventDestroy(total_start));
   CUDA_CHECK(cudaEventDestroy(total_stop));
   CUDA_CHECK(cudaEventDestroy(kernel_start));
   CUDA_CHECK(cudaEventDestroy(kernel_stop));
-  CUDA_CHECK(cudaFree(d_input));
-  CUDA_CHECK(cudaFree(d_output));
+  return output;
 }
 
 static int run_tests(bool skip_cpu_verify) {
-  if (!cuda_runtime_ready()) {
-    return 1;
-  }
+  std::vector<TestResult> results;
+  bool all_ok = true;
 
-  const LaunchConfig default_launch = g_launch_config;
-  const std::vector<TestCase> small_tests = {
-      {"small_1",
-       3,
-       3,
-       {-3.0f, -2.0f, -1.0f, -0.5f, 0.0f, 0.5f, 1.0f, 2.0f, 3.0f},
-       {-0.00363739f, -0.04540231f, -0.15880801f, -0.15428599f,
-        0.0f, 0.34571401f, 0.84119199f, 1.95459769f, 2.99636261f}},
-      {"small_2",
-       2,
-       3,
-       {-4.0f, 4.0f, 0.25f, -0.25f, 1.0f, -1.0f},
-       {-0.00007025f, 3.99992975f, 0.14967535f, -0.10032465f,
-        0.84119199f, -0.15880801f}},
-      {"small_tail",
+  const std::vector<TestCase> exact_tests = {
+      {"sample_4x4",
+       4,
+       4,
+       {-2.0f, -1.0f, 0.0f, 1.0f, 2.0f, -0.5f, 0.5f, -1.5f,
+        1.5f, 0.0f, -2.5f, 3.0f, -3.0f, 2.5f, -0.1f, 0.1f},
+       {0.11920292f, 0.26894143f, 0.5f, 0.73105860f,
+        0.88079708f, 0.37754067f, 0.62245935f, 0.18242552f,
+        0.81757450f, 0.5f, 0.07585818f, 0.95257413f,
+        0.04742587f, 0.92414182f, 0.47502081f, 0.52497917f}},
+      {"tail_1x5",
        1,
        5,
-       {-1.25f, -0.75f, 0.125f, 2.5f, -2.5f},
-       {-0.13228580f, -0.17003944f, 0.06871720f, 2.48491573f,
-        -0.01508427f}},
+       {-4.0f, -1.0f, 0.0f, 1.0f, 4.0f},
+       {0.01798621f, 0.26894143f, 0.5f, 0.73105860f, 0.98201376f}},
   };
 
-  const struct {
-    const char* name;
-    const char* scale_name;
-    size_t rows;
-    size_t cols;
-  } tensara_tests[] = {
-      {"tensara_1", "scale_tensara_1", 4096, 4096},
-      {"tensara_2", "scale_tensara_2", 6144, 4096},
-      {"tensara_3", "scale_tensara_3", 4096, 7168},
-      {"tensara_4", "scale_tensara_4", 4096, 8192},
-      {"tensara_5", "scale_tensara_5", 8192, 8192},
+  const std::vector<SizedCase> tensara_tests = {
+      {"tensara_1", 4096, 4096},
+      {"tensara_2", 6144, 4096},
+      {"tensara_3", 4096, 7168},
+      {"tensara_4", 4096, 8192},
+      {"tensara_5", 8192, 8192},
   };
 
-  const struct {
-    const char* name;
-    size_t rows;
-    size_t cols;
-  } medium_tests[] = {
+  const std::vector<SizedCase> medium_tests = {
       {"medium_1", 64, 64},
       {"medium_2", 255, 257},
       {"medium_rect", 512, 1025},
       {"medium_tail", 257, 258},
   };
 
-  const struct {
-    const char* name;
-    size_t rows;
-    size_t cols;
-  } large_verify_tests[] = {
+  const std::vector<SizedCase> large_tests = {
       {"large_1", 1023, 2049},
       {"large_2", 1537, 2049},
   };
 
-  const int scale_block_sizes[] = {64, 128, 256, 512};
-  const int scale_grid_sizes[] = {8, 16, 32, 64, 128};
   const KernelVariant kernel_variants[] = {KernelVariant::kBasic,
                                            KernelVariant::kFloat4};
 
-  bool all_ok = true;
-  std::vector<TestResult> results;
+  if (kGpuKernelImplemented && !cuda_runtime_ready()) {
+    return 1;
+  }
 
-  auto run_case = [&](const char* group, const char* name,
-                      const std::vector<float>& input,
-                      const std::vector<float>* expected, size_t rows,
-                      size_t cols) {
-    std::vector<float> ref(input.size(), 0.0f);
-    std::vector<float> gpu_out(input.size(), 0.0f);
-    run_solution_host(input, gpu_out, rows, cols);
-
+  auto record_case = [&](const std::string& group, const std::string& name,
+                         const std::vector<float>& input,
+                         const std::vector<float>* expected, size_t rows,
+                         size_t cols) {
     TestResult res;
     res.group = group;
     res.name = name;
@@ -662,29 +535,37 @@ static int run_tests(bool skip_cpu_verify) {
     res.grid_x = g_launch_config.grid_x;
     res.cpu = "SKIP";
     res.gpu = "SKIP";
+    g_last_timing = {};
 
     if (!skip_cpu_verify && kCpuReferenceImplemented) {
-      cpu_gelu_reference(input, ref, rows, cols);
+      std::vector<float> ref(rows * cols, 0.0f);
+      cpu_sigmoid_reference(input, ref, rows, cols);
       res.cpu = "REF";
-
       if (expected != nullptr) {
-        const bool cpu_ok =
-            verify_close(ref, *expected, 2e-5f, 1e-4f, name, false);
-        all_ok &= cpu_ok;
+        const bool cpu_ok = verify_close(ref, *expected, 6e-5f, 1e-4f,
+                                         name.c_str(), false);
         res.cpu = cpu_ok ? "PASS" : "FAIL";
+        all_ok &= cpu_ok;
       }
+    }
 
-      if (kGpuKernelImplemented) {
-        const bool gpu_ok =
-            verify_close(gpu_out, ref, 2e-5f, 1e-4f, name, false);
-        all_ok &= gpu_ok;
+    if (kGpuKernelImplemented) {
+      const auto gpu = run_gpu_case(input, rows, cols);
+      if (expected != nullptr) {
+        const bool gpu_ok = verify_close(gpu, *expected, 6e-5f, 1e-4f,
+                                         name.c_str(), false);
         res.gpu = gpu_ok ? "PASS" : "FAIL";
+        all_ok &= gpu_ok;
+      } else if (!skip_cpu_verify && kCpuReferenceImplemented) {
+        std::vector<float> ref(rows * cols, 0.0f);
+        cpu_sigmoid_reference(input, ref, rows, cols);
+        const bool gpu_ok = verify_close(gpu, ref, 6e-5f, 1e-4f,
+                                         name.c_str(), false);
+        res.gpu = gpu_ok ? "PASS" : "FAIL";
+        all_ok &= gpu_ok;
+      } else {
+        res.gpu = "SKIP";
       }
-    } else if (expected != nullptr && kGpuKernelImplemented) {
-      const bool gpu_ok =
-          verify_close(gpu_out, *expected, 2e-5f, 1e-4f, name, false);
-      all_ok &= gpu_ok;
-      res.gpu = gpu_ok ? "PASS" : "FAIL";
     }
 
     res.total_ms = g_last_timing.total_ms;
@@ -692,56 +573,36 @@ static int run_tests(bool skip_cpu_verify) {
     results.push_back(res);
   };
 
-  auto run_sized = [&](const char* group, const char* name, size_t rows,
-                       size_t cols) {
-    g_launch_config = default_launch;
-    const auto input = make_gelu_input(rows, cols);
-    run_case(group, name, input, nullptr, rows, cols);
-  };
-
-  auto run_scaling = [&](const char* name, size_t rows, size_t cols) {
-    const auto input = make_gelu_input(rows, cols);
-    for (int block_x : scale_block_sizes) {
-      for (int grid_x : scale_grid_sizes) {
-        g_launch_config = {block_x, grid_x};
-        run_case("scale", name, input, nullptr, rows, cols);
-      }
-    }
-  };
-
   for (KernelVariant kernel_variant : kernel_variants) {
     if (!kernel_enabled(kernel_variant)) {
       continue;
     }
     g_kernel_variant = kernel_variant;
-    g_launch_config = default_launch;
 
-    for (const auto& tc : small_tests) {
-      run_case("small", tc.name, tc.input, &tc.expected, tc.rows, tc.cols);
+    for (const auto& tc : exact_tests) {
+      record_case("small", tc.name, tc.input, &tc.expected, tc.rows, tc.cols);
     }
 
-    if (!skip_cpu_verify) {
-      for (const auto& mt : medium_tests) {
-        run_sized("medium", mt.name, mt.rows, mt.cols);
+    if (!skip_cpu_verify && kCpuReferenceImplemented) {
+      for (const auto& tc : medium_tests) {
+        const std::vector<float> input = make_sigmoid_input(tc.rows, tc.cols);
+        record_case("medium", tc.name, input, nullptr, tc.rows, tc.cols);
       }
-      for (const auto& lt : large_verify_tests) {
-        run_sized("large", lt.name, lt.rows, lt.cols);
+      for (const auto& tc : large_tests) {
+        const std::vector<float> input = make_sigmoid_input(tc.rows, tc.cols);
+        record_case("large", tc.name, input, nullptr, tc.rows, tc.cols);
       }
     }
 
     if (skip_cpu_verify) {
-      for (const auto& tt : tensara_tests) {
-        run_sized("tensara", tt.name, tt.rows, tt.cols);
-      }
-      for (const auto& tt : tensara_tests) {
-        run_scaling(tt.scale_name, tt.rows, tt.cols);
+      for (const auto& tc : tensara_tests) {
+        const std::vector<float> input = make_sigmoid_input(tc.rows, tc.cols);
+        record_case("tensara", tc.name, input, nullptr, tc.rows, tc.cols);
       }
     }
   }
 
   g_kernel_variant = KernelVariant::kBasic;
-  g_launch_config = default_launch;
-
   std::cout << "Timing samples: mode=" << timing_mode_name()
             << " repeats=" << g_timing_repeats
             << " warmup=" << kTimingWarmupIterations
@@ -752,7 +613,6 @@ static int run_tests(bool skip_cpu_verify) {
             << (kGpuKernelImplemented ? "yes" : "no") << "\n\n";
 
   print_results_table(results);
-  print_scale_heatmaps(results);
   return all_ok ? 0 : 1;
 }
 
@@ -779,8 +639,8 @@ int main(int argc, char** argv) {
       }
     } else {
       std::cerr << "Unknown argument: " << arg
-                << " (supported: --skip-cpu, --kernel=..., --timing=..., "
-                << "--timing-repeats=...)\n";
+                << " (supported: --skip-cpu, --kernel=..., "
+                << "--timing=..., --timing-repeats=...)\n";
       return 1;
     }
   }

@@ -1,0 +1,22 @@
+Timing samples: mode=median repeats=5 warmup=1 metric=kernel_ms
+CPU reference implemented: yes
+GPU kernel implemented: yes
+
+group   name              kernel      rows      cols      block_x grid_x  cpu   gpu   total_ms    kernel_ms   
+--------------------------------------------------------------------------------------------------------------
+small   sample_4x4        basic       4         4         256     64      PASS  PASS  437.890     0.020       
+small   tail_1x5          basic       1         5         256     64      PASS  PASS  1.180       0.005       
+medium  medium_1          basic       64        64        256     64      REF   PASS  0.948       0.005       
+medium  medium_2          basic       255       257       256     64      REF   PASS  1.437       0.015       
+medium  medium_rect       basic       512       1025      256     64      REF   PASS  2.638       0.030       
+medium  medium_tail       basic       257       258       256     64      REF   PASS  1.157       0.006       
+large   large_1           basic       1023      2049      256     64      REF   PASS  5.145       0.104       
+large   large_2           basic       1537      2049      256     64      REF   PASS  7.845       0.155       
+small   sample_4x4        float4      4         4         256     64      PASS  PASS  1.274       0.006       
+small   tail_1x5          float4      1         5         256     64      PASS  PASS  0.670       0.006       
+medium  medium_1          float4      64        64        256     64      REF   PASS  0.723       0.005       
+medium  medium_2          float4      255       257       256     64      REF   PASS  0.992       0.041       
+medium  medium_rect       float4      512       1025      256     64      REF   PASS  2.314       0.028       
+medium  medium_tail       float4      257       258       256     64      REF   PASS  1.066       0.006       
+large   large_1           float4      1023      2049      256     64      REF   PASS  5.774       0.102       
+large   large_2           float4      1537      2049      256     64      REF   PASS  7.074       0.147       

@@ -255,6 +255,370 @@ static void cpu_matrix_vector(
   }
 }
 
+// Basic GPU kernel.
+//
+// input_a: device pointer to a row-major matrix with shape (m, k),
+//          stored as input_a[row * k + col]
+// input_b: device pointer to a vector with shape (k)
+// output_c: device pointer to a vector with shape (m)
+// m: number of matrix rows and output elements
+// k: number of matrix columns and vector elements
+__global__ void device_mvm_basic(const float* input_a,
+                                 const float* input_b,
+                                 float* output_c, size_t m, size_t k) {
+  const size_t gix =
+      static_cast<size_t>(blockDim.x) * blockIdx.x + threadIdx.x;
+  const size_t grid_stride =
+      static_cast<size_t>(blockDim.x) * gridDim.x;
+
+  for (size_t row = gix; row < m; row += grid_stride) {
+    float rsum = 0.0f;
+
+    for (size_t col = 0; col < k; ++col) {
+      rsum += input_a[row * k + col] * input_b[col];
+    }
+
+    output_c[row] = rsum;
+  }
+}
+
+// Constant-memory input_b GPU kernel.
+//
+// input_a: device pointer to a row-major matrix with shape (m, k),
+//          stored as input_a[row * k + col]
+// output_c: device pointer to a vector with shape (m)
+// m: number of matrix rows and output elements
+// k: number of matrix columns and vector elements
+__global__ void device_mvm_constant_b(const float* input_a, float* output_c,
+                                      size_t m, size_t k) {
+  const size_t gix =
+      static_cast<size_t>(blockDim.x) * blockIdx.x + threadIdx.x;
+  const size_t grid_stride =
+      static_cast<size_t>(blockDim.x) * gridDim.x;
+
+  for (size_t row = gix; row < m; row += grid_stride) {
+    float rsum = 0.0f;
+
+    for (size_t col = 0; col < k; ++col) {
+      rsum += input_a[row * k + col] * g_input_b_constant[col];
+    }
+
+    output_c[row] = rsum;
+  }
+}
+
+// Shared-memory input_a/input_b GPU kernel.
+//
+// input_a: device pointer to a row-major matrix with shape (m, k),
+//          stored as input_a[row * k + col]
+// input_b: device pointer to a vector with shape (k)
+// output_c: device pointer to a vector with shape (m)
+// m: number of matrix rows and output elements
+// k: number of matrix columns and vector elements
+// shared memory: first blockDim.x floats are intended for input_a values;
+//                next blockDim.x floats are intended for input_b values
+__global__ void device_mvm_shared_ab(const float* input_a,
+                                     const float* input_b, float* output_c,
+                                     size_t m, size_t k) {
+
+  //high level
+  // each output tile is assigned a block of threads
+  // so technically this is a block stride
+  // how many blocks required for all outputs
+
+  size_t total_blocks = m;
+  size_t block_stride = gridDim.x;
+
+  // Dynamic shared memory is one per-block slab. Two separate
+  // extern __shared__ arrays would alias the same base address, so carve the
+  // slab manually: A uses [0, blockDim.x), B uses [blockDim.x, 2*blockDim.x).
+  // This keeps the two loaded tiles from overwriting each other before the
+  // per-block reduction reads them.
+  extern __shared__ float smem[];
+  float *tile_a = smem;
+  float *tile_b = tile_a + blockDim.x;
+
+  size_t num_tiles =  (k + blockDim.x - 1) / blockDim.x;
+
+  //each output cell is assiged a block
+  for (size_t bx = blockIdx.x; bx < total_blocks; bx += block_stride)
+  {
+    //load tiles from gmem to smem
+    float rsum = 0.0f;
+    for (size_t tile_id = 0; tile_id < num_tiles; ++tile_id)
+    {
+      //load current a tile
+
+      //each output row is assigned a block, i.e
+      //each block is responsible for a row in input_a
+      size_t row_pos_a = bx;
+
+      //we bring in blockdim worth of elements per row into the current tile
+      //within each tile, each thread will load a particular element
+      size_t col_pos_a = (tile_id * blockDim.x) + threadIdx.x;
+      size_t load_idx_a = (row_pos_a * k) + col_pos_a;
+      tile_a[threadIdx.x] =
+          (row_pos_a < m && col_pos_a < k) ? input_a[load_idx_a] : 0.0f;
+
+      //load tile b
+      size_t col_pos_b = (tile_id * blockDim.x) + threadIdx.x;
+      tile_b[threadIdx.x] =
+          (col_pos_b < k) ? input_b[col_pos_b] : 0.0f;
+
+      //wait for the entire block to finish writting to shared memory
+      __syncthreads();
+
+      //only 1 thread per block needs to compute the sum,
+      if (threadIdx.x == 0)
+      {
+        for (size_t rdim = 0; rdim < blockDim.x; ++rdim)
+          rsum +=  tile_a[rdim] * tile_b[rdim];
+      }
+
+      //wait for shared memory reads to complete
+      __syncthreads();
+    }
+
+    //store output
+    if (threadIdx.x == 0 && bx < m)
+      output_c[bx] = rsum;
+  }
+}
+
+// Warp-level input_a/input_b GPU kernel.
+//
+// input_a: device pointer to a row-major matrix with shape (m, k),
+//          stored as input_a[row * k + col]
+// input_b: device pointer to a vector with shape (k)
+// output_c: device pointer to a vector with shape (m)
+// m: number of matrix rows and output elements
+// k: number of matrix columns and vector elements
+__global__ void device_mvm_warp(const float* input_a,
+                                const float* input_b, float* output_c,
+                                size_t m, size_t k) {
+
+  size_t total_blocks = m; //each block is responsible for 1 output
+  size_t grid_stride = gridDim.x; //at block level
+  size_t num_tiles = (k + blockDim.x - 1) / blockDim.x;
+  __shared__ float block_res;
+  size_t lane_id = threadIdx.x % 32;
+
+  block_res = 0.0f;
+  __syncthreads();
+
+  for (size_t bx = blockIdx.x; bx < total_blocks; bx += grid_stride)
+  {
+    float rsum = 0.0f;
+
+    //each blockdim worth of data will be operated on
+    for (size_t tile_id = 0; tile_id < num_tiles; ++tile_id)
+    {
+      //load from global memory for local registers
+      int row_pos_a = bx;
+      int col_pos_a = (tile_id * blockDim.x) + threadIdx.x;
+      int load_pos_a = (row_pos_a * k) + col_pos_a;
+      float reg_a =
+          (row_pos_a < m && col_pos_a < k) ? input_a[load_pos_a] : 0.0f;
+
+      int load_pos_b = (tile_id * blockDim.x) + threadIdx.x;
+      float reg_b = (load_pos_b < k) ? input_b[load_pos_b] : 0.0f;
+      rsum += reg_a * reg_b;
+    }
+
+    //warp shuffle
+    for (size_t lane_offset = 16; lane_offset > 0; lane_offset /= 2)
+      rsum += __shfl_down_sync(0xffffffffu, rsum, lane_offset);
+
+    if (lane_id == 0)
+      atomicAdd(&block_res, rsum);
+
+    __syncthreads();
+
+    if (threadIdx.x == 0 && bx < m)
+    {
+      output_c[bx] = block_res;
+      block_res = 0.0f;
+    }
+
+    __syncthreads();
+  }
+}
+
+// Warp-level input_a/constant input_b GPU kernel.
+//
+// input_a: device pointer to a row-major matrix with shape (m, k),
+//          stored as input_a[row * k + col]
+// output_c: device pointer to a vector with shape (m)
+// m: number of matrix rows and output elements
+// k: number of matrix columns and vector elements
+__global__ void device_mvm_warp_const_b(const float* input_a,
+                                        float* output_c, size_t m,
+                                        size_t k) {
+  size_t total_blocks = m;
+  size_t grid_stride = gridDim.x;
+  size_t num_tiles = (k + blockDim.x - 1) / blockDim.x;
+  __shared__ float block_res;
+  size_t lane_id = threadIdx.x % 32;
+
+  block_res = 0.0f;
+  __syncthreads();
+
+  for (size_t bx = blockIdx.x; bx < total_blocks; bx += grid_stride) {
+    float rsum = 0.0f;
+
+    for (size_t tile_id = 0; tile_id < num_tiles; ++tile_id) {
+      const int row_pos_a = static_cast<int>(bx);
+      const int col_pos_a =
+          static_cast<int>(tile_id * blockDim.x + threadIdx.x);
+      const int load_pos_a =
+          static_cast<int>(row_pos_a * k) + col_pos_a;
+      const float reg_a =
+          (row_pos_a < static_cast<int>(m) && col_pos_a < static_cast<int>(k))
+              ? input_a[load_pos_a]
+              : 0.0f;
+
+      const int load_pos_b =
+          static_cast<int>(tile_id * blockDim.x + threadIdx.x);
+      const float reg_b =
+          (load_pos_b < static_cast<int>(k))
+              ? g_input_b_constant[load_pos_b]
+              : 0.0f;
+      rsum += reg_a * reg_b;
+    }
+
+    for (size_t lane_offset = 16; lane_offset > 0; lane_offset /= 2) {
+      rsum += __shfl_down_sync(0xffffffffu, rsum, lane_offset);
+    }
+
+    if (lane_id == 0) {
+      atomicAdd(&block_res, rsum);
+    }
+
+    __syncthreads();
+
+    if (threadIdx.x == 0 && bx < m) {
+      output_c[bx] = block_res;
+      block_res = 0.0f;
+    }
+
+    __syncthreads();
+  }
+}
+
+// One-warp-per-output-row GPU kernel.
+//
+// input_a: device pointer to a row-major matrix with shape (m, k),
+//          stored as input_a[row * k + col]
+// input_b: device pointer to a vector with shape (k)
+// output_c: device pointer to a vector with shape (m)
+// m: number of matrix rows and output elements
+// k: number of matrix columns and vector elements
+//
+// Intended mapping:
+// - one warp owns one output row
+// - one block owns blockDim.x / 32 output rows
+// - lanes in a warp walk columns as col = lane, lane + 32, ...
+__global__ void device_mvm_warp_per_row(const float* input_a,
+                                        const float* input_b,
+                                        float* output_c, size_t m,
+                                        size_t k) {
+  // Total warps required for output size: one warp per output cell.
+  const size_t total_warps = m;
+
+  // For each thread owning one output cell:
+  //   grid_stride = blockDim.x * gridDim.x
+  //
+  // For each block owning one output cell:
+  //   grid_stride = gridDim.x
+  //
+  // For each warp owning one output cell:
+  //   warps_per_block = blockDim.x / warpSize
+  //   grid_stride = warps_per_block * gridDim.x
+  //
+  // Example launch config: gridDim.x = 64, blockDim.x = 64
+  //   warps_per_block = 64 / 32 = 2
+  //   warps_per_grid = 2 * 64 = 128
+  const size_t warps_per_block = blockDim.x / warpSize;
+  const size_t grid_stride = warps_per_block * gridDim.x;
+  const size_t warp_lid = threadIdx.x / warpSize;
+  const size_t warp_gid = warps_per_block * blockIdx.x + warp_lid;
+
+  // Example: threadIdx.x 17 and 45 map to lane 17 and lane 13.
+  const size_t lane_id = threadIdx.x % warpSize;
+  const size_t total_tiles = (k + warpSize - 1) / warpSize;
+
+  // Grid-stride loop at warp level.
+  for (size_t wx = warp_gid; wx < total_warps; wx += grid_stride) {
+    float rsum = 0.0f;
+
+    // Warp-stride loop: each iteration covers one warp-sized column tile.
+    for (size_t tile_id = 0; tile_id < total_tiles; ++tile_id) {
+      // Load A register: one warp owns one output cell from m * k by k * 1.
+      const size_t row_pos_a = wx;
+
+      // Each warp pulls 32 contiguous A and B elements at a time.
+      const size_t col_pos_a = tile_id * warpSize + lane_id;
+      const size_t ld_pos_a = row_pos_a * k + col_pos_a;
+      const float reg_a =
+          (row_pos_a < m && col_pos_a < k) ? input_a[ld_pos_a] : 0.0f;
+
+      // Load B register from the 1D vector.
+      const size_t row_pos_b = tile_id * warpSize + lane_id;
+      const float reg_b = (row_pos_b < k) ? input_b[row_pos_b] : 0.0f;
+
+      // Lane-local partial sum.
+      rsum += reg_a * reg_b;
+    }
+
+    // Accumulate lane partial sums into lane 0.
+    for (size_t lane_offset = 16; lane_offset > 0; lane_offset /= 2) {
+      rsum += __shfl_down_sync(0xffffffffu, rsum, lane_offset);
+    }
+
+    // At this point only lane 0 has the full row result.
+    if (lane_id == 0 && wx < m) {
+      output_c[wx] = rsum;
+    }
+  }
+}
+
+extern "C" void solution(const float* input_a, const float* input_b,
+                         float* output_c, size_t m, size_t k) {
+  dim3 block_shape(g_launch_config.block_x, 1, 1);
+  dim3 grid_shape(g_launch_config.grid_x, 1, 1);
+  const size_t shared_bytes =
+      2 * static_cast<size_t>(g_launch_config.block_x) * sizeof(float);
+
+  switch (g_kernel_variant) {
+    case KernelVariant::kBasic:
+      device_mvm_basic<<<grid_shape, block_shape>>>(input_a, input_b, output_c,
+                                                    m, k);
+      break;
+    case KernelVariant::kConstantB:
+      device_mvm_constant_b<<<grid_shape, block_shape>>>(input_a, output_c, m,
+                                                         k);
+      break;
+    case KernelVariant::kSharedAB:
+      device_mvm_shared_ab<<<grid_shape, block_shape, shared_bytes>>>(
+          input_a, input_b, output_c, m, k);
+      break;
+    case KernelVariant::kWarp:
+      device_mvm_warp<<<grid_shape, block_shape>>>(input_a, input_b, output_c,
+                                                   m, k);
+      break;
+    case KernelVariant::kWarpConstB:
+      device_mvm_warp_const_b<<<grid_shape, block_shape>>>(input_a, output_c,
+                                                           m, k);
+      break;
+    case KernelVariant::kWarpPerRow:
+      device_mvm_warp_per_row<<<grid_shape, block_shape>>>(input_a, input_b,
+                                                           output_c, m, k);
+      break;
+  }
+
+  CUDA_CHECK(cudaGetLastError());
+}
+
 static std::vector<float> make_matrix_input(size_t m, size_t k) {
   const size_t total = m * k;
   std::vector<float> input_a(total, 0.0f);
@@ -972,370 +1336,6 @@ static int run_tests(bool skip_cpu_verify) {
   print_results_table(results);
   print_scale_heatmaps(results);
   return all_ok ? 0 : 1;
-}
-
-// Basic GPU kernel.
-//
-// input_a: device pointer to a row-major matrix with shape (m, k),
-//          stored as input_a[row * k + col]
-// input_b: device pointer to a vector with shape (k)
-// output_c: device pointer to a vector with shape (m)
-// m: number of matrix rows and output elements
-// k: number of matrix columns and vector elements
-__global__ void device_mvm_basic(const float* input_a,
-                                 const float* input_b,
-                                 float* output_c, size_t m, size_t k) {
-  const size_t gix =
-      static_cast<size_t>(blockDim.x) * blockIdx.x + threadIdx.x;
-  const size_t grid_stride =
-      static_cast<size_t>(blockDim.x) * gridDim.x;
-
-  for (size_t row = gix; row < m; row += grid_stride) {
-    float rsum = 0.0f;
-
-    for (size_t col = 0; col < k; ++col) {
-      rsum += input_a[row * k + col] * input_b[col];
-    }
-
-    output_c[row] = rsum;
-  }
-}
-
-// Constant-memory input_b GPU kernel.
-//
-// input_a: device pointer to a row-major matrix with shape (m, k),
-//          stored as input_a[row * k + col]
-// output_c: device pointer to a vector with shape (m)
-// m: number of matrix rows and output elements
-// k: number of matrix columns and vector elements
-__global__ void device_mvm_constant_b(const float* input_a, float* output_c,
-                                      size_t m, size_t k) {
-  const size_t gix =
-      static_cast<size_t>(blockDim.x) * blockIdx.x + threadIdx.x;
-  const size_t grid_stride =
-      static_cast<size_t>(blockDim.x) * gridDim.x;
-
-  for (size_t row = gix; row < m; row += grid_stride) {
-    float rsum = 0.0f;
-
-    for (size_t col = 0; col < k; ++col) {
-      rsum += input_a[row * k + col] * g_input_b_constant[col];
-    }
-
-    output_c[row] = rsum;
-  }
-}
-
-// Shared-memory input_a/input_b GPU kernel.
-//
-// input_a: device pointer to a row-major matrix with shape (m, k),
-//          stored as input_a[row * k + col]
-// input_b: device pointer to a vector with shape (k)
-// output_c: device pointer to a vector with shape (m)
-// m: number of matrix rows and output elements
-// k: number of matrix columns and vector elements
-// shared memory: first blockDim.x floats are intended for input_a values;
-//                next blockDim.x floats are intended for input_b values
-__global__ void device_mvm_shared_ab(const float* input_a,
-                                     const float* input_b, float* output_c,
-                                     size_t m, size_t k) {
-
-  //high level
-  // each output tile is assigned a block of threads
-  // so technically this is a block stride
-  // how many blocks required for all outputs
-
-  size_t total_blocks = m;
-  size_t block_stride = gridDim.x;
-
-  // Dynamic shared memory is one per-block slab. Two separate
-  // extern __shared__ arrays would alias the same base address, so carve the
-  // slab manually: A uses [0, blockDim.x), B uses [blockDim.x, 2*blockDim.x).
-  // This keeps the two loaded tiles from overwriting each other before the
-  // per-block reduction reads them.
-  extern __shared__ float smem[];
-  float *tile_a = smem;
-  float *tile_b = tile_a + blockDim.x;
-
-  size_t num_tiles =  (k + blockDim.x - 1) / blockDim.x;
-
-  //each output cell is assiged a block
-  for (size_t bx = blockIdx.x; bx < total_blocks; bx += block_stride)
-  {
-    //load tiles from gmem to smem
-    float rsum = 0.0f;
-    for (size_t tile_id = 0; tile_id < num_tiles; ++tile_id)
-    {
-      //load current a tile
-
-      //each output row is assigned a block, i.e
-      //each block is responsible for a row in input_a
-      size_t row_pos_a = bx;
-
-      //we bring in blockdim worth of elements per row into the current tile
-      //within each tile, each thread will load a particular element
-      size_t col_pos_a = (tile_id * blockDim.x) + threadIdx.x;
-      size_t load_idx_a = (row_pos_a * k) + col_pos_a;
-      tile_a[threadIdx.x] =
-          (row_pos_a < m && col_pos_a < k) ? input_a[load_idx_a] : 0.0f;
-
-      //load tile b
-      size_t col_pos_b = (tile_id * blockDim.x) + threadIdx.x;
-      tile_b[threadIdx.x] =
-          (col_pos_b < k) ? input_b[col_pos_b] : 0.0f;
-
-      //wait for the entire block to finish writting to shared memory
-      __syncthreads();
-
-      //only 1 thread per block needs to compute the sum,
-      if (threadIdx.x == 0)
-      {
-        for (size_t rdim = 0; rdim < blockDim.x; ++rdim)
-          rsum +=  tile_a[rdim] * tile_b[rdim];
-      }
-
-      //wait for shared memory reads to complete
-      __syncthreads();
-    }
-
-    //store output
-    if (threadIdx.x == 0 && bx < m)
-      output_c[bx] = rsum;
-  }
-}
-
-// Warp-level input_a/input_b GPU kernel.
-//
-// input_a: device pointer to a row-major matrix with shape (m, k),
-//          stored as input_a[row * k + col]
-// input_b: device pointer to a vector with shape (k)
-// output_c: device pointer to a vector with shape (m)
-// m: number of matrix rows and output elements
-// k: number of matrix columns and vector elements
-__global__ void device_mvm_warp(const float* input_a,
-                                const float* input_b, float* output_c,
-                                size_t m, size_t k) {
-
-  size_t total_blocks = m; //each block is responsible for 1 output
-  size_t grid_stride = gridDim.x; //at block level
-  size_t num_tiles = (k + blockDim.x - 1) / blockDim.x;
-  __shared__ float block_res;
-  size_t lane_id = threadIdx.x % 32;
-
-  block_res = 0.0f;
-  __syncthreads();
-
-  for (size_t bx = blockIdx.x; bx < total_blocks; bx += grid_stride)
-  {
-    float rsum = 0.0f;
-
-    //each blockdim worth of data will be operated on
-    for (size_t tile_id = 0; tile_id < num_tiles; ++tile_id)
-    {
-      //load from global memory for local registers
-      int row_pos_a = bx;
-      int col_pos_a = (tile_id * blockDim.x) + threadIdx.x;
-      int load_pos_a = (row_pos_a * k) + col_pos_a;
-      float reg_a =
-          (row_pos_a < m && col_pos_a < k) ? input_a[load_pos_a] : 0.0f;
-
-      int load_pos_b = (tile_id * blockDim.x) + threadIdx.x;
-      float reg_b = (load_pos_b < k) ? input_b[load_pos_b] : 0.0f;
-      rsum += reg_a * reg_b;
-    }
-
-    //warp shuffle
-    for (size_t lane_offset = 16; lane_offset > 0; lane_offset /= 2)
-      rsum += __shfl_down_sync(0xffffffffu, rsum, lane_offset);
-
-    if (lane_id == 0)
-      atomicAdd(&block_res, rsum);
-
-    __syncthreads();
-
-    if (threadIdx.x == 0 && bx < m)
-    {
-      output_c[bx] = block_res;
-      block_res = 0.0f;
-    }
-
-    __syncthreads();
-  }
-}
-
-// Warp-level input_a/constant input_b GPU kernel.
-//
-// input_a: device pointer to a row-major matrix with shape (m, k),
-//          stored as input_a[row * k + col]
-// output_c: device pointer to a vector with shape (m)
-// m: number of matrix rows and output elements
-// k: number of matrix columns and vector elements
-__global__ void device_mvm_warp_const_b(const float* input_a,
-                                        float* output_c, size_t m,
-                                        size_t k) {
-  size_t total_blocks = m;
-  size_t grid_stride = gridDim.x;
-  size_t num_tiles = (k + blockDim.x - 1) / blockDim.x;
-  __shared__ float block_res;
-  size_t lane_id = threadIdx.x % 32;
-
-  block_res = 0.0f;
-  __syncthreads();
-
-  for (size_t bx = blockIdx.x; bx < total_blocks; bx += grid_stride) {
-    float rsum = 0.0f;
-
-    for (size_t tile_id = 0; tile_id < num_tiles; ++tile_id) {
-      const int row_pos_a = static_cast<int>(bx);
-      const int col_pos_a =
-          static_cast<int>(tile_id * blockDim.x + threadIdx.x);
-      const int load_pos_a =
-          static_cast<int>(row_pos_a * k) + col_pos_a;
-      const float reg_a =
-          (row_pos_a < static_cast<int>(m) && col_pos_a < static_cast<int>(k))
-              ? input_a[load_pos_a]
-              : 0.0f;
-
-      const int load_pos_b =
-          static_cast<int>(tile_id * blockDim.x + threadIdx.x);
-      const float reg_b =
-          (load_pos_b < static_cast<int>(k))
-              ? g_input_b_constant[load_pos_b]
-              : 0.0f;
-      rsum += reg_a * reg_b;
-    }
-
-    for (size_t lane_offset = 16; lane_offset > 0; lane_offset /= 2) {
-      rsum += __shfl_down_sync(0xffffffffu, rsum, lane_offset);
-    }
-
-    if (lane_id == 0) {
-      atomicAdd(&block_res, rsum);
-    }
-
-    __syncthreads();
-
-    if (threadIdx.x == 0 && bx < m) {
-      output_c[bx] = block_res;
-      block_res = 0.0f;
-    }
-
-    __syncthreads();
-  }
-}
-
-// One-warp-per-output-row GPU kernel.
-//
-// input_a: device pointer to a row-major matrix with shape (m, k),
-//          stored as input_a[row * k + col]
-// input_b: device pointer to a vector with shape (k)
-// output_c: device pointer to a vector with shape (m)
-// m: number of matrix rows and output elements
-// k: number of matrix columns and vector elements
-//
-// Intended mapping:
-// - one warp owns one output row
-// - one block owns blockDim.x / 32 output rows
-// - lanes in a warp walk columns as col = lane, lane + 32, ...
-__global__ void device_mvm_warp_per_row(const float* input_a,
-                                        const float* input_b,
-                                        float* output_c, size_t m,
-                                        size_t k) {
-  // Total warps required for output size: one warp per output cell.
-  const size_t total_warps = m;
-
-  // For each thread owning one output cell:
-  //   grid_stride = blockDim.x * gridDim.x
-  //
-  // For each block owning one output cell:
-  //   grid_stride = gridDim.x
-  //
-  // For each warp owning one output cell:
-  //   warps_per_block = blockDim.x / warpSize
-  //   grid_stride = warps_per_block * gridDim.x
-  //
-  // Example launch config: gridDim.x = 64, blockDim.x = 64
-  //   warps_per_block = 64 / 32 = 2
-  //   warps_per_grid = 2 * 64 = 128
-  const size_t warps_per_block = blockDim.x / warpSize;
-  const size_t grid_stride = warps_per_block * gridDim.x;
-  const size_t warp_lid = threadIdx.x / warpSize;
-  const size_t warp_gid = warps_per_block * blockIdx.x + warp_lid;
-
-  // Example: threadIdx.x 17 and 45 map to lane 17 and lane 13.
-  const size_t lane_id = threadIdx.x % warpSize;
-  const size_t total_tiles = (k + warpSize - 1) / warpSize;
-
-  // Grid-stride loop at warp level.
-  for (size_t wx = warp_gid; wx < total_warps; wx += grid_stride) {
-    float rsum = 0.0f;
-
-    // Warp-stride loop: each iteration covers one warp-sized column tile.
-    for (size_t tile_id = 0; tile_id < total_tiles; ++tile_id) {
-      // Load A register: one warp owns one output cell from m * k by k * 1.
-      const size_t row_pos_a = wx;
-
-      // Each warp pulls 32 contiguous A and B elements at a time.
-      const size_t col_pos_a = tile_id * warpSize + lane_id;
-      const size_t ld_pos_a = row_pos_a * k + col_pos_a;
-      const float reg_a =
-          (row_pos_a < m && col_pos_a < k) ? input_a[ld_pos_a] : 0.0f;
-
-      // Load B register from the 1D vector.
-      const size_t row_pos_b = tile_id * warpSize + lane_id;
-      const float reg_b = (row_pos_b < k) ? input_b[row_pos_b] : 0.0f;
-
-      // Lane-local partial sum.
-      rsum += reg_a * reg_b;
-    }
-
-    // Accumulate lane partial sums into lane 0.
-    for (size_t lane_offset = 16; lane_offset > 0; lane_offset /= 2) {
-      rsum += __shfl_down_sync(0xffffffffu, rsum, lane_offset);
-    }
-
-    // At this point only lane 0 has the full row result.
-    if (lane_id == 0 && wx < m) {
-      output_c[wx] = rsum;
-    }
-  }
-}
-
-extern "C" void solution(const float* input_a, const float* input_b,
-                         float* output_c, size_t m, size_t k) {
-  dim3 block_shape(g_launch_config.block_x, 1, 1);
-  dim3 grid_shape(g_launch_config.grid_x, 1, 1);
-  const size_t shared_bytes =
-      2 * static_cast<size_t>(g_launch_config.block_x) * sizeof(float);
-
-  switch (g_kernel_variant) {
-    case KernelVariant::kBasic:
-      device_mvm_basic<<<grid_shape, block_shape>>>(input_a, input_b, output_c,
-                                                    m, k);
-      break;
-    case KernelVariant::kConstantB:
-      device_mvm_constant_b<<<grid_shape, block_shape>>>(input_a, output_c, m,
-                                                         k);
-      break;
-    case KernelVariant::kSharedAB:
-      device_mvm_shared_ab<<<grid_shape, block_shape, shared_bytes>>>(
-          input_a, input_b, output_c, m, k);
-      break;
-    case KernelVariant::kWarp:
-      device_mvm_warp<<<grid_shape, block_shape>>>(input_a, input_b, output_c,
-                                                   m, k);
-      break;
-    case KernelVariant::kWarpConstB:
-      device_mvm_warp_const_b<<<grid_shape, block_shape>>>(input_a, output_c,
-                                                           m, k);
-      break;
-    case KernelVariant::kWarpPerRow:
-      device_mvm_warp_per_row<<<grid_shape, block_shape>>>(input_a, input_b,
-                                                           output_c, m, k);
-      break;
-  }
-
-  CUDA_CHECK(cudaGetLastError());
 }
 
 int main(int argc, char** argv) {
