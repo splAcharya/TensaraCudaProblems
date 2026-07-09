@@ -1,0 +1,27 @@
+Timing samples: mode=median repeats=5 warmup=1 metric=kernel_ms
+CPU reference implemented: yes
+GPU kernel implemented: yes
+
+group   name              kernel      rows      cols      block_x grid_x  cpu   gpu   total_ms    kernel_ms   
+--------------------------------------------------------------------------------------------------------------
+small   sample_2x4        basic       2         4         256     64      PASS  PASS  515.477     0.026       
+small   tail_2x3          basic       2         3         256     64      PASS  PASS  0.673       0.005       
+medium  medium_1          basic       8         8         256     64      REF   PASS  0.668       0.005       
+medium  medium_rect       basic       17        33        256     64      REF   PASS  0.565       0.005       
+medium  medium_tail       basic       31        65        256     64      REF   PASS  0.637       0.007       
+large   large_1           basic       257       513       256     64      REF   PASS  1.956       0.205       
+large   large_2           basic       511       1025      256     64      REF   PASS  11.640      1.628       
+small   sample_2x4        shared_mem  2         4         256     64      PASS  PASS  1.644       0.008       
+small   tail_2x3          shared_mem  2         3         256     64      PASS  PASS  0.611       0.006       
+medium  medium_1          shared_mem  8         8         256     64      REF   PASS  0.898       0.011       
+medium  medium_rect       shared_mem  17        33        256     64      REF   PASS  0.563       0.006       
+medium  medium_tail       shared_mem  31        65        256     64      REF   PASS  0.558       0.005       
+large   large_1           shared_mem  257       513       256     64      REF   PASS  0.877       0.031       
+large   large_2           shared_mem  511       1025      256     64      REF   PASS  2.113       0.039       
+small   sample_2x4        warp        2         4         256     64      PASS  PASS  0.974       0.006       
+small   tail_2x3          warp        2         3         256     64      PASS  PASS  0.593       0.006       
+medium  medium_1          warp        8         8         256     64      REF   PASS  0.490       0.005       
+medium  medium_rect       warp        17        33        256     64      REF   PASS  0.544       0.006       
+medium  medium_tail       warp        31        65        256     64      REF   PASS  0.531       0.006       
+large   large_1           warp        257       513       256     64      REF   PASS  0.891       0.010       
+large   large_2           warp        511       1025      256     64      REF   PASS  2.439       0.044       

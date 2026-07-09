@@ -1,0 +1,350 @@
+Timing samples: mode=median repeats=5 warmup=1 metric=kernel_ms
+CPU reference implemented: yes
+GPU kernel implemented: yes
+
+group   name              kernel      rows      cols      block_x grid_x  cpu   gpu   total_ms    kernel_ms   
+--------------------------------------------------------------------------------------------------------------
+small   sample_2x4        basic       2         4         256     64      SKIP  PASS  4.048       0.005       
+small   tail_2x3          basic       2         3         256     64      SKIP  PASS  0.775       0.006       
+tensara tensara_1         basic       1024      1024      256     64      SKIP  SKIP  25.270      3.654       
+tensara tensara_2         basic       1024      4096      256     64      SKIP  SKIP  323.197     48.306      
+tensara tensara_3         basic       2048      8192      256     64      SKIP  SKIP  2346.792    385.591     
+tensara tensara_4         basic       512       16384     256     64      SKIP  SKIP  2325.406    384.537     
+scale   scale_tensara_1   basic       1024      1024      64      8       SKIP  SKIP  186.997     30.456      
+scale   scale_tensara_1   basic       1024      1024      64      16      SKIP  SKIP  151.777     24.525      
+scale   scale_tensara_1   basic       1024      1024      64      32      SKIP  SKIP  78.162      12.358      
+scale   scale_tensara_1   basic       1024      1024      64      64      SKIP  SKIP  42.039      6.303       
+scale   scale_tensara_1   basic       1024      1024      64      128     SKIP  SKIP  22.216      3.205       
+scale   scale_tensara_1   basic       1024      1024      128     8       SKIP  SKIP  153.333     24.877      
+scale   scale_tensara_1   basic       1024      1024      128     16      SKIP  SKIP  79.367      12.549      
+scale   scale_tensara_1   basic       1024      1024      128     32      SKIP  SKIP  41.888      6.358       
+scale   scale_tensara_1   basic       1024      1024      128     64      SKIP  SKIP  23.185      3.279       
+scale   scale_tensara_1   basic       1024      1024      128     128     SKIP  SKIP  19.884      2.648       
+scale   scale_tensara_1   basic       1024      1024      256     8       SKIP  SKIP  80.387      12.753      
+scale   scale_tensara_1   basic       1024      1024      256     16      SKIP  SKIP  41.888      6.432       
+scale   scale_tensara_1   basic       1024      1024      256     32      SKIP  SKIP  23.636      3.323       
+scale   scale_tensara_1   basic       1024      1024      256     64      SKIP  SKIP  20.194      2.881       
+scale   scale_tensara_1   basic       1024      1024      256     128     SKIP  SKIP  16.497      2.260       
+scale   scale_tensara_1   basic       1024      1024      512     8       SKIP  SKIP  42.897      6.520       
+scale   scale_tensara_1   basic       1024      1024      512     16      SKIP  SKIP  23.313      3.273       
+scale   scale_tensara_1   basic       1024      1024      512     32      SKIP  SKIP  17.485      2.369       
+scale   scale_tensara_1   basic       1024      1024      512     64      SKIP  SKIP  17.236      2.308       
+scale   scale_tensara_1   basic       1024      1024      512     128     SKIP  SKIP  15.364      1.998       
+scale   scale_tensara_2   basic       1024      4096      64      8       SKIP  SKIP  1560.683    258.544     
+scale   scale_tensara_2   basic       1024      4096      64      16      SKIP  SKIP  1008.826    166.641     
+scale   scale_tensara_2   basic       1024      4096      64      32      SKIP  SKIP  734.822     120.814     
+scale   scale_tensara_2   basic       1024      4096      64      64      SKIP  SKIP  603.075     98.790      
+scale   scale_tensara_2   basic       1024      4096      64      128     SKIP  SKIP  312.535     50.611      
+scale   scale_tensara_2   basic       1024      4096      128     8       SKIP  SKIP  1095.590    180.727     
+scale   scale_tensara_2   basic       1024      4096      128     16      SKIP  SKIP  772.698     127.343     
+scale   scale_tensara_2   basic       1024      4096      128     32      SKIP  SKIP  604.359     99.176      
+scale   scale_tensara_2   basic       1024      4096      128     64      SKIP  SKIP  316.525     50.676      
+scale   scale_tensara_2   basic       1024      4096      128     128     SKIP  SKIP  273.466     44.045      
+scale   scale_tensara_2   basic       1024      4096      256     8       SKIP  SKIP  818.711     134.657     
+scale   scale_tensara_2   basic       1024      4096      256     16      SKIP  SKIP  607.678     99.623      
+scale   scale_tensara_2   basic       1024      4096      256     32      SKIP  SKIP  314.540     50.480      
+scale   scale_tensara_2   basic       1024      4096      256     64      SKIP  SKIP  298.893     48.057      
+scale   scale_tensara_2   basic       1024      4096      256     128     SKIP  SKIP  232.683     37.664      
+scale   scale_tensara_2   basic       1024      4096      512     8       SKIP  SKIP  612.895     100.632     
+scale   scale_tensara_2   basic       1024      4096      512     16      SKIP  SKIP  313.855     50.887      
+scale   scale_tensara_2   basic       1024      4096      512     32      SKIP  SKIP  236.251     37.887      
+scale   scale_tensara_2   basic       1024      4096      512     64      SKIP  SKIP  233.076     37.388      
+scale   scale_tensara_2   basic       1024      4096      512     128     SKIP  SKIP  202.142     32.153      
+scale   scale_tensara_3   basic       2048      8192      64      8       SKIP  SKIP  10581.452   1757.420    
+scale   scale_tensara_3   basic       2048      8192      64      16      SKIP  SKIP  6229.435    1027.505    
+scale   scale_tensara_3   basic       2048      8192      64      32      SKIP  SKIP  4021.952    662.670     
+scale   scale_tensara_3   basic       2048      8192      64      64      SKIP  SKIP  3010.345    496.265     
+scale   scale_tensara_3   basic       2048      8192      64      128     SKIP  SKIP  2412.116    395.862     
+scale   scale_tensara_3   basic       2048      8192      128     8       SKIP  SKIP  7032.610    1166.591    
+scale   scale_tensara_3   basic       2048      8192      128     16      SKIP  SKIP  4395.553    726.759     
+scale   scale_tensara_3   basic       2048      8192      128     32      SKIP  SKIP  3080.760    506.558     
+scale   scale_tensara_3   basic       2048      8192      128     64      SKIP  SKIP  2409.479    395.759     
+scale   scale_tensara_3   basic       2048      8192      128     128     SKIP  SKIP  2207.448    362.431     
+scale   scale_tensara_3   basic       2048      8192      256     8       SKIP  SKIP  4909.216    812.758     
+scale   scale_tensara_3   basic       2048      8192      256     16      SKIP  SKIP  3243.658    534.910     
+scale   scale_tensara_3   basic       2048      8192      256     32      SKIP  SKIP  2414.592    396.433     
+scale   scale_tensara_3   basic       2048      8192      256     64      SKIP  SKIP  2358.954    386.901     
+scale   scale_tensara_3   basic       2048      8192      256     128     SKIP  SKIP  1978.100    323.567     
+scale   scale_tensara_3   basic       2048      8192      512     8       SKIP  SKIP  4127.329    678.480     
+scale   scale_tensara_3   basic       2048      8192      512     16      SKIP  SKIP  2444.337    400.287     
+scale   scale_tensara_3   basic       2048      8192      512     32      SKIP  SKIP  1916.793    313.774     
+scale   scale_tensara_3   basic       2048      8192      512     64      SKIP  SKIP  1864.062    304.768     
+scale   scale_tensara_3   basic       2048      8192      512     128     SKIP  SKIP  1603.250    261.627     
+scale   scale_tensara_4   basic       512       16384     64      8       SKIP  SKIP  9685.624    1611.419    
+scale   scale_tensara_4   basic       512       16384     64      16      SKIP  SKIP  5455.665    880.535     
+scale   scale_tensara_4   basic       512       16384     64      32      SKIP  SKIP  3105.826    514.492     
+scale   scale_tensara_4   basic       512       16384     64      64      SKIP  SKIP  2124.263    351.101     
+scale   scale_tensara_4   basic       512       16384     64      128     SKIP  SKIP  1663.698    274.850     
+scale   scale_tensara_4   basic       512       16384     128     8       SKIP  SKIP  6201.851    1032.028    
+scale   scale_tensara_4   basic       512       16384     128     16      SKIP  SKIP  3510.259    581.749     
+scale   scale_tensara_4   basic       512       16384     128     32      SKIP  SKIP  2172.010    359.441     
+scale   scale_tensara_4   basic       512       16384     128     64      SKIP  SKIP  2406.464    398.093     
+scale   scale_tensara_4   basic       512       16384     128     128     SKIP  SKIP  2193.607    362.529     
+scale   scale_tensara_4   basic       512       16384     256     8       SKIP  SKIP  4129.651    684.390     
+scale   scale_tensara_4   basic       512       16384     256     16      SKIP  SKIP  2457.634    406.548     
+scale   scale_tensara_4   basic       512       16384     256     32      SKIP  SKIP  2141.149    353.693     
+scale   scale_tensara_4   basic       512       16384     256     64      SKIP  SKIP  2340.178    387.391     
+scale   scale_tensara_4   basic       512       16384     256     128     SKIP  SKIP  1922.203    321.611     
+scale   scale_tensara_4   basic       512       16384     512     8       SKIP  SKIP  3711.306    615.534     
+scale   scale_tensara_4   basic       512       16384     512     16      SKIP  SKIP  2044.998    338.147     
+scale   scale_tensara_4   basic       512       16384     512     32      SKIP  SKIP  1904.306    314.765     
+scale   scale_tensara_4   basic       512       16384     512     64      SKIP  SKIP  1849.112    305.312     
+scale   scale_tensara_4   basic       512       16384     512     128     SKIP  SKIP  1579.918    261.982     
+small   sample_2x4        shared_mem  2         4         256     64      SKIP  PASS  1.293       0.007       
+small   tail_2x3          shared_mem  2         3         256     64      SKIP  PASS  0.906       0.006       
+tensara tensara_1         shared_mem  1024      1024      256     64      SKIP  SKIP  3.360       0.061       
+tensara tensara_2         shared_mem  1024      4096      256     64      SKIP  SKIP  10.991      0.251       
+tensara tensara_3         shared_mem  2048      8192      256     64      SKIP  SKIP  43.198      1.162       
+tensara tensara_4         shared_mem  512       16384     256     64      SKIP  SKIP  24.459      0.591       
+scale   scale_tensara_1   shared_mem  1024      1024      64      8       SKIP  SKIP  7.732       0.827       
+scale   scale_tensara_1   shared_mem  1024      1024      64      16      SKIP  SKIP  5.716       0.421       
+scale   scale_tensara_1   shared_mem  1024      1024      64      32      SKIP  SKIP  3.917       0.220       
+scale   scale_tensara_1   shared_mem  1024      1024      64      64      SKIP  SKIP  3.497       0.123       
+scale   scale_tensara_1   shared_mem  1024      1024      64      128     SKIP  SKIP  2.915       0.073       
+scale   scale_tensara_1   shared_mem  1024      1024      128     8       SKIP  SKIP  5.363       0.464       
+scale   scale_tensara_1   shared_mem  1024      1024      128     16      SKIP  SKIP  4.392       0.239       
+scale   scale_tensara_1   shared_mem  1024      1024      128     32      SKIP  SKIP  3.730       0.131       
+scale   scale_tensara_1   shared_mem  1024      1024      128     64      SKIP  SKIP  3.655       0.077       
+scale   scale_tensara_1   shared_mem  1024      1024      128     128     SKIP  SKIP  3.150       0.056       
+scale   scale_tensara_1   shared_mem  1024      1024      256     8       SKIP  SKIP  4.118       0.301       
+scale   scale_tensara_1   shared_mem  1024      1024      256     16      SKIP  SKIP  3.227       0.159       
+scale   scale_tensara_1   shared_mem  1024      1024      256     32      SKIP  SKIP  3.211       0.091       
+scale   scale_tensara_1   shared_mem  1024      1024      256     64      SKIP  SKIP  2.729       0.061       
+scale   scale_tensara_1   shared_mem  1024      1024      256     128     SKIP  SKIP  4.616       0.066       
+scale   scale_tensara_1   shared_mem  1024      1024      512     8       SKIP  SKIP  4.136       0.246       
+scale   scale_tensara_1   shared_mem  1024      1024      512     16      SKIP  SKIP  3.563       0.130       
+scale   scale_tensara_1   shared_mem  1024      1024      512     32      SKIP  SKIP  2.856       0.081       
+scale   scale_tensara_1   shared_mem  1024      1024      512     64      SKIP  SKIP  3.073       0.079       
+scale   scale_tensara_1   shared_mem  1024      1024      512     128     SKIP  SKIP  3.731       0.066       
+scale   scale_tensara_2   shared_mem  1024      4096      64      8       SKIP  SKIP  28.618      3.176       
+scale   scale_tensara_2   shared_mem  1024      4096      64      16      SKIP  SKIP  19.184      1.633       
+scale   scale_tensara_2   shared_mem  1024      4096      64      32      SKIP  SKIP  15.667      0.915       
+scale   scale_tensara_2   shared_mem  1024      4096      64      64      SKIP  SKIP  12.612      0.596       
+scale   scale_tensara_2   shared_mem  1024      4096      64      128     SKIP  SKIP  10.333      0.415       
+scale   scale_tensara_2   shared_mem  1024      4096      128     8       SKIP  SKIP  18.632      1.653       
+scale   scale_tensara_2   shared_mem  1024      4096      128     16      SKIP  SKIP  14.399      0.860       
+scale   scale_tensara_2   shared_mem  1024      4096      128     32      SKIP  SKIP  11.943      0.497       
+scale   scale_tensara_2   shared_mem  1024      4096      128     64      SKIP  SKIP  10.365      0.345       
+scale   scale_tensara_2   shared_mem  1024      4096      128     128     SKIP  SKIP  10.578      0.295       
+scale   scale_tensara_2   shared_mem  1024      4096      256     8       SKIP  SKIP  15.289      0.922       
+scale   scale_tensara_2   shared_mem  1024      4096      256     16      SKIP  SKIP  11.329      0.479       
+scale   scale_tensara_2   shared_mem  1024      4096      256     32      SKIP  SKIP  10.953      0.299       
+scale   scale_tensara_2   shared_mem  1024      4096      256     64      SKIP  SKIP  9.764       0.249       
+scale   scale_tensara_2   shared_mem  1024      4096      256     128     SKIP  SKIP  11.260      0.318       
+scale   scale_tensara_2   shared_mem  1024      4096      512     8       SKIP  SKIP  11.404      0.586       
+scale   scale_tensara_2   shared_mem  1024      4096      512     16      SKIP  SKIP  11.957      0.324       
+scale   scale_tensara_2   shared_mem  1024      4096      512     32      SKIP  SKIP  10.032      0.224       
+scale   scale_tensara_2   shared_mem  1024      4096      512     64      SKIP  SKIP  10.183      0.271       
+scale   scale_tensara_2   shared_mem  1024      4096      512     128     SKIP  SKIP  10.709      0.246       
+scale   scale_tensara_3   shared_mem  2048      8192      64      8       SKIP  SKIP  123.555     14.347      
+scale   scale_tensara_3   shared_mem  2048      8192      64      16      SKIP  SKIP  77.942      7.065       
+scale   scale_tensara_3   shared_mem  2048      8192      64      32      SKIP  SKIP  62.869      4.259       
+scale   scale_tensara_3   shared_mem  2048      8192      64      64      SKIP  SKIP  50.680      2.896       
+scale   scale_tensara_3   shared_mem  2048      8192      64      128     SKIP  SKIP  42.000      1.626       
+scale   scale_tensara_3   shared_mem  2048      8192      128     8       SKIP  SKIP  77.491      7.372       
+scale   scale_tensara_3   shared_mem  2048      8192      128     16      SKIP  SKIP  58.268      3.703       
+scale   scale_tensara_3   shared_mem  2048      8192      128     32      SKIP  SKIP  48.792      2.323       
+scale   scale_tensara_3   shared_mem  2048      8192      128     64      SKIP  SKIP  47.597      1.612       
+scale   scale_tensara_3   shared_mem  2048      8192      128     128     SKIP  SKIP  44.493      1.184       
+scale   scale_tensara_3   shared_mem  2048      8192      256     8       SKIP  SKIP  56.278      3.787       
+scale   scale_tensara_3   shared_mem  2048      8192      256     16      SKIP  SKIP  44.156      1.953       
+scale   scale_tensara_3   shared_mem  2048      8192      256     32      SKIP  SKIP  42.367      1.360       
+scale   scale_tensara_3   shared_mem  2048      8192      256     64      SKIP  SKIP  38.974      1.161       
+scale   scale_tensara_3   shared_mem  2048      8192      256     128     SKIP  SKIP  45.713      1.293       
+scale   scale_tensara_3   shared_mem  2048      8192      512     8       SKIP  SKIP  48.316      2.175       
+scale   scale_tensara_3   shared_mem  2048      8192      512     16      SKIP  SKIP  39.903      1.167       
+scale   scale_tensara_3   shared_mem  2048      8192      512     32      SKIP  SKIP  37.174      0.964       
+scale   scale_tensara_3   shared_mem  2048      8192      512     64      SKIP  SKIP  39.447      1.289       
+scale   scale_tensara_3   shared_mem  2048      8192      512     128     SKIP  SKIP  37.886      1.157       
+scale   scale_tensara_4   shared_mem  512       16384     64      8       SKIP  SKIP  60.011      7.418       
+scale   scale_tensara_4   shared_mem  512       16384     64      16      SKIP  SKIP  41.325      3.940       
+scale   scale_tensara_4   shared_mem  512       16384     64      32      SKIP  SKIP  32.168      2.756       
+scale   scale_tensara_4   shared_mem  512       16384     64      64      SKIP  SKIP  28.121      1.436       
+scale   scale_tensara_4   shared_mem  512       16384     64      128     SKIP  SKIP  22.248      0.807       
+scale   scale_tensara_4   shared_mem  512       16384     128     8       SKIP  SKIP  39.876      3.758       
+scale   scale_tensara_4   shared_mem  512       16384     128     16      SKIP  SKIP  29.438      2.057       
+scale   scale_tensara_4   shared_mem  512       16384     128     32      SKIP  SKIP  29.430      1.462       
+scale   scale_tensara_4   shared_mem  512       16384     128     64      SKIP  SKIP  22.550      0.813       
+scale   scale_tensara_4   shared_mem  512       16384     128     128     SKIP  SKIP  19.523      0.587       
+scale   scale_tensara_4   shared_mem  512       16384     256     8       SKIP  SKIP  28.978      1.991       
+scale   scale_tensara_4   shared_mem  512       16384     256     16      SKIP  SKIP  23.614      1.148       
+scale   scale_tensara_4   shared_mem  512       16384     256     32      SKIP  SKIP  21.242      0.825       
+scale   scale_tensara_4   shared_mem  512       16384     256     64      SKIP  SKIP  20.880      0.589       
+scale   scale_tensara_4   shared_mem  512       16384     256     128     SKIP  SKIP  23.038      0.648       
+scale   scale_tensara_4   shared_mem  512       16384     512     8       SKIP  SKIP  22.502      1.091       
+scale   scale_tensara_4   shared_mem  512       16384     512     16      SKIP  SKIP  19.929      0.673       
+scale   scale_tensara_4   shared_mem  512       16384     512     32      SKIP  SKIP  20.597      0.589       
+scale   scale_tensara_4   shared_mem  512       16384     512     64      SKIP  SKIP  20.789      0.653       
+scale   scale_tensara_4   shared_mem  512       16384     512     128     SKIP  SKIP  20.210      0.591       
+small   sample_2x4        warp        2         4         256     64      SKIP  PASS  1.172       0.020       
+small   tail_2x3          warp        2         3         256     64      SKIP  PASS  0.604       0.005       
+tensara tensara_1         warp        1024      1024      256     64      SKIP  SKIP  2.705       0.078       
+tensara tensara_2         warp        1024      4096      256     64      SKIP  SKIP  10.705      0.304       
+tensara tensara_3         warp        2048      8192      256     64      SKIP  SKIP  36.378      1.202       
+tensara tensara_4         warp        512       16384     256     64      SKIP  SKIP  20.114      0.605       
+scale   scale_tensara_1   warp        1024      1024      64      8       SKIP  SKIP  7.812       0.763       
+scale   scale_tensara_1   warp        1024      1024      64      16      SKIP  SKIP  5.939       0.387       
+scale   scale_tensara_1   warp        1024      1024      64      32      SKIP  SKIP  4.186       0.199       
+scale   scale_tensara_1   warp        1024      1024      64      64      SKIP  SKIP  3.074       0.120       
+scale   scale_tensara_1   warp        1024      1024      64      128     SKIP  SKIP  3.546       0.081       
+scale   scale_tensara_1   warp        1024      1024      128     8       SKIP  SKIP  4.742       0.389       
+scale   scale_tensara_1   warp        1024      1024      128     16      SKIP  SKIP  3.615       0.199       
+scale   scale_tensara_1   warp        1024      1024      128     32      SKIP  SKIP  3.051       0.119       
+scale   scale_tensara_1   warp        1024      1024      128     64      SKIP  SKIP  3.336       0.083       
+scale   scale_tensara_1   warp        1024      1024      128     128     SKIP  SKIP  3.917       0.078       
+scale   scale_tensara_1   warp        1024      1024      256     8       SKIP  SKIP  3.796       0.219       
+scale   scale_tensara_1   warp        1024      1024      256     16      SKIP  SKIP  3.012       0.115       
+scale   scale_tensara_1   warp        1024      1024      256     32      SKIP  SKIP  2.662       0.080       
+scale   scale_tensara_1   warp        1024      1024      256     64      SKIP  SKIP  2.616       0.077       
+scale   scale_tensara_1   warp        1024      1024      256     128     SKIP  SKIP  2.971       0.084       
+scale   scale_tensara_1   warp        1024      1024      512     8       SKIP  SKIP  3.638       0.128       
+scale   scale_tensara_1   warp        1024      1024      512     16      SKIP  SKIP  3.135       0.082       
+scale   scale_tensara_1   warp        1024      1024      512     32      SKIP  SKIP  2.864       0.077       
+scale   scale_tensara_1   warp        1024      1024      512     64      SKIP  SKIP  3.291       0.085       
+scale   scale_tensara_1   warp        1024      1024      512     128     SKIP  SKIP  2.774       0.085       
+scale   scale_tensara_2   warp        1024      4096      64      8       SKIP  SKIP  30.384      3.298       
+scale   scale_tensara_2   warp        1024      4096      64      16      SKIP  SKIP  18.878      1.662       
+scale   scale_tensara_2   warp        1024      4096      64      32      SKIP  SKIP  14.592      1.020       
+scale   scale_tensara_2   warp        1024      4096      64      64      SKIP  SKIP  12.735      0.712       
+scale   scale_tensara_2   warp        1024      4096      64      128     SKIP  SKIP  10.516      0.407       
+scale   scale_tensara_2   warp        1024      4096      128     8       SKIP  SKIP  20.109      1.836       
+scale   scale_tensara_2   warp        1024      4096      128     16      SKIP  SKIP  14.300      1.041       
+scale   scale_tensara_2   warp        1024      4096      128     32      SKIP  SKIP  13.136      0.713       
+scale   scale_tensara_2   warp        1024      4096      128     64      SKIP  SKIP  9.903       0.401       
+scale   scale_tensara_2   warp        1024      4096      128     128     SKIP  SKIP  10.611      0.303       
+scale   scale_tensara_2   warp        1024      4096      256     8       SKIP  SKIP  15.000      1.067       
+scale   scale_tensara_2   warp        1024      4096      256     16      SKIP  SKIP  12.650      0.715       
+scale   scale_tensara_2   warp        1024      4096      256     32      SKIP  SKIP  16.606      0.408       
+scale   scale_tensara_2   warp        1024      4096      256     64      SKIP  SKIP  15.747      0.306       
+scale   scale_tensara_2   warp        1024      4096      256     128     SKIP  SKIP  12.193      0.325       
+scale   scale_tensara_2   warp        1024      4096      512     8       SKIP  SKIP  19.484      0.714       
+scale   scale_tensara_2   warp        1024      4096      512     16      SKIP  SKIP  11.255      0.408       
+scale   scale_tensara_2   warp        1024      4096      512     32      SKIP  SKIP  12.115      0.303       
+scale   scale_tensara_2   warp        1024      4096      512     64      SKIP  SKIP  10.702      0.325       
+scale   scale_tensara_2   warp        1024      4096      512     128     SKIP  SKIP  10.893      0.326       
+scale   scale_tensara_3   warp        2048      8192      64      8       SKIP  SKIP  119.303     14.410      
+scale   scale_tensara_3   warp        2048      8192      64      16      SKIP  SKIP  81.409      8.447       
+scale   scale_tensara_3   warp        2048      8192      64      32      SKIP  SKIP  63.521      5.351       
+scale   scale_tensara_3   warp        2048      8192      64      64      SKIP  SKIP  52.330      2.840       
+scale   scale_tensara_3   warp        2048      8192      64      128     SKIP  SKIP  45.122      1.645       
+scale   scale_tensara_3   warp        2048      8192      128     8       SKIP  SKIP  82.894      8.499       
+scale   scale_tensara_3   warp        2048      8192      128     16      SKIP  SKIP  65.486      5.350       
+scale   scale_tensara_3   warp        2048      8192      128     32      SKIP  SKIP  48.798      2.829       
+scale   scale_tensara_3   warp        2048      8192      128     64      SKIP  SKIP  44.030      1.635       
+scale   scale_tensara_3   warp        2048      8192      128     128     SKIP  SKIP  38.296      1.200       
+scale   scale_tensara_3   warp        2048      8192      256     8       SKIP  SKIP  64.758      5.338       
+scale   scale_tensara_3   warp        2048      8192      256     16      SKIP  SKIP  46.890      2.836       
+scale   scale_tensara_3   warp        2048      8192      256     32      SKIP  SKIP  41.701      1.646       
+scale   scale_tensara_3   warp        2048      8192      256     64      SKIP  SKIP  40.382      1.198       
+scale   scale_tensara_3   warp        2048      8192      256     128     SKIP  SKIP  42.429      1.377       
+scale   scale_tensara_3   warp        2048      8192      512     8       SKIP  SKIP  51.156      2.838       
+scale   scale_tensara_3   warp        2048      8192      512     16      SKIP  SKIP  41.948      1.644       
+scale   scale_tensara_3   warp        2048      8192      512     32      SKIP  SKIP  44.099      1.204       
+scale   scale_tensara_3   warp        2048      8192      512     64      SKIP  SKIP  40.626      1.395       
+scale   scale_tensara_3   warp        2048      8192      512     128     SKIP  SKIP  37.936      1.221       
+scale   scale_tensara_4   warp        512       16384     64      8       SKIP  SKIP  65.680      7.870       
+scale   scale_tensara_4   warp        512       16384     64      16      SKIP  SKIP  46.885      5.250       
+scale   scale_tensara_4   warp        512       16384     64      32      SKIP  SKIP  33.517      2.693       
+scale   scale_tensara_4   warp        512       16384     64      64      SKIP  SKIP  25.802      1.416       
+scale   scale_tensara_4   warp        512       16384     64      128     SKIP  SKIP  22.241      0.828       
+scale   scale_tensara_4   warp        512       16384     128     8       SKIP  SKIP  46.966      5.250       
+scale   scale_tensara_4   warp        512       16384     128     16      SKIP  SKIP  34.398      2.686       
+scale   scale_tensara_4   warp        512       16384     128     32      SKIP  SKIP  24.160      1.412       
+scale   scale_tensara_4   warp        512       16384     128     64      SKIP  SKIP  22.679      0.824       
+scale   scale_tensara_4   warp        512       16384     128     128     SKIP  SKIP  20.754      0.610       
+scale   scale_tensara_4   warp        512       16384     256     8       SKIP  SKIP  31.159      2.688       
+scale   scale_tensara_4   warp        512       16384     256     16      SKIP  SKIP  25.558      1.411       
+scale   scale_tensara_4   warp        512       16384     256     32      SKIP  SKIP  22.103      0.828       
+scale   scale_tensara_4   warp        512       16384     256     64      SKIP  SKIP  21.328      0.613       
+scale   scale_tensara_4   warp        512       16384     256     128     SKIP  SKIP  22.666      0.612       
+scale   scale_tensara_4   warp        512       16384     512     8       SKIP  SKIP  24.633      1.413       
+scale   scale_tensara_4   warp        512       16384     512     16      SKIP  SKIP  20.578      0.829       
+scale   scale_tensara_4   warp        512       16384     512     32      SKIP  SKIP  20.010      0.608       
+scale   scale_tensara_4   warp        512       16384     512     64      SKIP  SKIP  18.367      0.611       
+scale   scale_tensara_4   warp        512       16384     512     128     SKIP  SKIP  18.790      0.613       
+
+Scale heatmaps: kernel_ms
+
+scale_tensara_1 / basic best=(512, 128) -> 1.998 ms
+block\grid8         16        32        64        128
+64        30.456    24.525    12.358    6.303     3.205
+128       24.877    12.549    6.358     3.279     2.648
+256       12.753    6.432     3.323     2.881     2.260
+512       6.520     3.273     2.369     2.308     1.998
+
+scale_tensara_1 / shared_mem best=(128, 128) -> 0.056 ms
+block\grid8         16        32        64        128
+64        0.827     0.421     0.220     0.123     0.073
+128       0.464     0.239     0.131     0.077     0.056
+256       0.301     0.159     0.091     0.061     0.066
+512       0.246     0.130     0.081     0.079     0.066
+
+scale_tensara_1 / warp best=(512, 32) -> 0.077 ms
+block\grid8         16        32        64        128
+64        0.763     0.387     0.199     0.120     0.081
+128       0.389     0.199     0.119     0.083     0.078
+256       0.219     0.115     0.080     0.077     0.084
+512       0.128     0.082     0.077     0.085     0.085
+
+scale_tensara_2 / basic best=(512, 128) -> 32.153 ms
+block\grid8         16        32        64        128
+64        258.544   166.641   120.814   98.790    50.611
+128       180.727   127.343   99.176    50.676    44.045
+256       134.657   99.623    50.480    48.057    37.664
+512       100.632   50.887    37.887    37.388    32.153
+
+scale_tensara_2 / shared_mem best=(512, 32) -> 0.224 ms
+block\grid8         16        32        64        128
+64        3.176     1.633     0.915     0.596     0.415
+128       1.653     0.860     0.497     0.345     0.295
+256       0.922     0.479     0.299     0.249     0.318
+512       0.586     0.324     0.224     0.271     0.246
+
+scale_tensara_2 / warp best=(128, 128) -> 0.303 ms
+block\grid8         16        32        64        128
+64        3.298     1.662     1.020     0.712     0.407
+128       1.836     1.041     0.713     0.401     0.303
+256       1.067     0.715     0.408     0.306     0.325
+512       0.714     0.408     0.303     0.325     0.326
+
+scale_tensara_3 / basic best=(512, 128) -> 261.627 ms
+block\grid8         16        32        64        128
+64        1757.420  1027.505  662.670   496.265   395.862
+128       1166.591  726.759   506.558   395.759   362.431
+256       812.758   534.910   396.433   386.901   323.567
+512       678.480   400.287   313.774   304.768   261.627
+
+scale_tensara_3 / shared_mem best=(512, 32) -> 0.964 ms
+block\grid8         16        32        64        128
+64        14.347    7.065     4.259     2.896     1.626
+128       7.372     3.703     2.323     1.612     1.184
+256       3.787     1.953     1.360     1.161     1.293
+512       2.175     1.167     0.964     1.289     1.157
+
+scale_tensara_3 / warp best=(256, 64) -> 1.198 ms
+block\grid8         16        32        64        128
+64        14.410    8.447     5.351     2.840     1.645
+128       8.499     5.350     2.829     1.635     1.200
+256       5.338     2.836     1.646     1.198     1.377
+512       2.838     1.644     1.204     1.395     1.221
+
+scale_tensara_4 / basic best=(512, 128) -> 261.982 ms
+block\grid8         16        32        64        128
+64        1611.419  880.535   514.492   351.101   274.850
+128       1032.028  581.749   359.441   398.093   362.529
+256       684.390   406.548   353.693   387.391   321.611
+512       615.534   338.147   314.765   305.312   261.982
+
+scale_tensara_4 / shared_mem best=(128, 128) -> 0.587 ms
+block\grid8         16        32        64        128
+64        7.418     3.940     2.756     1.436     0.807
+128       3.758     2.057     1.462     0.813     0.587
+256       1.991     1.148     0.825     0.589     0.648
+512       1.091     0.673     0.589     0.653     0.591
+
+scale_tensara_4 / warp best=(512, 32) -> 0.608 ms
+block\grid8         16        32        64        128
+64        7.870     5.250     2.693     1.416     0.828
+128       5.250     2.686     1.412     0.824     0.610
+256       2.688     1.411     0.828     0.613     0.612
+512       1.413     0.829     0.608     0.611     0.613

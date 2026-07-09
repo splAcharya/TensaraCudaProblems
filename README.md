@@ -28,6 +28,7 @@ Current problem files:
 - `P6_AVG_POOL_1D.cu`: 1D average pooling over a vector.
 - `P7_GELU.cu`: elementwise GELU over a row-major matrix.
 - `P8_SIGMOID.cu`: elementwise Sigmoid over a row-major matrix.
+- `P9_RMS_NORM.cu`: RMS normalization over a row-major matrix.
 
 Detailed correctness and benchmark notes live next to each problem:
 
