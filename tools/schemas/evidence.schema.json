@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/tensara/evidence.schema.json",
+  "title": "Tensara evidence record",
+  "type": "object",
+  "required": ["schema_version", "evidence_id", "problem_id",
+               "evidence_kind", "verification_status"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "evidence_id": {"type": "string", "minLength": 1},
+    "comparison_key": {"type": "string"},
+    "problem_id": {"type": "string", "pattern": "^P[0-9]+$"},
+    "case_id": {"type": "string"},
+    "kernel_id": {"type": "string"},
+    "evidence_kind": {
+      "enum": ["compile", "exact_fixture", "cpu_reference",
+               "metamorphic", "sanitizer", "benchmark_unverified",
+               "legacy_partial"]
+    },
+    "verification_status": {
+      "enum": ["pass", "fail", "skip", "unknown"]
+    },
+    "provenance_quality": {"enum": ["native", "legacy_partial"]},
+    "dimensions": {"type": "object"},
+    "launch": {"type": "object"},
+    "timing": {"type": "object"}
+  },
+  "additionalProperties": true
+}

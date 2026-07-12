@@ -4,551 +4,551 @@ GPU kernel implemented: yes
 
 group   name              kernel                 H       H_out       K       S       P   block    grid    cpu    gpu    total_ms   kernel_ms
 --------------------------------------------------------------------------------------------------------------------------------------------
-small   pad_stride_1      basic                  5           5       3       1       1     256      64   SKIP   PASS       3.819       0.007
-small   stride_2          basic                  6           3       2       2       0     256      64   SKIP   PASS       0.591       0.007
-small   wide_pad          basic                  4           5       4       1       2     256      64   SKIP   PASS       0.744       0.006
-small   kernel_1          basic                  4           4       1       1       0     256      64   SKIP   PASS       0.833       0.006
-small   pad_stride_2      basic                  3           3       3       2       2     256      64   SKIP   PASS       0.755       0.006
-small   stride_gap        basic                  7           2       2       3       0     256      64   SKIP   PASS       0.741       0.006
-small   pad_zero_windows  basic                  1           6       2       1       3     256      64   SKIP   PASS       0.483       0.006
+small   pad_stride_1      basic                  5           5       3       1       1     256      64   SKIP   PASS       1.057       0.006
+small   stride_2          basic                  6           3       2       2       0     256      64   SKIP   PASS       0.500       0.005
+small   wide_pad          basic                  4           5       4       1       2     256      64   SKIP   PASS       0.876       0.005
+small   kernel_1          basic                  4           4       1       1       0     256      64   SKIP   PASS       0.648       0.009
+small   pad_stride_2      basic                  3           3       3       2       2     256      64   SKIP   PASS       0.488       0.007
+small   stride_gap        basic                  7           2       2       3       0     256      64   SKIP   PASS       0.572       0.006
+small   pad_zero_windows  basic                  1           6       2       1       3     256      64   SKIP   PASS       0.501       0.005
 small   zero_output       basic                  2           0       5       1       0     256      64   SKIP   PASS       0.000       0.000
-medium  sample            basic                 16           8       3       2       1     256      64   SKIP   SKIP       0.686       0.007
-medium  medium_1          basic               4096        1024       7       4       3     256      64   SKIP   SKIP       0.537       0.007
-medium  medium_2          basic              65536       32768       3       2       1     256      64   SKIP   SKIP       0.638       0.008
-medium  medium_3          basic             262144       87382       5       3       2     256      64   SKIP   SKIP       0.732       0.011
-large   large_1           basic            1048576      262144       7       4       3     256      64   SKIP   SKIP       1.594       0.037
-large   large_2           basic            1048583      349528       5       3       2     256      64   SKIP   SKIP       2.213       0.041
-tensara tensara_1         basic            2097152      524288       7       4       3     256      64   SKIP   SKIP       2.652       0.068
-tensara tensara_2         basic            4194304     4194303       2       1       0     256      64   SKIP   SKIP       8.717       0.304
-tensara tensara_3         basic            8388608     4194304       3       2       1     256      64   SKIP   SKIP      11.803       0.310
-tensara tensara_4         basic           16777216     8388608       4       2       1     256      64   SKIP   SKIP      23.271       0.648
-tensara tensara_5         basic           33554432    33554432       3       1       1     256      64   SKIP   SKIP      63.981       2.508
-tensara tensara_6         basic           67108864    22369622       5       3       2     256      64   SKIP   SKIP      71.934       2.169
-scale   scale_tensara_1   basic            2097152      524288       7       4       3      64       8   SKIP   SKIP       6.803       0.762
-scale   scale_tensara_1   basic            2097152      524288       7       4       3      64      16   SKIP   SKIP       5.378       0.387
-scale   scale_tensara_1   basic            2097152      524288       7       4       3      64      32   SKIP   SKIP       5.013       0.200
-scale   scale_tensara_1   basic            2097152      524288       7       4       3      64      64   SKIP   SKIP       3.067       0.111
-scale   scale_tensara_1   basic            2097152      524288       7       4       3      64     128   SKIP   SKIP       2.788       0.072
-scale   scale_tensara_1   basic            2097152      524288       7       4       3     128       8   SKIP   SKIP       4.520       0.387
-scale   scale_tensara_1   basic            2097152      524288       7       4       3     128      16   SKIP   SKIP       3.300       0.201
-scale   scale_tensara_1   basic            2097152      524288       7       4       3     128      32   SKIP   SKIP       2.739       0.112
-scale   scale_tensara_1   basic            2097152      524288       7       4       3     128      64   SKIP   SKIP       2.828       0.073
-scale   scale_tensara_1   basic            2097152      524288       7       4       3     128     128   SKIP   SKIP       2.417       0.067
-scale   scale_tensara_1   basic            2097152      524288       7       4       3     256       8   SKIP   SKIP       3.207       0.207
-scale   scale_tensara_1   basic            2097152      524288       7       4       3     256      16   SKIP   SKIP       4.769       0.113
-scale   scale_tensara_1   basic            2097152      524288       7       4       3     256      32   SKIP   SKIP       2.704       0.071
-scale   scale_tensara_1   basic            2097152      524288       7       4       3     256      64   SKIP   SKIP       2.383       0.065
-scale   scale_tensara_1   basic            2097152      524288       7       4       3     256     128   SKIP   SKIP       2.543       0.073
-scale   scale_tensara_1   basic            2097152      524288       7       4       3     512       8   SKIP   SKIP       2.704       0.121
-scale   scale_tensara_1   basic            2097152      524288       7       4       3     512      16   SKIP   SKIP       2.365       0.071
-scale   scale_tensara_1   basic            2097152      524288       7       4       3     512      32   SKIP   SKIP       2.657       0.063
-scale   scale_tensara_1   basic            2097152      524288       7       4       3     512      64   SKIP   SKIP       2.458       0.073
-scale   scale_tensara_1   basic            2097152      524288       7       4       3     512     128   SKIP   SKIP       2.333       0.067
-scale   scale_tensara_2   basic            4194304     4194303       2       1       0      64       8   SKIP   SKIP      43.374       6.184
-scale   scale_tensara_2   basic            4194304     4194303       2       1       0      64      16   SKIP   SKIP      29.054       2.910
-scale   scale_tensara_2   basic            4194304     4194303       2       1       0      64      32   SKIP   SKIP      14.254       1.236
-scale   scale_tensara_2   basic            4194304     4194303       2       1       0      64      64   SKIP   SKIP      11.983       0.635
-scale   scale_tensara_2   basic            4194304     4194303       2       1       0      64     128   SKIP   SKIP      10.878       0.348
-scale   scale_tensara_2   basic            4194304     4194303       2       1       0     128       8   SKIP   SKIP      20.553       2.380
-scale   scale_tensara_2   basic            4194304     4194303       2       1       0     128      16   SKIP   SKIP      12.890       1.200
-scale   scale_tensara_2   basic            4194304     4194303       2       1       0     128      32   SKIP   SKIP       9.772       0.630
-scale   scale_tensara_2   basic            4194304     4194303       2       1       0     128      64   SKIP   SKIP       7.621       0.345
-scale   scale_tensara_2   basic            4194304     4194303       2       1       0     128     128   SKIP   SKIP       9.478       0.250
-scale   scale_tensara_2   basic            4194304     4194303       2       1       0     256       8   SKIP   SKIP      13.169       1.210
-scale   scale_tensara_2   basic            4194304     4194303       2       1       0     256      16   SKIP   SKIP       9.934       0.628
-scale   scale_tensara_2   basic            4194304     4194303       2       1       0     256      32   SKIP   SKIP       8.170       0.345
-scale   scale_tensara_2   basic            4194304     4194303       2       1       0     256      64   SKIP   SKIP       7.559       0.254
-scale   scale_tensara_2   basic            4194304     4194303       2       1       0     256     128   SKIP   SKIP       7.199       0.268
-scale   scale_tensara_2   basic            4194304     4194303       2       1       0     512       8   SKIP   SKIP      10.272       0.654
-scale   scale_tensara_2   basic            4194304     4194303       2       1       0     512      16   SKIP   SKIP       7.490       0.346
-scale   scale_tensara_2   basic            4194304     4194303       2       1       0     512      32   SKIP   SKIP       7.261       0.248
-scale   scale_tensara_2   basic            4194304     4194303       2       1       0     512      64   SKIP   SKIP       6.874       0.271
-scale   scale_tensara_2   basic            4194304     4194303       2       1       0     512     128   SKIP   SKIP      10.326       0.225
-scale   scale_tensara_3   basic            8388608     4194304       3       2       1      64       8   SKIP   SKIP      33.798       4.071
-scale   scale_tensara_3   basic            8388608     4194304       3       2       1      64      16   SKIP   SKIP      20.573       2.061
-scale   scale_tensara_3   basic            8388608     4194304       3       2       1      64      32   SKIP   SKIP      17.625       1.064
-scale   scale_tensara_3   basic            8388608     4194304       3       2       1      64      64   SKIP   SKIP      11.581       0.568
-scale   scale_tensara_3   basic            8388608     4194304       3       2       1      64     128   SKIP   SKIP       9.899       0.341
-scale   scale_tensara_3   basic            8388608     4194304       3       2       1     128       8   SKIP   SKIP      20.779       2.066
-scale   scale_tensara_3   basic            8388608     4194304       3       2       1     128      16   SKIP   SKIP      14.316       1.065
-scale   scale_tensara_3   basic            8388608     4194304       3       2       1     128      32   SKIP   SKIP      13.136       0.572
-scale   scale_tensara_3   basic            8388608     4194304       3       2       1     128      64   SKIP   SKIP      10.194       0.343
-scale   scale_tensara_3   basic            8388608     4194304       3       2       1     128     128   SKIP   SKIP       9.594       0.295
-scale   scale_tensara_3   basic            8388608     4194304       3       2       1     256       8   SKIP   SKIP      15.114       1.087
-scale   scale_tensara_3   basic            8388608     4194304       3       2       1     256      16   SKIP   SKIP      11.784       0.571
-scale   scale_tensara_3   basic            8388608     4194304       3       2       1     256      32   SKIP   SKIP      13.794       0.343
-scale   scale_tensara_3   basic            8388608     4194304       3       2       1     256      64   SKIP   SKIP      10.188       0.299
-scale   scale_tensara_3   basic            8388608     4194304       3       2       1     256     128   SKIP   SKIP      10.188       0.335
-scale   scale_tensara_3   basic            8388608     4194304       3       2       1     512       8   SKIP   SKIP      13.809       0.600
-scale   scale_tensara_3   basic            8388608     4194304       3       2       1     512      16   SKIP   SKIP      10.585       0.338
-scale   scale_tensara_3   basic            8388608     4194304       3       2       1     512      32   SKIP   SKIP       9.747       0.298
-scale   scale_tensara_3   basic            8388608     4194304       3       2       1     512      64   SKIP   SKIP      12.365       0.355
-scale   scale_tensara_3   basic            8388608     4194304       3       2       1     512     128   SKIP   SKIP       9.779       0.308
-scale   scale_tensara_4   basic           16777216     8388608       4       2       1      64       8   SKIP   SKIP      72.913       9.023
-scale   scale_tensara_4   basic           16777216     8388608       4       2       1      64      16   SKIP   SKIP      44.002       4.588
-scale   scale_tensara_4   basic           16777216     8388608       4       2       1      64      32   SKIP   SKIP      33.733       2.347
-scale   scale_tensara_4   basic           16777216     8388608       4       2       1      64      64   SKIP   SKIP      28.413       1.246
-scale   scale_tensara_4   basic           16777216     8388608       4       2       1      64     128   SKIP   SKIP      22.808       0.743
-scale   scale_tensara_4   basic           16777216     8388608       4       2       1     128       8   SKIP   SKIP      66.665       4.601
-scale   scale_tensara_4   basic           16777216     8388608       4       2       1     128      16   SKIP   SKIP      31.229       2.352
-scale   scale_tensara_4   basic           16777216     8388608       4       2       1     128      32   SKIP   SKIP      25.057       1.251
-scale   scale_tensara_4   basic           16777216     8388608       4       2       1     128      64   SKIP   SKIP      20.102       0.745
-scale   scale_tensara_4   basic           16777216     8388608       4       2       1     128     128   SKIP   SKIP      23.933       0.601
-scale   scale_tensara_4   basic           16777216     8388608       4       2       1     256       8   SKIP   SKIP      32.642       2.412
-scale   scale_tensara_4   basic           16777216     8388608       4       2       1     256      16   SKIP   SKIP      26.062       1.246
-scale   scale_tensara_4   basic           16777216     8388608       4       2       1     256      32   SKIP   SKIP      25.397       0.741
-scale   scale_tensara_4   basic           16777216     8388608       4       2       1     256      64   SKIP   SKIP      20.409       0.611
-scale   scale_tensara_4   basic           16777216     8388608       4       2       1     256     128   SKIP   SKIP      21.019       0.736
-scale   scale_tensara_4   basic           16777216     8388608       4       2       1     512       8   SKIP   SKIP      24.955       1.325
-scale   scale_tensara_4   basic           16777216     8388608       4       2       1     512      16   SKIP   SKIP      24.766       0.733
-scale   scale_tensara_4   basic           16777216     8388608       4       2       1     512      32   SKIP   SKIP      22.039       0.605
-scale   scale_tensara_4   basic           16777216     8388608       4       2       1     512      64   SKIP   SKIP      20.106       0.717
-scale   scale_tensara_4   basic           16777216     8388608       4       2       1     512     128   SKIP   SKIP      19.064       0.647
-scale   scale_tensara_5   basic           33554432    33554432       3       1       1      64       8   SKIP   SKIP     289.007      40.719
-scale   scale_tensara_5   basic           33554432    33554432       3       1       1      64      16   SKIP   SKIP     163.175      19.332
-scale   scale_tensara_5   basic           33554432    33554432       3       1       1      64      32   SKIP   SKIP     104.357       9.766
-scale   scale_tensara_5   basic           33554432    33554432       3       1       1      64      64   SKIP   SKIP      73.815       5.049
-scale   scale_tensara_5   basic           33554432    33554432       3       1       1      64     128   SKIP   SKIP      66.365       3.269
-scale   scale_tensara_5   basic           33554432    33554432       3       1       1     128       8   SKIP   SKIP     156.554      19.115
-scale   scale_tensara_5   basic           33554432    33554432       3       1       1     128      16   SKIP   SKIP     110.056       9.578
-scale   scale_tensara_5   basic           33554432    33554432       3       1       1     128      32   SKIP   SKIP      75.848       5.006
-scale   scale_tensara_5   basic           33554432    33554432       3       1       1     128      64   SKIP   SKIP      64.683       3.271
-scale   scale_tensara_5   basic           33554432    33554432       3       1       1     128     128   SKIP   SKIP      53.328       2.145
-scale   scale_tensara_5   basic           33554432    33554432       3       1       1     256       8   SKIP   SKIP     108.840       9.703
-scale   scale_tensara_5   basic           33554432    33554432       3       1       1     256      16   SKIP   SKIP      73.961       5.023
-scale   scale_tensara_5   basic           33554432    33554432       3       1       1     256      32   SKIP   SKIP      67.424       3.208
-scale   scale_tensara_5   basic           33554432    33554432       3       1       1     256      64   SKIP   SKIP      57.083       2.181
-scale   scale_tensara_5   basic           33554432    33554432       3       1       1     256     128   SKIP   SKIP      59.468       2.194
-scale   scale_tensara_5   basic           33554432    33554432       3       1       1     512       8   SKIP   SKIP      73.072       5.219
-scale   scale_tensara_5   basic           33554432    33554432       3       1       1     512      16   SKIP   SKIP      70.968       2.718
-scale   scale_tensara_5   basic           33554432    33554432       3       1       1     512      32   SKIP   SKIP      61.043       2.149
-scale   scale_tensara_5   basic           33554432    33554432       3       1       1     512      64   SKIP   SKIP      59.203       2.212
-scale   scale_tensara_5   basic           33554432    33554432       3       1       1     512     128   SKIP   SKIP      61.574       1.794
-scale   scale_tensara_6   basic           67108864    22369622       5       3       2      64       8   SKIP   SKIP     211.002      24.868
-scale   scale_tensara_6   basic           67108864    22369622       5       3       2      64      16   SKIP   SKIP     134.120      12.697
-scale   scale_tensara_6   basic           67108864    22369622       5       3       2      64      32   SKIP   SKIP      96.328       6.532
-scale   scale_tensara_6   basic           67108864    22369622       5       3       2      64      64   SKIP   SKIP      81.074       3.510
-scale   scale_tensara_6   basic           67108864    22369622       5       3       2      64     128   SKIP   SKIP      67.619       2.344
-scale   scale_tensara_6   basic           67108864    22369622       5       3       2     128       8   SKIP   SKIP     131.615      12.718
-scale   scale_tensara_6   basic           67108864    22369622       5       3       2     128      16   SKIP   SKIP      96.936       6.536
-scale   scale_tensara_6   basic           67108864    22369622       5       3       2     128      32   SKIP   SKIP      83.832       3.513
-scale   scale_tensara_6   basic           67108864    22369622       5       3       2     128      64   SKIP   SKIP      77.958       2.356
-scale   scale_tensara_6   basic           67108864    22369622       5       3       2     128     128   SKIP   SKIP      79.471       2.105
-scale   scale_tensara_6   basic           67108864    22369622       5       3       2     256       8   SKIP   SKIP      96.092       6.706
-scale   scale_tensara_6   basic           67108864    22369622       5       3       2     256      16   SKIP   SKIP      83.625       3.512
-scale   scale_tensara_6   basic           67108864    22369622       5       3       2     256      32   SKIP   SKIP      75.227       2.331
-scale   scale_tensara_6   basic           67108864    22369622       5       3       2     256      64   SKIP   SKIP      83.831       2.110
-scale   scale_tensara_6   basic           67108864    22369622       5       3       2     256     128   SKIP   SKIP      77.627       2.511
-scale   scale_tensara_6   basic           67108864    22369622       5       3       2     512       8   SKIP   SKIP      82.526       3.729
-scale   scale_tensara_6   basic           67108864    22369622       5       3       2     512      16   SKIP   SKIP      71.733       2.307
-scale   scale_tensara_6   basic           67108864    22369622       5       3       2     512      32   SKIP   SKIP      72.361       2.092
-scale   scale_tensara_6   basic           67108864    22369622       5       3       2     512      64   SKIP   SKIP      74.308       2.629
-scale   scale_tensara_6   basic           67108864    22369622       5       3       2     512     128   SKIP   SKIP      77.160       2.264
-small   pad_stride_1      basic_ldg              5           5       3       1       1     256      64   SKIP   PASS       0.652       0.007
-small   stride_2          basic_ldg              6           3       2       2       0     256      64   SKIP   PASS       0.487       0.006
-small   wide_pad          basic_ldg              4           5       4       1       2     256      64   SKIP   PASS       0.472       0.007
-small   kernel_1          basic_ldg              4           4       1       1       0     256      64   SKIP   PASS       0.435       0.007
-small   pad_stride_2      basic_ldg              3           3       3       2       2     256      64   SKIP   PASS       0.520       0.007
-small   stride_gap        basic_ldg              7           2       2       3       0     256      64   SKIP   PASS       0.659       0.006
-small   pad_zero_windows  basic_ldg              1           6       2       1       3     256      64   SKIP   PASS       0.709       0.006
+medium  sample            basic                 16           8       3       2       1     256      64   SKIP   SKIP       0.465       0.007
+medium  medium_1          basic               4096        1024       7       4       3     256      64   SKIP   SKIP       0.508       0.006
+medium  medium_2          basic              65536       32768       3       2       1     256      64   SKIP   SKIP       0.638       0.007
+medium  medium_3          basic             262144       87382       5       3       2     256      64   SKIP   SKIP       0.797       0.012
+large   large_1           basic            1048576      262144       7       4       3     256      64   SKIP   SKIP       2.426       0.039
+large   large_2           basic            1048583      349528       5       3       2     256      64   SKIP   SKIP       2.245       0.041
+tensara tensara_1         basic            2097152      524288       7       4       3     256      64   SKIP   SKIP       3.348       0.066
+tensara tensara_2         basic            4194304     4194303       2       1       0     256      64   SKIP   SKIP       8.549       0.301
+tensara tensara_3         basic            8388608     4194304       3       2       1     256      64   SKIP   SKIP      11.634       0.310
+tensara tensara_4         basic           16777216     8388608       4       2       1     256      64   SKIP   SKIP      22.911       0.650
+tensara tensara_5         basic           33554432    33554432       3       1       1     256      64   SKIP   SKIP      69.431       2.520
+tensara tensara_6         basic           67108864    22369622       5       3       2     256      64   SKIP   SKIP      88.217       2.172
+scale   scale_tensara_1   basic            2097152      524288       7       4       3      64       8   SKIP   SKIP       8.686       0.765
+scale   scale_tensara_1   basic            2097152      524288       7       4       3      64      16   SKIP   SKIP       5.628       0.389
+scale   scale_tensara_1   basic            2097152      524288       7       4       3      64      32   SKIP   SKIP       3.698       0.202
+scale   scale_tensara_1   basic            2097152      524288       7       4       3      64      64   SKIP   SKIP       3.263       0.112
+scale   scale_tensara_1   basic            2097152      524288       7       4       3      64     128   SKIP   SKIP       2.896       0.073
+scale   scale_tensara_1   basic            2097152      524288       7       4       3     128       8   SKIP   SKIP       5.476       0.389
+scale   scale_tensara_1   basic            2097152      524288       7       4       3     128      16   SKIP   SKIP       3.970       0.199
+scale   scale_tensara_1   basic            2097152      524288       7       4       3     128      32   SKIP   SKIP       3.118       0.110
+scale   scale_tensara_1   basic            2097152      524288       7       4       3     128      64   SKIP   SKIP       3.553       0.073
+scale   scale_tensara_1   basic            2097152      524288       7       4       3     128     128   SKIP   SKIP       3.242       0.065
+scale   scale_tensara_1   basic            2097152      524288       7       4       3     256       8   SKIP   SKIP       3.605       0.207
+scale   scale_tensara_1   basic            2097152      524288       7       4       3     256      16   SKIP   SKIP       2.918       0.114
+scale   scale_tensara_1   basic            2097152      524288       7       4       3     256      32   SKIP   SKIP       2.586       0.071
+scale   scale_tensara_1   basic            2097152      524288       7       4       3     256      64   SKIP   SKIP       3.331       0.067
+scale   scale_tensara_1   basic            2097152      524288       7       4       3     256     128   SKIP   SKIP       3.620       0.072
+scale   scale_tensara_1   basic            2097152      524288       7       4       3     512       8   SKIP   SKIP       3.210       0.122
+scale   scale_tensara_1   basic            2097152      524288       7       4       3     512      16   SKIP   SKIP       2.769       0.068
+scale   scale_tensara_1   basic            2097152      524288       7       4       3     512      32   SKIP   SKIP       2.691       0.063
+scale   scale_tensara_1   basic            2097152      524288       7       4       3     512      64   SKIP   SKIP       2.558       0.071
+scale   scale_tensara_1   basic            2097152      524288       7       4       3     512     128   SKIP   SKIP       2.846       0.066
+scale   scale_tensara_2   basic            4194304     4194303       2       1       0      64       8   SKIP   SKIP      37.517       5.124
+scale   scale_tensara_2   basic            4194304     4194303       2       1       0      64      16   SKIP   SKIP      22.579       2.426
+scale   scale_tensara_2   basic            4194304     4194303       2       1       0      64      32   SKIP   SKIP      14.975       1.222
+scale   scale_tensara_2   basic            4194304     4194303       2       1       0      64      64   SKIP   SKIP      13.239       0.640
+scale   scale_tensara_2   basic            4194304     4194303       2       1       0      64     128   SKIP   SKIP       8.419       0.350
+scale   scale_tensara_2   basic            4194304     4194303       2       1       0     128       8   SKIP   SKIP      21.679       2.403
+scale   scale_tensara_2   basic            4194304     4194303       2       1       0     128      16   SKIP   SKIP      17.272       1.210
+scale   scale_tensara_2   basic            4194304     4194303       2       1       0     128      32   SKIP   SKIP      11.112       0.632
+scale   scale_tensara_2   basic            4194304     4194303       2       1       0     128      64   SKIP   SKIP       9.457       0.347
+scale   scale_tensara_2   basic            4194304     4194303       2       1       0     128     128   SKIP   SKIP      11.472       0.247
+scale   scale_tensara_2   basic            4194304     4194303       2       1       0     256       8   SKIP   SKIP      15.590       1.225
+scale   scale_tensara_2   basic            4194304     4194303       2       1       0     256      16   SKIP   SKIP      11.798       0.631
+scale   scale_tensara_2   basic            4194304     4194303       2       1       0     256      32   SKIP   SKIP       9.495       0.346
+scale   scale_tensara_2   basic            4194304     4194303       2       1       0     256      64   SKIP   SKIP       8.624       0.253
+scale   scale_tensara_2   basic            4194304     4194303       2       1       0     256     128   SKIP   SKIP       8.336       0.270
+scale   scale_tensara_2   basic            4194304     4194303       2       1       0     512       8   SKIP   SKIP      12.360       0.658
+scale   scale_tensara_2   basic            4194304     4194303       2       1       0     512      16   SKIP   SKIP       9.157       0.345
+scale   scale_tensara_2   basic            4194304     4194303       2       1       0     512      32   SKIP   SKIP       9.999       0.253
+scale   scale_tensara_2   basic            4194304     4194303       2       1       0     512      64   SKIP   SKIP       8.139       0.270
+scale   scale_tensara_2   basic            4194304     4194303       2       1       0     512     128   SKIP   SKIP       8.044       0.227
+scale   scale_tensara_3   basic            8388608     4194304       3       2       1      64       8   SKIP   SKIP      35.812       4.096
+scale   scale_tensara_3   basic            8388608     4194304       3       2       1      64      16   SKIP   SKIP      22.527       2.077
+scale   scale_tensara_3   basic            8388608     4194304       3       2       1      64      32   SKIP   SKIP      16.302       1.069
+scale   scale_tensara_3   basic            8388608     4194304       3       2       1      64      64   SKIP   SKIP      15.262       0.573
+scale   scale_tensara_3   basic            8388608     4194304       3       2       1      64     128   SKIP   SKIP      15.022       0.347
+scale   scale_tensara_3   basic            8388608     4194304       3       2       1     128       8   SKIP   SKIP      23.395       2.082
+scale   scale_tensara_3   basic            8388608     4194304       3       2       1     128      16   SKIP   SKIP      15.848       1.068
+scale   scale_tensara_3   basic            8388608     4194304       3       2       1     128      32   SKIP   SKIP      16.246       0.575
+scale   scale_tensara_3   basic            8388608     4194304       3       2       1     128      64   SKIP   SKIP      11.889       0.344
+scale   scale_tensara_3   basic            8388608     4194304       3       2       1     128     128   SKIP   SKIP      13.669       0.301
+scale   scale_tensara_3   basic            8388608     4194304       3       2       1     256       8   SKIP   SKIP      15.687       1.095
+scale   scale_tensara_3   basic            8388608     4194304       3       2       1     256      16   SKIP   SKIP      15.571       0.573
+scale   scale_tensara_3   basic            8388608     4194304       3       2       1     256      32   SKIP   SKIP      11.747       0.341
+scale   scale_tensara_3   basic            8388608     4194304       3       2       1     256      64   SKIP   SKIP      13.680       0.300
+scale   scale_tensara_3   basic            8388608     4194304       3       2       1     256     128   SKIP   SKIP      11.967       0.337
+scale   scale_tensara_3   basic            8388608     4194304       3       2       1     512       8   SKIP   SKIP      14.413       0.604
+scale   scale_tensara_3   basic            8388608     4194304       3       2       1     512      16   SKIP   SKIP      12.578       0.339
+scale   scale_tensara_3   basic            8388608     4194304       3       2       1     512      32   SKIP   SKIP      11.739       0.298
+scale   scale_tensara_3   basic            8388608     4194304       3       2       1     512      64   SKIP   SKIP      11.807       0.353
+scale   scale_tensara_3   basic            8388608     4194304       3       2       1     512     128   SKIP   SKIP      13.449       0.300
+scale   scale_tensara_4   basic           16777216     8388608       4       2       1      64       8   SKIP   SKIP      73.895       9.102
+scale   scale_tensara_4   basic           16777216     8388608       4       2       1      64      16   SKIP   SKIP      50.398       4.620
+scale   scale_tensara_4   basic           16777216     8388608       4       2       1      64      32   SKIP   SKIP      35.643       2.363
+scale   scale_tensara_4   basic           16777216     8388608       4       2       1      64      64   SKIP   SKIP      26.999       1.257
+scale   scale_tensara_4   basic           16777216     8388608       4       2       1      64     128   SKIP   SKIP      24.574       0.746
+scale   scale_tensara_4   basic           16777216     8388608       4       2       1     128       8   SKIP   SKIP      51.415       4.652
+scale   scale_tensara_4   basic           16777216     8388608       4       2       1     128      16   SKIP   SKIP      33.945       2.366
+scale   scale_tensara_4   basic           16777216     8388608       4       2       1     128      32   SKIP   SKIP      27.972       1.266
+scale   scale_tensara_4   basic           16777216     8388608       4       2       1     128      64   SKIP   SKIP      27.175       0.749
+scale   scale_tensara_4   basic           16777216     8388608       4       2       1     128     128   SKIP   SKIP      26.395       0.605
+scale   scale_tensara_4   basic           16777216     8388608       4       2       1     256       8   SKIP   SKIP      38.492       2.425
+scale   scale_tensara_4   basic           16777216     8388608       4       2       1     256      16   SKIP   SKIP      26.858       1.258
+scale   scale_tensara_4   basic           16777216     8388608       4       2       1     256      32   SKIP   SKIP      26.340       0.745
+scale   scale_tensara_4   basic           16777216     8388608       4       2       1     256      64   SKIP   SKIP      24.766       0.613
+scale   scale_tensara_4   basic           16777216     8388608       4       2       1     256     128   SKIP   SKIP      24.571       0.741
+scale   scale_tensara_4   basic           16777216     8388608       4       2       1     512       8   SKIP   SKIP      27.938       1.339
+scale   scale_tensara_4   basic           16777216     8388608       4       2       1     512      16   SKIP   SKIP      23.383       0.733
+scale   scale_tensara_4   basic           16777216     8388608       4       2       1     512      32   SKIP   SKIP      28.051       0.605
+scale   scale_tensara_4   basic           16777216     8388608       4       2       1     512      64   SKIP   SKIP      24.877       0.712
+scale   scale_tensara_4   basic           16777216     8388608       4       2       1     512     128   SKIP   SKIP      23.205       0.626
+scale   scale_tensara_5   basic           33554432    33554432       3       1       1      64       8   SKIP   SKIP     293.723      41.004
+scale   scale_tensara_5   basic           33554432    33554432       3       1       1      64      16   SKIP   SKIP     164.594      19.469
+scale   scale_tensara_5   basic           33554432    33554432       3       1       1      64      32   SKIP   SKIP     112.845       9.950
+scale   scale_tensara_5   basic           33554432    33554432       3       1       1      64      64   SKIP   SKIP      85.876       5.096
+scale   scale_tensara_5   basic           33554432    33554432       3       1       1      64     128   SKIP   SKIP      71.855       3.419
+scale   scale_tensara_5   basic           33554432    33554432       3       1       1     128       8   SKIP   SKIP     166.753      19.243
+scale   scale_tensara_5   basic           33554432    33554432       3       1       1     128      16   SKIP   SKIP     114.177       9.716
+scale   scale_tensara_5   basic           33554432    33554432       3       1       1     128      32   SKIP   SKIP      83.475       5.045
+scale   scale_tensara_5   basic           33554432    33554432       3       1       1     128      64   SKIP   SKIP      75.860       3.310
+scale   scale_tensara_5   basic           33554432    33554432       3       1       1     128     128   SKIP   SKIP      92.358       2.159
+scale   scale_tensara_5   basic           33554432    33554432       3       1       1     256       8   SKIP   SKIP     113.225       9.806
+scale   scale_tensara_5   basic           33554432    33554432       3       1       1     256      16   SKIP   SKIP      82.801       5.066
+scale   scale_tensara_5   basic           33554432    33554432       3       1       1     256      32   SKIP   SKIP      81.185       2.748
+scale   scale_tensara_5   basic           33554432    33554432       3       1       1     256      64   SKIP   SKIP      81.834       2.202
+scale   scale_tensara_5   basic           33554432    33554432       3       1       1     256     128   SKIP   SKIP      67.500       2.208
+scale   scale_tensara_5   basic           33554432    33554432       3       1       1     512       8   SKIP   SKIP      99.690       5.272
+scale   scale_tensara_5   basic           33554432    33554432       3       1       1     512      16   SKIP   SKIP      91.644       2.728
+scale   scale_tensara_5   basic           33554432    33554432       3       1       1     512      32   SKIP   SKIP      68.509       2.153
+scale   scale_tensara_5   basic           33554432    33554432       3       1       1     512      64   SKIP   SKIP      69.748       2.186
+scale   scale_tensara_5   basic           33554432    33554432       3       1       1     512     128   SKIP   SKIP      71.913       1.796
+scale   scale_tensara_6   basic           67108864    22369622       5       3       2      64       8   SKIP   SKIP     227.828      24.969
+scale   scale_tensara_6   basic           67108864    22369622       5       3       2      64      16   SKIP   SKIP     181.579      12.891
+scale   scale_tensara_6   basic           67108864    22369622       5       3       2      64      32   SKIP   SKIP     117.383       6.741
+scale   scale_tensara_6   basic           67108864    22369622       5       3       2      64      64   SKIP   SKIP     129.384       3.569
+scale   scale_tensara_6   basic           67108864    22369622       5       3       2      64     128   SKIP   SKIP      91.702       2.348
+scale   scale_tensara_6   basic           67108864    22369622       5       3       2     128       8   SKIP   SKIP     147.577      12.857
+scale   scale_tensara_6   basic           67108864    22369622       5       3       2     128      16   SKIP   SKIP     111.673       6.591
+scale   scale_tensara_6   basic           67108864    22369622       5       3       2     128      32   SKIP   SKIP      96.098       3.547
+scale   scale_tensara_6   basic           67108864    22369622       5       3       2     128      64   SKIP   SKIP      83.419       2.360
+scale   scale_tensara_6   basic           67108864    22369622       5       3       2     128     128   SKIP   SKIP      82.904       2.110
+scale   scale_tensara_6   basic           67108864    22369622       5       3       2     256       8   SKIP   SKIP     113.020       6.860
+scale   scale_tensara_6   basic           67108864    22369622       5       3       2     256      16   SKIP   SKIP     116.552       3.558
+scale   scale_tensara_6   basic           67108864    22369622       5       3       2     256      32   SKIP   SKIP      89.869       2.341
+scale   scale_tensara_6   basic           67108864    22369622       5       3       2     256      64   SKIP   SKIP     104.257       2.115
+scale   scale_tensara_6   basic           67108864    22369622       5       3       2     256     128   SKIP   SKIP     160.687       2.554
+scale   scale_tensara_6   basic           67108864    22369622       5       3       2     512       8   SKIP   SKIP     110.110       3.772
+scale   scale_tensara_6   basic           67108864    22369622       5       3       2     512      16   SKIP   SKIP     123.594       2.328
+scale   scale_tensara_6   basic           67108864    22369622       5       3       2     512      32   SKIP   SKIP     111.881       2.102
+scale   scale_tensara_6   basic           67108864    22369622       5       3       2     512      64   SKIP   SKIP      93.239       2.626
+scale   scale_tensara_6   basic           67108864    22369622       5       3       2     512     128   SKIP   SKIP     106.435       2.260
+small   pad_stride_1      basic_ldg              5           5       3       1       1     256      64   SKIP   PASS       0.687       0.006
+small   stride_2          basic_ldg              6           3       2       2       0     256      64   SKIP   PASS       0.583       0.007
+small   wide_pad          basic_ldg              4           5       4       1       2     256      64   SKIP   PASS       0.516       0.008
+small   kernel_1          basic_ldg              4           4       1       1       0     256      64   SKIP   PASS       0.681       0.006
+small   pad_stride_2      basic_ldg              3           3       3       2       2     256      64   SKIP   PASS       0.672       0.007
+small   stride_gap        basic_ldg              7           2       2       3       0     256      64   SKIP   PASS       0.583       0.007
+small   pad_zero_windows  basic_ldg              1           6       2       1       3     256      64   SKIP   PASS       0.684       0.006
 small   zero_output       basic_ldg              2           0       5       1       0     256      64   SKIP   PASS       0.000       0.000
-medium  sample            basic_ldg             16           8       3       2       1     256      64   SKIP   SKIP       0.508       0.007
-medium  medium_1          basic_ldg           4096        1024       7       4       3     256      64   SKIP   SKIP       0.482       0.006
-medium  medium_2          basic_ldg          65536       32768       3       2       1     256      64   SKIP   SKIP       0.680       0.007
-medium  medium_3          basic_ldg         262144       87382       5       3       2     256      64   SKIP   SKIP       7.564       0.009
-large   large_1           basic_ldg        1048576      262144       7       4       3     256      64   SKIP   SKIP       1.812       0.036
-large   large_2           basic_ldg        1048583      349528       5       3       2     256      64   SKIP   SKIP       1.730       0.038
-tensara tensara_1         basic_ldg        2097152      524288       7       4       3     256      64   SKIP   SKIP       2.924       0.063
-tensara tensara_2         basic_ldg        4194304     4194303       2       1       0     256      64   SKIP   SKIP       7.868       0.249
-tensara tensara_3         basic_ldg        8388608     4194304       3       2       1     256      64   SKIP   SKIP      13.174       0.299
-tensara tensara_4         basic_ldg       16777216     8388608       4       2       1     256      64   SKIP   SKIP      19.997       0.611
-tensara tensara_5         basic_ldg       33554432    33554432       3       1       1     256      64   SKIP   SKIP      68.124       2.183
-tensara tensara_6         basic_ldg       67108864    22369622       5       3       2     256      64   SKIP   SKIP      70.205       2.107
-scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3      64       8   SKIP   SKIP       9.058       0.623
-scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3      64      16   SKIP   SKIP       4.658       0.316
-scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3      64      32   SKIP   SKIP       3.600       0.166
-scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3      64      64   SKIP   SKIP       2.575       0.094
-scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3      64     128   SKIP   SKIP       2.384       0.067
-scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     128       8   SKIP   SKIP       3.789       0.316
-scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     128      16   SKIP   SKIP       2.982       0.165
-scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     128      32   SKIP   SKIP       2.446       0.095
-scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     128      64   SKIP   SKIP       2.460       0.066
-scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     128     128   SKIP   SKIP       2.949       0.066
-scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     256       8   SKIP   SKIP       4.078       0.169
-scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     256      16   SKIP   SKIP       2.709       0.094
-scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     256      32   SKIP   SKIP       2.234       0.067
-scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     256      64   SKIP   SKIP       2.216       0.062
-scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     256     128   SKIP   SKIP       2.522       0.069
-scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     512       8   SKIP   SKIP       2.493       0.099
-scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     512      16   SKIP   SKIP       2.326       0.065
-scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     512      32   SKIP   SKIP       2.796       0.064
-scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     512      64   SKIP   SKIP       2.358       0.069
-scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     512     128   SKIP   SKIP       4.352       0.066
-scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0      64       8   SKIP   SKIP      38.187       5.062
-scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0      64      16   SKIP   SKIP      21.455       2.394
-scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0      64      32   SKIP   SKIP      13.941       1.212
-scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0      64      64   SKIP   SKIP       9.308       0.632
-scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0      64     128   SKIP   SKIP      10.143       0.354
-scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     128       8   SKIP   SKIP      19.650       2.373
-scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     128      16   SKIP   SKIP      15.221       1.198
-scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     128      32   SKIP   SKIP       9.215       0.627
-scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     128      64   SKIP   SKIP       7.588       0.343
-scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     128     128   SKIP   SKIP       8.799       0.231
-scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     256       8   SKIP   SKIP      13.406       1.208
-scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     256      16   SKIP   SKIP       9.542       0.624
-scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     256      32   SKIP   SKIP      10.249       0.344
-scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     256      64   SKIP   SKIP       7.029       0.259
-scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     256     128   SKIP   SKIP       8.835       0.274
-scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     512       8   SKIP   SKIP      10.565       0.650
-scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     512      16   SKIP   SKIP      10.022       0.346
-scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     512      32   SKIP   SKIP       7.452       0.247
-scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     512      64   SKIP   SKIP       7.991       0.272
-scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     512     128   SKIP   SKIP       8.959       0.231
-scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1      64       8   SKIP   SKIP      36.672       4.058
-scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1      64      16   SKIP   SKIP      20.970       2.052
-scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1      64      32   SKIP   SKIP      14.220       1.061
-scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1      64      64   SKIP   SKIP      11.782       0.566
-scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1      64     128   SKIP   SKIP      10.304       0.341
-scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     128       8   SKIP   SKIP      25.601       2.062
-scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     128      16   SKIP   SKIP      18.169       1.060
-scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     128      32   SKIP   SKIP      11.429       0.568
-scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     128      64   SKIP   SKIP       9.804       0.343
-scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     128     128   SKIP   SKIP      11.814       0.297
-scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     256       8   SKIP   SKIP      15.234       1.083
-scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     256      16   SKIP   SKIP      11.630       0.570
-scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     256      32   SKIP   SKIP      10.926       0.338
-scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     256      64   SKIP   SKIP       9.359       0.300
-scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     256     128   SKIP   SKIP       9.981       0.339
-scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     512       8   SKIP   SKIP      12.686       0.599
-scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     512      16   SKIP   SKIP      10.443       0.337
-scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     512      32   SKIP   SKIP      13.103       0.296
-scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     512      64   SKIP   SKIP      10.216       0.351
-scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     512     128   SKIP   SKIP       9.499       0.307
-scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1      64       8   SKIP   SKIP      74.238       8.983
-scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1      64      16   SKIP   SKIP      43.610       4.569
-scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1      64      32   SKIP   SKIP      31.571       2.341
-scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1      64      64   SKIP   SKIP      24.232       1.241
-scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1      64     128   SKIP   SKIP      20.611       0.740
-scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     128       8   SKIP   SKIP      43.312       4.581
-scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     128      16   SKIP   SKIP      32.050       2.345
-scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     128      32   SKIP   SKIP      23.280       1.245
-scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     128      64   SKIP   SKIP      21.548       0.741
-scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     128     128   SKIP   SKIP      19.248       0.604
-scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     256       8   SKIP   SKIP      34.389       2.402
-scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     256      16   SKIP   SKIP      26.750       1.243
-scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     256      32   SKIP   SKIP      22.325       0.743
-scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     256      64   SKIP   SKIP      24.774       0.609
-scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     256     128   SKIP   SKIP      20.882       0.729
-scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     512       8   SKIP   SKIP      25.862       1.336
-scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     512      16   SKIP   SKIP      22.687       0.729
-scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     512      32   SKIP   SKIP      23.734       0.604
-scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     512      64   SKIP   SKIP      20.699       0.769
-scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     512     128   SKIP   SKIP      20.952       0.638
-scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1      64       8   SKIP   SKIP     290.768      40.575
-scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1      64      16   SKIP   SKIP     163.452      19.283
-scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1      64      32   SKIP   SKIP      99.715       9.738
-scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1      64      64   SKIP   SKIP      81.048       5.035
-scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1      64     128   SKIP   SKIP      62.674       2.753
-scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     128       8   SKIP   SKIP     162.063      19.064
-scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     128      16   SKIP   SKIP     106.670       9.560
-scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     128      32   SKIP   SKIP      71.457       4.993
-scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     128      64   SKIP   SKIP      68.402       3.281
-scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     128     128   SKIP   SKIP      53.185       2.136
-scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     256       8   SKIP   SKIP      99.302       9.678
-scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     256      16   SKIP   SKIP      75.899       5.000
-scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     256      32   SKIP   SKIP      62.017       2.719
-scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     256      64   SKIP   SKIP      61.868       2.189
-scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     256     128   SKIP   SKIP      56.279       2.182
-scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     512       8   SKIP   SKIP      80.642       5.201
-scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     512      16   SKIP   SKIP      58.542       2.702
-scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     512      32   SKIP   SKIP      58.763       2.149
-scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     512      64   SKIP   SKIP      59.391       2.178
-scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     512     128   SKIP   SKIP      51.721       1.801
-scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2      64       8   SKIP   SKIP     203.481      24.812
-scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2      64      16   SKIP   SKIP     133.507      12.667
-scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2      64      32   SKIP   SKIP      96.950       6.510
-scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2      64      64   SKIP   SKIP      83.944       3.506
-scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2      64     128   SKIP   SKIP      67.519       2.343
-scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     128       8   SKIP   SKIP     138.478      12.685
-scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     128      16   SKIP   SKIP      98.934       6.514
-scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     128      32   SKIP   SKIP      86.275       3.509
-scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     128      64   SKIP   SKIP      67.457       2.349
-scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     128     128   SKIP   SKIP      69.621       2.100
-scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     256       8   SKIP   SKIP      97.129       6.693
-scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     256      16   SKIP   SKIP      78.720       3.500
-scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     256      32   SKIP   SKIP      69.482       2.330
-scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     256      64   SKIP   SKIP      74.913       2.115
-scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     256     128   SKIP   SKIP      71.221       2.512
-scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     512       8   SKIP   SKIP      79.434       3.723
-scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     512      16   SKIP   SKIP      75.966       2.310
-scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     512      32   SKIP   SKIP      73.082       2.096
-scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     512      64   SKIP   SKIP      72.065       2.606
-scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     512     128   SKIP   SKIP      70.627       2.255
-small   pad_stride_1      coop_shared            5           5       3       1       1     256      64   SKIP   PASS       0.872       0.005
-small   stride_2          coop_shared            6           3       2       2       0     256      64   SKIP   PASS       1.017       0.020
-small   wide_pad          coop_shared            4           5       4       1       2     256      64   SKIP   PASS       0.601       0.009
-small   kernel_1          coop_shared            4           4       1       1       0     256      64   SKIP   PASS       0.551       0.007
-small   pad_stride_2      coop_shared            3           3       3       2       2     256      64   SKIP   PASS       0.467       0.005
-small   stride_gap        coop_shared            7           2       2       3       0     256      64   SKIP   PASS       0.532       0.005
-small   pad_zero_windows  coop_shared            1           6       2       1       3     256      64   SKIP   PASS       0.443       0.006
+medium  sample            basic_ldg             16           8       3       2       1     256      64   SKIP   SKIP       0.611       0.006
+medium  medium_1          basic_ldg           4096        1024       7       4       3     256      64   SKIP   SKIP       0.563       0.006
+medium  medium_2          basic_ldg          65536       32768       3       2       1     256      64   SKIP   SKIP       0.694       0.008
+medium  medium_3          basic_ldg         262144       87382       5       3       2     256      64   SKIP   SKIP       0.982       0.011
+large   large_1           basic_ldg        1048576      262144       7       4       3     256      64   SKIP   SKIP       2.643       0.036
+large   large_2           basic_ldg        1048583      349528       5       3       2     256      64   SKIP   SKIP       2.905       0.053
+tensara tensara_1         basic_ldg        2097152      524288       7       4       3     256      64   SKIP   SKIP       4.069       0.065
+tensara tensara_2         basic_ldg        4194304     4194303       2       1       0     256      64   SKIP   SKIP       9.047       0.260
+tensara tensara_3         basic_ldg        8388608     4194304       3       2       1     256      64   SKIP   SKIP      11.388       0.297
+tensara tensara_4         basic_ldg       16777216     8388608       4       2       1     256      64   SKIP   SKIP      26.519       0.613
+tensara tensara_5         basic_ldg       33554432    33554432       3       1       1     256      64   SKIP   SKIP      65.792       2.189
+tensara tensara_6         basic_ldg       67108864    22369622       5       3       2     256      64   SKIP   SKIP      98.696       2.116
+scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3      64       8   SKIP   SKIP       7.326       0.690
+scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3      64      16   SKIP   SKIP       4.408       0.333
+scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3      64      32   SKIP   SKIP       3.449       0.175
+scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3      64      64   SKIP   SKIP       2.816       0.098
+scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3      64     128   SKIP   SKIP       2.842       0.069
+scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     128       8   SKIP   SKIP       4.500       0.325
+scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     128      16   SKIP   SKIP       4.519       0.171
+scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     128      32   SKIP   SKIP       3.699       0.095
+scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     128      64   SKIP   SKIP       3.304       0.069
+scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     128     128   SKIP   SKIP       3.030       0.065
+scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     256       8   SKIP   SKIP       3.522       0.173
+scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     256      16   SKIP   SKIP       3.177       0.118
+scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     256      32   SKIP   SKIP       2.896       0.068
+scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     256      64   SKIP   SKIP       3.186       0.065
+scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     256     128   SKIP   SKIP       4.264       0.070
+scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     512       8   SKIP   SKIP       3.628       0.101
+scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     512      16   SKIP   SKIP       2.687       0.068
+scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     512      32   SKIP   SKIP       2.550       0.065
+scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     512      64   SKIP   SKIP       2.554       0.071
+scale   scale_tensara_1   basic_ldg        2097152      524288       7       4       3     512     128   SKIP   SKIP       3.016       0.066
+scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0      64       8   SKIP   SKIP      38.820       5.103
+scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0      64      16   SKIP   SKIP      33.172       2.431
+scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0      64      32   SKIP   SKIP      16.650       1.225
+scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0      64      64   SKIP   SKIP      11.541       0.639
+scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0      64     128   SKIP   SKIP      10.853       0.351
+scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     128       8   SKIP   SKIP      25.336       2.408
+scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     128      16   SKIP   SKIP      15.425       1.208
+scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     128      32   SKIP   SKIP      10.968       0.632
+scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     128      64   SKIP   SKIP      10.302       0.350
+scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     128     128   SKIP   SKIP       8.157       0.234
+scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     256       8   SKIP   SKIP      14.045       1.221
+scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     256      16   SKIP   SKIP      11.765       0.628
+scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     256      32   SKIP   SKIP       8.481       0.345
+scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     256      64   SKIP   SKIP       9.697       0.258
+scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     256     128   SKIP   SKIP       9.066       0.270
+scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     512       8   SKIP   SKIP      11.658       0.657
+scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     512      16   SKIP   SKIP       8.521       0.344
+scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     512      32   SKIP   SKIP       8.388       0.249
+scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     512      64   SKIP   SKIP      10.446       0.271
+scale   scale_tensara_2   basic_ldg        4194304     4194303       2       1       0     512     128   SKIP   SKIP       7.714       0.226
+scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1      64       8   SKIP   SKIP      35.879       4.077
+scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1      64      16   SKIP   SKIP      24.720       2.069
+scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1      64      32   SKIP   SKIP      18.741       1.089
+scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1      64      64   SKIP   SKIP      14.045       0.571
+scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1      64     128   SKIP   SKIP      11.541       0.342
+scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     128       8   SKIP   SKIP      23.329       2.079
+scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     128      16   SKIP   SKIP      16.831       1.065
+scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     128      32   SKIP   SKIP      13.216       0.572
+scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     128      64   SKIP   SKIP      12.128       0.344
+scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     128     128   SKIP   SKIP      12.446       0.297
+scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     256       8   SKIP   SKIP      15.791       1.090
+scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     256      16   SKIP   SKIP      14.148       0.572
+scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     256      32   SKIP   SKIP      13.046       0.342
+scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     256      64   SKIP   SKIP      11.560       0.298
+scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     256     128   SKIP   SKIP      12.265       0.337
+scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     512       8   SKIP   SKIP      13.479       0.602
+scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     512      16   SKIP   SKIP      14.078       0.338
+scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     512      32   SKIP   SKIP      12.564       0.298
+scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     512      64   SKIP   SKIP      16.278       0.337
+scale   scale_tensara_3   basic_ldg        8388608     4194304       3       2       1     512     128   SKIP   SKIP      14.012       0.309
+scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1      64       8   SKIP   SKIP      75.332       9.051
+scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1      64      16   SKIP   SKIP      46.091       4.603
+scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1      64      32   SKIP   SKIP      40.200       2.364
+scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1      64      64   SKIP   SKIP      26.774       1.252
+scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1      64     128   SKIP   SKIP      25.745       0.746
+scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     128       8   SKIP   SKIP      49.943       4.613
+scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     128      16   SKIP   SKIP      34.707       2.361
+scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     128      32   SKIP   SKIP      27.662       1.253
+scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     128      64   SKIP   SKIP      25.014       0.746
+scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     128     128   SKIP   SKIP      28.358       0.607
+scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     256       8   SKIP   SKIP      33.631       2.420
+scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     256      16   SKIP   SKIP      27.463       1.255
+scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     256      32   SKIP   SKIP      27.063       0.741
+scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     256      64   SKIP   SKIP      24.492       0.612
+scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     256     128   SKIP   SKIP      26.361       0.736
+scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     512       8   SKIP   SKIP      28.190       1.331
+scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     512      16   SKIP   SKIP      23.609       0.733
+scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     512      32   SKIP   SKIP      23.757       0.607
+scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     512      64   SKIP   SKIP      22.943       0.715
+scale   scale_tensara_4   basic_ldg       16777216     8388608       4       2       1     512     128   SKIP   SKIP      22.202       0.647
+scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1      64       8   SKIP   SKIP     307.031      40.838
+scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1      64      16   SKIP   SKIP     179.201      19.422
+scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1      64      32   SKIP   SKIP     118.188       9.798
+scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1      64      64   SKIP   SKIP      86.787       5.074
+scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1      64     128   SKIP   SKIP      90.727       3.418
+scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     128       8   SKIP   SKIP     170.143      19.191
+scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     128      16   SKIP   SKIP     112.311       9.754
+scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     128      32   SKIP   SKIP      80.742       5.038
+scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     128      64   SKIP   SKIP      68.448       3.234
+scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     128     128   SKIP   SKIP      60.576       2.145
+scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     256       8   SKIP   SKIP     115.604       9.856
+scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     256      16   SKIP   SKIP      84.529       5.092
+scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     256      32   SKIP   SKIP      76.462       2.738
+scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     256      64   SKIP   SKIP      70.768       2.190
+scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     256     128   SKIP   SKIP      60.652       2.206
+scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     512       8   SKIP   SKIP      84.100       5.259
+scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     512      16   SKIP   SKIP      65.051       2.727
+scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     512      32   SKIP   SKIP      60.917       2.160
+scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     512      64   SKIP   SKIP      61.337       2.192
+scale   scale_tensara_5   basic_ldg       33554432    33554432       3       1       1     512     128   SKIP   SKIP      59.241       1.811
+scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2      64       8   SKIP   SKIP     215.665      24.890
+scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2      64      16   SKIP   SKIP     145.225      12.785
+scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2      64      32   SKIP   SKIP     108.341       6.571
+scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2      64      64   SKIP   SKIP      91.444       3.548
+scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2      64     128   SKIP   SKIP      81.350       2.349
+scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     128       8   SKIP   SKIP     147.493      12.869
+scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     128      16   SKIP   SKIP     109.150       6.575
+scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     128      32   SKIP   SKIP      88.609       3.542
+scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     128      64   SKIP   SKIP      86.786       2.353
+scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     128     128   SKIP   SKIP      83.565       2.107
+scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     256       8   SKIP   SKIP     111.860       6.761
+scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     256      16   SKIP   SKIP     104.324       3.542
+scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     256      32   SKIP   SKIP      82.676       2.331
+scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     256      64   SKIP   SKIP      91.450       2.115
+scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     256     128   SKIP   SKIP      97.883       2.537
+scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     512       8   SKIP   SKIP      91.271       3.765
+scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     512      16   SKIP   SKIP      88.585       2.310
+scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     512      32   SKIP   SKIP      80.581       2.097
+scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     512      64   SKIP   SKIP     119.989       2.618
+scale   scale_tensara_6   basic_ldg       67108864    22369622       5       3       2     512     128   SKIP   SKIP      81.589       2.254
+small   pad_stride_1      coop_shared            5           5       3       1       1     256      64   SKIP   PASS       0.690       0.007
+small   stride_2          coop_shared            6           3       2       2       0     256      64   SKIP   PASS       0.702       0.026
+small   wide_pad          coop_shared            4           5       4       1       2     256      64   SKIP   PASS       0.469       0.005
+small   kernel_1          coop_shared            4           4       1       1       0     256      64   SKIP   PASS       0.477       0.005
+small   pad_stride_2      coop_shared            3           3       3       2       2     256      64   SKIP   PASS       0.449       0.005
+small   stride_gap        coop_shared            7           2       2       3       0     256      64   SKIP   PASS       0.428       0.006
+small   pad_zero_windows  coop_shared            1           6       2       1       3     256      64   SKIP   PASS       0.455       0.008
 small   zero_output       coop_shared            2           0       5       1       0     256      64   SKIP   PASS       0.000       0.000
-medium  sample            coop_shared           16           8       3       2       1     256      64   SKIP   SKIP       0.478       0.006
-medium  medium_1          coop_shared         4096        1024       7       4       3     256      64   SKIP   SKIP       0.463       0.006
-medium  medium_2          coop_shared        65536       32768       3       2       1     256      64   SKIP   SKIP       0.580       0.007
-medium  medium_3          coop_shared       262144       87382       5       3       2     256      64   SKIP   SKIP       0.687       0.010
-large   large_1           coop_shared      1048576      262144       7       4       3     256      64   SKIP   SKIP       1.569       0.043
-large   large_2           coop_shared      1048583      349528       5       3       2     256      64   SKIP   SKIP       1.788       0.045
-tensara tensara_1         coop_shared      2097152      524288       7       4       3     256      64   SKIP   SKIP       2.333       0.080
-tensara tensara_2         coop_shared      4194304     4194303       2       1       0     256      64   SKIP   SKIP       7.488       0.276
-tensara tensara_3         coop_shared      8388608     4194304       3       2       1     256      64   SKIP   SKIP      10.770       0.358
-tensara tensara_4         coop_shared     16777216     8388608       4       2       1     256      64   SKIP   SKIP      23.994       0.833
-tensara tensara_5         coop_shared     33554432    33554432       3       1       1     256      64   SKIP   SKIP      56.863       2.112
-tensara tensara_6         coop_shared     67108864    22369622       5       3       2     256      64   SKIP   SKIP      73.388       2.471
-scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3      64       8   SKIP   SKIP      13.058       1.753
-scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3      64      16   SKIP   SKIP       7.512       0.884
-scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3      64      32   SKIP   SKIP       4.839       0.449
-scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3      64      64   SKIP   SKIP       4.545       0.232
-scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3      64     128   SKIP   SKIP       3.336       0.127
-scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     128       8   SKIP   SKIP       7.526       0.898
-scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     128      16   SKIP   SKIP       4.602       0.455
-scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     128      32   SKIP   SKIP       4.118       0.237
-scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     128      64   SKIP   SKIP       2.549       0.128
-scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     128     128   SKIP   SKIP       2.295       0.077
-scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     256       8   SKIP   SKIP       4.823       0.477
-scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     256      16   SKIP   SKIP       4.482       0.247
-scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     256      32   SKIP   SKIP       6.855       0.134
-scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     256      64   SKIP   SKIP       2.532       0.080
-scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     256     128   SKIP   SKIP       2.433       0.089
-scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     512       8   SKIP   SKIP       3.778       0.266
-scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     512      16   SKIP   SKIP       2.633       0.140
-scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     512      32   SKIP   SKIP       2.290       0.084
-scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     512      64   SKIP   SKIP       2.457       0.092
-scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     512     128   SKIP   SKIP       2.294       0.076
-scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0      64       8   SKIP   SKIP      44.489       6.441
-scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0      64      16   SKIP   SKIP      24.440       3.133
-scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0      64      32   SKIP   SKIP      14.968       1.526
-scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0      64      64   SKIP   SKIP      10.266       0.776
-scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0      64     128   SKIP   SKIP      11.266       0.412
-scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     128       8   SKIP   SKIP      25.379       3.247
-scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     128      16   SKIP   SKIP      15.415       1.610
-scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     128      32   SKIP   SKIP      10.464       0.823
-scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     128      64   SKIP   SKIP       8.397       0.431
-scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     128     128   SKIP   SKIP       7.366       0.248
-scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     256       8   SKIP   SKIP      16.047       1.760
-scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     256      16   SKIP   SKIP      12.524       0.891
-scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     256      32   SKIP   SKIP       8.775       0.472
-scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     256      64   SKIP   SKIP       8.487       0.269
-scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     256     128   SKIP   SKIP      11.246       0.308
-scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     512       8   SKIP   SKIP      11.971       1.003
-scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     512      16   SKIP   SKIP       9.226       0.513
-scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     512      32   SKIP   SKIP      10.850       0.292
-scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     512      64   SKIP   SKIP       7.815       0.327
-scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     512     128   SKIP   SKIP       7.235       0.252
-scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1      64       8   SKIP   SKIP      59.963       7.936
-scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1      64      16   SKIP   SKIP      33.630       3.977
-scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1      64      32   SKIP   SKIP      20.928       2.014
-scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1      64      64   SKIP   SKIP      17.212       1.043
-scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1      64     128   SKIP   SKIP      12.182       0.558
-scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     128       8   SKIP   SKIP      33.464       4.130
-scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     128      16   SKIP   SKIP      21.407       2.084
-scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     128      32   SKIP   SKIP      15.295       1.073
-scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     128      64   SKIP   SKIP      12.494       0.572
-scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     128     128   SKIP   SKIP      10.694       0.334
-scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     256       8   SKIP   SKIP      22.832       2.285
-scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     256      16   SKIP   SKIP      15.507       1.164
-scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     256      32   SKIP   SKIP      12.956       0.623
-scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     256      64   SKIP   SKIP      11.754       0.359
-scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     256     128   SKIP   SKIP      12.241       0.409
-scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     512       8   SKIP   SKIP      17.856       1.264
-scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     512      16   SKIP   SKIP      13.159       0.653
-scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     512      32   SKIP   SKIP      12.591       0.377
-scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     512      64   SKIP   SKIP      11.239       0.419
-scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     512     128   SKIP   SKIP      13.309       0.345
-scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1      64       8   SKIP   SKIP     133.773      18.534
-scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1      64      16   SKIP   SKIP      73.815       9.174
-scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1      64      32   SKIP   SKIP      43.573       4.631
-scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1      64      64   SKIP   SKIP      34.267       2.374
-scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1      64     128   SKIP   SKIP      28.578       1.247
-scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     128       8   SKIP   SKIP      74.565       9.521
-scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     128      16   SKIP   SKIP      47.390       4.798
-scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     128      32   SKIP   SKIP      31.430       2.448
-scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     128      64   SKIP   SKIP      23.806       1.285
-scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     128     128   SKIP   SKIP      23.954       0.721
-scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     256       8   SKIP   SKIP      53.957       5.260
-scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     256      16   SKIP   SKIP      32.584       2.661
-scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     256      32   SKIP   SKIP      23.984       1.401
-scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     256      64   SKIP   SKIP      20.976       0.837
-scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     256     128   SKIP   SKIP      23.326       0.887
-scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     512       8   SKIP   SKIP      36.177       2.889
-scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     512      16   SKIP   SKIP      27.447       1.474
-scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     512      32   SKIP   SKIP      22.050       0.828
-scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     512      64   SKIP   SKIP      22.823       0.938
-scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     512     128   SKIP   SKIP      20.860       0.725
-scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1      64       8   SKIP   SKIP     356.889      51.385
-scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1      64      16   SKIP   SKIP     192.155      24.997
-scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1      64      32   SKIP   SKIP     119.877      12.175
-scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1      64      64   SKIP   SKIP      88.090       6.209
-scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1      64     128   SKIP   SKIP      67.590       3.246
-scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     128       8   SKIP   SKIP     201.814      25.970
-scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     128      16   SKIP   SKIP     118.056      12.823
-scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     128      32   SKIP   SKIP      84.511       6.565
-scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     128      64   SKIP   SKIP      69.199       3.417
-scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     128     128   SKIP   SKIP      53.832       1.923
-scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     256       8   SKIP   SKIP     128.576      14.109
-scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     256      16   SKIP   SKIP      87.724       7.121
-scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     256      32   SKIP   SKIP      63.782       3.747
-scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     256      64   SKIP   SKIP      60.822       2.114
-scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     256     128   SKIP   SKIP      58.851       2.514
-scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     512       8   SKIP   SKIP      99.902       8.017
-scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     512      16   SKIP   SKIP      66.498       4.064
-scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     512      32   SKIP   SKIP      62.789       2.273
-scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     512      64   SKIP   SKIP      57.209       2.701
-scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     512     128   SKIP   SKIP      67.526       2.115
-scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2      64       8   SKIP   SKIP     420.356      58.990
-scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2      64      16   SKIP   SKIP     237.431      29.680
-scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2      64      32   SKIP   SKIP     148.446      14.902
-scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2      64      64   SKIP   SKIP     104.102       7.664
-scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2      64     128   SKIP   SKIP      86.749       4.046
-scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     128       8   SKIP   SKIP     238.087      30.040
-scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     128      16   SKIP   SKIP     151.418      15.206
-scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     128      32   SKIP   SKIP     115.156       7.723
-scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     128      64   SKIP   SKIP      84.854       4.098
-scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     128     128   SKIP   SKIP      70.816       2.371
-scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     256       8   SKIP   SKIP     157.926      15.691
-scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     256      16   SKIP   SKIP     104.688       8.022
-scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     256      32   SKIP   SKIP      84.187       4.271
-scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     256      64   SKIP   SKIP      74.280       2.474
-scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     256     128   SKIP   SKIP      71.346       2.828
-scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     512       8   SKIP   SKIP     112.851       8.677
-scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     512      16   SKIP   SKIP      86.858       4.492
-scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     512      32   SKIP   SKIP      72.961       2.585
-scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     512      64   SKIP   SKIP      75.906       2.906
-scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     512     128   SKIP   SKIP      70.943       2.390
+medium  sample            coop_shared           16           8       3       2       1     256      64   SKIP   SKIP       0.469       0.006
+medium  medium_1          coop_shared         4096        1024       7       4       3     256      64   SKIP   SKIP       0.465       0.006
+medium  medium_2          coop_shared        65536       32768       3       2       1     256      64   SKIP   SKIP       0.712       0.009
+medium  medium_3          coop_shared       262144       87382       5       3       2     256      64   SKIP   SKIP       1.380       0.012
+large   large_1           coop_shared      1048576      262144       7       4       3     256      64   SKIP   SKIP       2.235       0.043
+large   large_2           coop_shared      1048583      349528       5       3       2     256      64   SKIP   SKIP       1.940       0.045
+tensara tensara_1         coop_shared      2097152      524288       7       4       3     256      64   SKIP   SKIP       4.569       0.083
+tensara tensara_2         coop_shared      4194304     4194303       2       1       0     256      64   SKIP   SKIP       8.243       0.269
+tensara tensara_3         coop_shared      8388608     4194304       3       2       1     256      64   SKIP   SKIP      15.152       0.365
+tensara tensara_4         coop_shared     16777216     8388608       4       2       1     256      64   SKIP   SKIP      28.334       0.838
+tensara tensara_5         coop_shared     33554432    33554432       3       1       1     256      64   SKIP   SKIP      72.759       2.128
+tensara tensara_6         coop_shared     67108864    22369622       5       3       2     256      64   SKIP   SKIP      80.570       2.478
+scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3      64       8   SKIP   SKIP      14.104       1.801
+scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3      64      16   SKIP   SKIP       8.270       0.896
+scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3      64      32   SKIP   SKIP       6.058       0.453
+scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3      64      64   SKIP   SKIP       3.820       0.234
+scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3      64     128   SKIP   SKIP       3.369       0.127
+scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     128       8   SKIP   SKIP       8.066       0.903
+scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     128      16   SKIP   SKIP       5.236       0.460
+scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     128      32   SKIP   SKIP       4.140       0.238
+scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     128      64   SKIP   SKIP       5.654       0.131
+scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     128     128   SKIP   SKIP       2.835       0.077
+scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     256       8   SKIP   SKIP       5.504       0.481
+scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     256      16   SKIP   SKIP       4.631       0.248
+scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     256      32   SKIP   SKIP       3.920       0.135
+scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     256      64   SKIP   SKIP       4.995       0.081
+scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     256     128   SKIP   SKIP       4.063       0.088
+scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     512       8   SKIP   SKIP       4.703       0.267
+scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     512      16   SKIP   SKIP       3.306       0.141
+scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     512      32   SKIP   SKIP       3.238       0.085
+scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     512      64   SKIP   SKIP       2.899       0.092
+scale   scale_tensara_1   coop_shared      2097152      524288       7       4       3     512     128   SKIP   SKIP       2.746       0.076
+scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0      64       8   SKIP   SKIP      49.041       6.501
+scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0      64      16   SKIP   SKIP      29.072       3.162
+scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0      64      32   SKIP   SKIP      16.329       1.543
+scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0      64      64   SKIP   SKIP      14.918       0.785
+scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0      64     128   SKIP   SKIP      10.262       0.415
+scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     128       8   SKIP   SKIP      30.103       3.281
+scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     128      16   SKIP   SKIP      20.689       1.636
+scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     128      32   SKIP   SKIP      12.986       0.836
+scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     128      64   SKIP   SKIP      11.046       0.436
+scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     128     128   SKIP   SKIP       7.983       0.247
+scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     256       8   SKIP   SKIP      19.051       1.776
+scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     256      16   SKIP   SKIP      14.275       0.904
+scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     256      32   SKIP   SKIP      10.668       0.475
+scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     256      64   SKIP   SKIP       8.511       0.270
+scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     256     128   SKIP   SKIP      10.948       0.310
+scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     512       8   SKIP   SKIP      14.624       1.014
+scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     512      16   SKIP   SKIP      10.768       0.516
+scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     512      32   SKIP   SKIP       8.155       0.290
+scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     512      64   SKIP   SKIP      13.099       0.331
+scale   scale_tensara_2   coop_shared      4194304     4194303       2       1       0     512     128   SKIP   SKIP       8.519       0.254
+scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1      64       8   SKIP   SKIP      61.177       7.964
+scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1      64      16   SKIP   SKIP      34.845       4.013
+scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1      64      32   SKIP   SKIP      27.463       2.031
+scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1      64      64   SKIP   SKIP      24.712       1.051
+scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1      64     128   SKIP   SKIP      17.149       0.562
+scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     128       8   SKIP   SKIP      38.752       4.163
+scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     128      16   SKIP   SKIP      24.587       2.098
+scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     128      32   SKIP   SKIP      17.997       1.081
+scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     128      64   SKIP   SKIP      14.751       0.575
+scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     128     128   SKIP   SKIP      11.872       0.336
+scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     256       8   SKIP   SKIP      24.499       2.302
+scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     256      16   SKIP   SKIP      16.552       1.171
+scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     256      32   SKIP   SKIP      15.015       0.626
+scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     256      64   SKIP   SKIP      11.617       0.361
+scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     256     128   SKIP   SKIP      12.708       0.410
+scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     512       8   SKIP   SKIP      23.290       1.285
+scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     512      16   SKIP   SKIP      14.202       0.660
+scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     512      32   SKIP   SKIP      15.593       0.379
+scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     512      64   SKIP   SKIP      13.131       0.421
+scale   scale_tensara_3   coop_shared      8388608     4194304       3       2       1     512     128   SKIP   SKIP      12.511       0.346
+scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1      64       8   SKIP   SKIP     134.281      18.691
+scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1      64      16   SKIP   SKIP      80.942       9.235
+scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1      64      32   SKIP   SKIP      52.009       4.661
+scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1      64      64   SKIP   SKIP      36.387       2.387
+scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1      64     128   SKIP   SKIP      27.635       1.254
+scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     128       8   SKIP   SKIP      75.840       9.595
+scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     128      16   SKIP   SKIP      50.355       4.827
+scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     128      32   SKIP   SKIP      34.117       2.465
+scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     128      64   SKIP   SKIP      26.331       1.297
+scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     128     128   SKIP   SKIP      23.777       0.754
+scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     256       8   SKIP   SKIP      50.570       5.306
+scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     256      16   SKIP   SKIP      37.750       2.680
+scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     256      32   SKIP   SKIP      28.176       1.404
+scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     256      64   SKIP   SKIP      28.444       0.838
+scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     256     128   SKIP   SKIP      26.720       0.891
+scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     512       8   SKIP   SKIP      39.238       2.897
+scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     512      16   SKIP   SKIP      28.163       1.487
+scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     512      32   SKIP   SKIP      24.833       0.834
+scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     512      64   SKIP   SKIP      28.036       0.942
+scale   scale_tensara_4   coop_shared     16777216     8388608       4       2       1     512     128   SKIP   SKIP      27.166       0.732
+scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1      64       8   SKIP   SKIP     365.034      51.803
+scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1      64      16   SKIP   SKIP     207.090      25.190
+scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1      64      32   SKIP   SKIP     137.572      12.281
+scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1      64      64   SKIP   SKIP     128.996       6.238
+scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1      64     128   SKIP   SKIP      98.548       3.280
+scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     128       8   SKIP   SKIP     226.461      26.235
+scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     128      16   SKIP   SKIP     157.561      12.947
+scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     128      32   SKIP   SKIP     103.787       6.671
+scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     128      64   SKIP   SKIP      73.130       3.441
+scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     128     128   SKIP   SKIP      62.867       1.929
+scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     256       8   SKIP   SKIP     139.431      14.221
+scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     256      16   SKIP   SKIP      89.976       7.202
+scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     256      32   SKIP   SKIP      75.584       3.777
+scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     256      64   SKIP   SKIP      68.949       2.122
+scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     256     128   SKIP   SKIP      68.727       2.530
+scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     512       8   SKIP   SKIP      96.568       8.054
+scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     512      16   SKIP   SKIP      78.492       4.070
+scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     512      32   SKIP   SKIP      60.020       2.279
+scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     512      64   SKIP   SKIP      69.798       2.707
+scale   scale_tensara_5   coop_shared     33554432    33554432       3       1       1     512     128   SKIP   SKIP      67.605       2.117
+scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2      64       8   SKIP   SKIP     428.334      59.070
+scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2      64      16   SKIP   SKIP     248.563      29.782
+scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2      64      32   SKIP   SKIP     157.038      14.968
+scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2      64      64   SKIP   SKIP     113.827       7.750
+scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2      64     128   SKIP   SKIP      95.177       4.066
+scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     128       8   SKIP   SKIP     254.882      30.209
+scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     128      16   SKIP   SKIP     159.166      15.219
+scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     128      32   SKIP   SKIP     122.880       7.769
+scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     128      64   SKIP   SKIP      93.538       4.125
+scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     128     128   SKIP   SKIP      82.747       2.370
+scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     256       8   SKIP   SKIP     164.145      15.739
+scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     256      16   SKIP   SKIP     117.416       8.046
+scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     256      32   SKIP   SKIP      96.893       4.292
+scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     256      64   SKIP   SKIP      81.562       2.472
+scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     256     128   SKIP   SKIP     101.243       2.838
+scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     512       8   SKIP   SKIP     118.222       8.843
+scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     512      16   SKIP   SKIP      95.986       4.535
+scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     512      32   SKIP   SKIP      81.880       2.595
+scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     512      64   SKIP   SKIP      89.175       2.915
+scale   scale_tensara_6   coop_shared     67108864    22369622       5       3       2     512     128   SKIP   SKIP      86.636       2.393
 
 Scale heatmaps: kernel_ms, '-' means no row
 
 scale_tensara_1 / basic best=(512, 32) -> 0.063 ms
 block\grid8         16        32        64        128
-64        0.762     0.387     0.200     0.111     0.072
-128       0.387     0.201     0.112     0.073     0.067
-256       0.207     0.113     0.071     0.065     0.073
-512       0.121     0.071     0.063     0.073     0.067
+64        0.765     0.389     0.202     0.112     0.073
+128       0.389     0.199     0.110     0.073     0.065
+256       0.207     0.114     0.071     0.067     0.072
+512       0.122     0.068     0.063     0.071     0.066
 
-scale_tensara_1 / basic_ldg best=(256, 64) -> 0.062 ms
+scale_tensara_1 / basic_ldg best=(128, 128) -> 0.065 ms
 block\grid8         16        32        64        128
-64        0.623     0.316     0.166     0.094     0.067
-128       0.316     0.165     0.095     0.066     0.066
-256       0.169     0.094     0.067     0.062     0.069
-512       0.099     0.065     0.064     0.069     0.066
+64        0.690     0.333     0.175     0.098     0.069
+128       0.325     0.171     0.095     0.069     0.065
+256       0.173     0.118     0.068     0.065     0.070
+512       0.101     0.068     0.065     0.071     0.066
 
 scale_tensara_1 / coop_shared best=(512, 128) -> 0.076 ms
 block\grid8         16        32        64        128
-64        1.753     0.884     0.449     0.232     0.127
-128       0.898     0.455     0.237     0.128     0.077
-256       0.477     0.247     0.134     0.080     0.089
-512       0.266     0.140     0.084     0.092     0.076
+64        1.801     0.896     0.453     0.234     0.127
+128       0.903     0.460     0.238     0.131     0.077
+256       0.481     0.248     0.135     0.081     0.088
+512       0.267     0.141     0.085     0.092     0.076
 
-scale_tensara_2 / basic best=(512, 128) -> 0.225 ms
+scale_tensara_2 / basic best=(512, 128) -> 0.227 ms
 block\grid8         16        32        64        128
-64        6.184     2.910     1.236     0.635     0.348
-128       2.380     1.200     0.630     0.345     0.250
-256       1.210     0.628     0.345     0.254     0.268
-512       0.654     0.346     0.248     0.271     0.225
+64        5.124     2.426     1.222     0.640     0.350
+128       2.403     1.210     0.632     0.347     0.247
+256       1.225     0.631     0.346     0.253     0.270
+512       0.658     0.345     0.253     0.270     0.227
 
-scale_tensara_2 / basic_ldg best=(128, 128) -> 0.231 ms
+scale_tensara_2 / basic_ldg best=(512, 128) -> 0.226 ms
 block\grid8         16        32        64        128
-64        5.062     2.394     1.212     0.632     0.354
-128       2.373     1.198     0.627     0.343     0.231
-256       1.208     0.624     0.344     0.259     0.274
-512       0.650     0.346     0.247     0.272     0.231
+64        5.103     2.431     1.225     0.639     0.351
+128       2.408     1.208     0.632     0.350     0.234
+256       1.221     0.628     0.345     0.258     0.270
+512       0.657     0.344     0.249     0.271     0.226
 
-scale_tensara_2 / coop_shared best=(128, 128) -> 0.248 ms
+scale_tensara_2 / coop_shared best=(128, 128) -> 0.247 ms
 block\grid8         16        32        64        128
-64        6.441     3.133     1.526     0.776     0.412
-128       3.247     1.610     0.823     0.431     0.248
-256       1.760     0.891     0.472     0.269     0.308
-512       1.003     0.513     0.292     0.327     0.252
+64        6.501     3.162     1.543     0.785     0.415
+128       3.281     1.636     0.836     0.436     0.247
+256       1.776     0.904     0.475     0.270     0.310
+512       1.014     0.516     0.290     0.331     0.254
 
-scale_tensara_3 / basic best=(128, 128) -> 0.295 ms
+scale_tensara_3 / basic best=(512, 32) -> 0.298 ms
 block\grid8         16        32        64        128
-64        4.071     2.061     1.064     0.568     0.341
-128       2.066     1.065     0.572     0.343     0.295
-256       1.087     0.571     0.343     0.299     0.335
-512       0.600     0.338     0.298     0.355     0.308
+64        4.096     2.077     1.069     0.573     0.347
+128       2.082     1.068     0.575     0.344     0.301
+256       1.095     0.573     0.341     0.300     0.337
+512       0.604     0.339     0.298     0.353     0.300
 
-scale_tensara_3 / basic_ldg best=(512, 32) -> 0.296 ms
+scale_tensara_3 / basic_ldg best=(128, 128) -> 0.297 ms
 block\grid8         16        32        64        128
-64        4.058     2.052     1.061     0.566     0.341
-128       2.062     1.060     0.568     0.343     0.297
-256       1.083     0.570     0.338     0.300     0.339
-512       0.599     0.337     0.296     0.351     0.307
+64        4.077     2.069     1.089     0.571     0.342
+128       2.079     1.065     0.572     0.344     0.297
+256       1.090     0.572     0.342     0.298     0.337
+512       0.602     0.338     0.298     0.337     0.309
 
-scale_tensara_3 / coop_shared best=(128, 128) -> 0.334 ms
+scale_tensara_3 / coop_shared best=(128, 128) -> 0.336 ms
 block\grid8         16        32        64        128
-64        7.936     3.977     2.014     1.043     0.558
-128       4.130     2.084     1.073     0.572     0.334
-256       2.285     1.164     0.623     0.359     0.409
-512       1.264     0.653     0.377     0.419     0.345
+64        7.964     4.013     2.031     1.051     0.562
+128       4.163     2.098     1.081     0.575     0.336
+256       2.302     1.171     0.626     0.361     0.410
+512       1.285     0.660     0.379     0.421     0.346
 
-scale_tensara_4 / basic best=(128, 128) -> 0.601 ms
+scale_tensara_4 / basic best=(128, 128) -> 0.605 ms
 block\grid8         16        32        64        128
-64        9.023     4.588     2.347     1.246     0.743
-128       4.601     2.352     1.251     0.745     0.601
-256       2.412     1.246     0.741     0.611     0.736
-512       1.325     0.733     0.605     0.717     0.647
+64        9.102     4.620     2.363     1.257     0.746
+128       4.652     2.366     1.266     0.749     0.605
+256       2.425     1.258     0.745     0.613     0.741
+512       1.339     0.733     0.605     0.712     0.626
 
-scale_tensara_4 / basic_ldg best=(128, 128) -> 0.604 ms
+scale_tensara_4 / basic_ldg best=(128, 128) -> 0.607 ms
 block\grid8         16        32        64        128
-64        8.983     4.569     2.341     1.241     0.740
-128       4.581     2.345     1.245     0.741     0.604
-256       2.402     1.243     0.743     0.609     0.729
-512       1.336     0.729     0.604     0.769     0.638
+64        9.051     4.603     2.364     1.252     0.746
+128       4.613     2.361     1.253     0.746     0.607
+256       2.420     1.255     0.741     0.612     0.736
+512       1.331     0.733     0.607     0.715     0.647
 
-scale_tensara_4 / coop_shared best=(128, 128) -> 0.721 ms
+scale_tensara_4 / coop_shared best=(512, 128) -> 0.732 ms
 block\grid8         16        32        64        128
-64        18.534    9.174     4.631     2.374     1.247
-128       9.521     4.798     2.448     1.285     0.721
-256       5.260     2.661     1.401     0.837     0.887
-512       2.889     1.474     0.828     0.938     0.725
+64        18.691    9.235     4.661     2.387     1.254
+128       9.595     4.827     2.465     1.297     0.754
+256       5.306     2.680     1.404     0.838     0.891
+512       2.897     1.487     0.834     0.942     0.732
 
-scale_tensara_5 / basic best=(512, 128) -> 1.794 ms
+scale_tensara_5 / basic best=(512, 128) -> 1.796 ms
 block\grid8         16        32        64        128
-64        40.719    19.332    9.766     5.049     3.269
-128       19.115    9.578     5.006     3.271     2.145
-256       9.703     5.023     3.208     2.181     2.194
-512       5.219     2.718     2.149     2.212     1.794
+64        41.004    19.469    9.950     5.096     3.419
+128       19.243    9.716     5.045     3.310     2.159
+256       9.806     5.066     2.748     2.202     2.208
+512       5.272     2.728     2.153     2.186     1.796
 
-scale_tensara_5 / basic_ldg best=(512, 128) -> 1.801 ms
+scale_tensara_5 / basic_ldg best=(512, 128) -> 1.811 ms
 block\grid8         16        32        64        128
-64        40.575    19.283    9.738     5.035     2.753
-128       19.064    9.560     4.993     3.281     2.136
-256       9.678     5.000     2.719     2.189     2.182
-512       5.201     2.702     2.149     2.178     1.801
+64        40.838    19.422    9.798     5.074     3.418
+128       19.191    9.754     5.038     3.234     2.145
+256       9.856     5.092     2.738     2.190     2.206
+512       5.259     2.727     2.160     2.192     1.811
 
-scale_tensara_5 / coop_shared best=(128, 128) -> 1.923 ms
+scale_tensara_5 / coop_shared best=(128, 128) -> 1.929 ms
 block\grid8         16        32        64        128
-64        51.385    24.997    12.175    6.209     3.246
-128       25.970    12.823    6.565     3.417     1.923
-256       14.109    7.121     3.747     2.114     2.514
-512       8.017     4.064     2.273     2.701     2.115
+64        51.803    25.190    12.281    6.238     3.280
+128       26.235    12.947    6.671     3.441     1.929
+256       14.221    7.202     3.777     2.122     2.530
+512       8.054     4.070     2.279     2.707     2.117
 
-scale_tensara_6 / basic best=(512, 32) -> 2.092 ms
+scale_tensara_6 / basic best=(512, 32) -> 2.102 ms
 block\grid8         16        32        64        128
-64        24.868    12.697    6.532     3.510     2.344
-128       12.718    6.536     3.513     2.356     2.105
-256       6.706     3.512     2.331     2.110     2.511
-512       3.729     2.307     2.092     2.629     2.264
+64        24.969    12.891    6.741     3.569     2.348
+128       12.857    6.591     3.547     2.360     2.110
+256       6.860     3.558     2.341     2.115     2.554
+512       3.772     2.328     2.102     2.626     2.260
 
-scale_tensara_6 / basic_ldg best=(512, 32) -> 2.096 ms
+scale_tensara_6 / basic_ldg best=(512, 32) -> 2.097 ms
 block\grid8         16        32        64        128
-64        24.812    12.667    6.510     3.506     2.343
-128       12.685    6.514     3.509     2.349     2.100
-256       6.693     3.500     2.330     2.115     2.512
-512       3.723     2.310     2.096     2.606     2.255
+64        24.890    12.785    6.571     3.548     2.349
+128       12.869    6.575     3.542     2.353     2.107
+256       6.761     3.542     2.331     2.115     2.537
+512       3.765     2.310     2.097     2.618     2.254
 
-scale_tensara_6 / coop_shared best=(128, 128) -> 2.371 ms
+scale_tensara_6 / coop_shared best=(128, 128) -> 2.370 ms
 block\grid8         16        32        64        128
-64        58.990    29.680    14.902    7.664     4.046
-128       30.040    15.206    7.723     4.098     2.371
-256       15.691    8.022     4.271     2.474     2.828
-512       8.677     4.492     2.585     2.906     2.390
+64        59.070    29.782    14.968    7.750     4.066
+128       30.209    15.219    7.769     4.125     2.370
+256       15.739    8.046     4.292     2.472     2.838
+512       8.843     4.535     2.595     2.915     2.393

@@ -62,6 +62,8 @@ static constexpr bool kCpuReferenceImplemented = true;
 static constexpr bool kGpuKernelImplemented = true;
 static constexpr int kDefaultTimingRepeats = 5;
 static constexpr int kTimingWarmupIterations = 1;
+static constexpr int kProfileWarmupIterations = 5;
+static constexpr int kProfileIterations = 50;
 
 struct Timing {
   float total_ms = 0.0f;
@@ -576,6 +578,60 @@ static void run_solution_host(const std::vector<float>& input,
   CUDA_CHECK(cudaFree(d_output));
 }
 
+static int run_profile() {
+  if (!cuda_runtime_ready()) {
+    return 1;
+  }
+
+  const size_t rows = 6144;
+  const size_t cols = 4096;
+  const size_t total = rows * cols;
+  const size_t bytes = total * sizeof(float);
+  const auto input = make_gelu_input(rows, cols);
+  float* d_input = nullptr;
+  float* d_output = nullptr;
+  cudaEvent_t start = nullptr;
+  cudaEvent_t stop = nullptr;
+  CUDA_CHECK(cudaMalloc(&d_input, bytes));
+  CUDA_CHECK(cudaMalloc(&d_output, bytes));
+  CUDA_CHECK(cudaMemcpy(d_input, input.data(), bytes,
+                        cudaMemcpyHostToDevice));
+  CUDA_CHECK(cudaEventCreate(&start));
+  CUDA_CHECK(cudaEventCreate(&stop));
+
+  for (int i = 0; i < kProfileWarmupIterations; ++i) {
+    solution(d_input, d_output, rows, cols);
+  }
+  CUDA_CHECK(cudaDeviceSynchronize());
+  CUDA_CHECK(cudaEventRecord(start));
+  for (int i = 0; i < kProfileIterations; ++i) {
+    solution(d_input, d_output, rows, cols);
+  }
+  CUDA_CHECK(cudaEventRecord(stop));
+  CUDA_CHECK(cudaEventSynchronize(stop));
+
+  float elapsed_ms = 0.0f;
+  CUDA_CHECK(cudaEventElapsedTime(&elapsed_ms, start, stop));
+  const double device_mib =
+      static_cast<double>(bytes * 2) / (1024.0 * 1024.0);
+  std::cout << std::fixed << std::setprecision(3)
+            << "profile scope=kernel-only verify=off"
+            << " kernel=" << current_kernel_name()
+            << " rows=" << rows << " cols=" << cols
+            << " block_x=" << g_launch_config.block_x
+            << " grid_x=" << g_launch_config.grid_x
+            << " warmup=" << kProfileWarmupIterations
+            << " repeats=" << kProfileIterations
+            << " device_mib=" << device_mib
+            << " avg_kernel_ms=" << elapsed_ms / kProfileIterations << '\n';
+
+  CUDA_CHECK(cudaEventDestroy(start));
+  CUDA_CHECK(cudaEventDestroy(stop));
+  CUDA_CHECK(cudaFree(d_input));
+  CUDA_CHECK(cudaFree(d_output));
+  return 0;
+}
+
 static int run_tests(bool skip_cpu_verify) {
   if (!cuda_runtime_ready()) {
     return 1;
@@ -761,10 +817,22 @@ int main(int argc, char** argv) {
   std::cin.tie(nullptr);
 
   bool skip_cpu_verify = false;
+  bool profile_mode = false;
   for (int i = 1; i < argc; ++i) {
     const std::string arg = argv[i];
     if (arg == "--skip-cpu") {
       skip_cpu_verify = true;
+    } else if (arg == "--help") {
+      std::cout << "Usage: " << argv[0]
+                << " [--skip-cpu] [--profile] [--kernel=NAME]"
+                << " [--timing=median|best] [--timing-repeats=N]"
+                << " [--list-kernels]\n";
+      return 0;
+    } else if (arg == "--list-kernels") {
+      std::cout << "basic\nfloat4\n";
+      return 0;
+    } else if (arg == "--profile") {
+      profile_mode = true;
     } else if (arg.rfind("--kernel=", 0) == 0) {
       if (!parse_kernel_arg(arg)) {
         return 1;
@@ -779,11 +847,19 @@ int main(int argc, char** argv) {
       }
     } else {
       std::cerr << "Unknown argument: " << arg
-                << " (supported: --skip-cpu, --kernel=..., --timing=..., "
+                << " (supported: --skip-cpu, --profile, --kernel=..., "
+                << "--timing=..., "
                 << "--timing-repeats=...)\n";
       return 1;
     }
   }
 
+  if (profile_mode) {
+    if (!g_kernel_arg_set) {
+      std::cerr << "--profile requires an explicit --kernel=... value\n";
+      return 1;
+    }
+    return run_profile();
+  }
   return run_tests(skip_cpu_verify);
 }

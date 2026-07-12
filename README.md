@@ -32,6 +32,8 @@ Current problem files:
 
 Detailed correctness and benchmark notes live next to each problem:
 
+- [Repository-wide results index](RESULTS_INDEX.md)
+
 - [P1_1D_CONVOLUTIONS_RESULTS.md](P1_1D_CONVOLUTIONS_RESULTS.md)
 - [P3_RESULT_RESULTS.md](P3_RESULT_RESULTS.md)
 - [P4_MVM_RESULTS.md](P4_MVM_RESULTS.md)
@@ -39,6 +41,7 @@ Detailed correctness and benchmark notes live next to each problem:
 - [P6_AVG_POOL_1D_RESULTS.md](P6_AVG_POOL_1D_RESULTS.md)
 - [P7_GELU_RESULTS.md](P7_GELU_RESULTS.md)
 - [P8_SIGMOID_RESULTS.md](P8_SIGMOID_RESULTS.md)
+- [P9_RMS_NORM_RESULTS.md](P9_RMS_NORM_RESULTS.md)
 
 ## Harness Pattern
 
@@ -79,8 +82,9 @@ shapes are promising, and which benchmark rows look noisy or suspicious.
 
 ## Current Snapshot
 
-The latest saved logs cover CPU-backed and skip-CPU runs for P1, P3, P4,
-P5, P6, P7, and P8.
+The saved logs cover CPU-backed and skip-CPU runs for P1 and P3 through P9.
+P9 is marked stale/incomplete in the results index because its current source
+contains a kernel variant absent from the saved logs.
 
 - `P1_1D_CONVOLUTIONS.cu`
   - `bstride_c` is the strongest current heavy-run kernel.
@@ -116,6 +120,11 @@ P5, P6, P7, and P8.
 Local timings are useful for iteration, but they are not a substitute for
 Tensara leaderboard measurements. Treat them as directional data:
 
+- every problem supports `--profile --kernel=<variant>`
+- profile mode uses `5` warmup launches and `50` kernel-only timed launches
+- profile output reports average `avg_kernel_ms` with verification disabled
+- every problem supports `--help` and `--list-kernels`
+
 - compare kernel variants under the same harness and input set
 - check odd sizes and tail cases, especially for vectorized kernels
 - rerun suspicious rows before drawing conclusions
@@ -126,6 +135,10 @@ The current local benchmark environment used for the saved result files is an
 NVIDIA GeForce RTX 3050 Ti Laptop GPU.
 
 ## Development Notes
+
+Repository-wide build, evidence, and reporting commands are documented in
+[tools/README.md](tools/README.md). Automation tiers and their evidence limits
+are documented in [docs/AUTOMATION.md](docs/AUTOMATION.md).
 
 The repository has been developed with Codex assistance for harness structure,
 test generation, benchmark organization, and documentation. Kernel strategy and

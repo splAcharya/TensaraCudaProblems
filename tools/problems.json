@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "profile": {"warmup": 5, "repeats": 50, "requires_kernel": true},
+  "problems": [
+    {"id":"P1","name":"1D Convolutions","source":"P1_1D_CONVOLUTIONS.cu","report":"P1_1D_CONVOLUTIONS_RESULTS.md","log_prefix":"p1","cpu":["cpu_conv_same"],"kernels":["device_1d_conv_basic","device_1d_conv_basic_const","device_1d_conv_tiled","device_1d_conv_tiled_const","device_1d_conv_tiled_block_stride","device_1d_conv_tiled_block_stride_const"],"helpers":[],"constants":["kMaxConstantFilterSize","g_const_b"]},
+    {"id":"P3","name":"ReLU","source":"P3_RELU.cu","report":"P3_RESULT_RESULTS.md","log_prefix":"p3","cpu":["cpu_relu"],"kernels":["device_relu_basic","device_relu_float4"],"helpers":[],"constants":[]},
+    {"id":"P4","name":"Matrix-Vector Multiplication","source":"P4_MVM.cu","report":"P4_MVM_RESULTS.md","log_prefix":"p4","cpu":["cpu_matrix_vector"],"kernels":["device_mvm_basic","device_mvm_constant_b","device_mvm_shared_ab","device_mvm_warp","device_mvm_warp_const_b","device_mvm_warp_per_row"],"helpers":[],"constants":["kConstantInputBElements","g_input_b_constant"]},
+    {"id":"P5","name":"Leaky ReLU","source":"P5_LEAKY_RELU.cu","report":"P5_LEAKY_RELU_RESULTS.md","log_prefix":"p5","cpu":["cpu_leaky_relu"],"kernels":["device_leaky_relu_basic","device_leaky_relu_float4"],"helpers":[],"constants":[]},
+    {"id":"P6","name":"Average Pool 1D","source":"P6_AVG_POOL_1D.cu","report":"P6_AVG_POOL_1D_RESULTS.md","log_prefix":"p6","cpu":["cpu_avg_pool_1d_cannonical","cpu_avg_pool_1d_sliding_window"],"kernels":["avg_pool_1d_basic_kernel","avg_pool_1d_basic_ldg_kernel","avg_pool_1d_coop_shared_kernel"],"helpers":[],"constants":[]},
+    {"id":"P7","name":"GELU","source":"P7_GELU.cu","report":"P7_GELU_RESULTS.md","log_prefix":"p7","cpu":["cpu_gelu_reference"],"kernels":["gelu_basic_kernel","gelu_float4_kernel"],"helpers":["gelu_single"],"constants":[]},
+    {"id":"P8","name":"Sigmoid","source":"P8_SIGMOID.cu","report":"P8_SIGMOID_RESULTS.md","log_prefix":"p8","cpu":["cpu_sigmoid_reference"],"kernels":["sigmoid_basic_kernel","sigmoid_float4_kernel"],"helpers":["sigmoid_int"],"constants":[]},
+    {"id":"P9","name":"RMS Norm","source":"P9_RMS_NORM.cu","report":"P9_RMS_NORM_RESULTS.md","log_prefix":"p9","cpu":["cpu_rms_norm_reference"],"kernels":["rms_norm_basic_kernel","rms_norm_float4_kernel","rms_norm_shared_mem_kernel","rms_norm_warp_kernel"],"helpers":[],"constants":[]}
+  ]
+}

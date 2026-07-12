@@ -1305,6 +1305,16 @@ int main(int argc, char** argv) {
   for (int i = 1; i < argc; ++i) {
     if (std::string(argv[i]) == "--skip-cpu") {
       skip_cpu_verify = true;
+    } else if (std::string(argv[i]) == "--help") {
+      std::cout << "Usage: " << argv[0]
+                << " [--skip-cpu] [--profile] [--kernel=NAME]"
+                << " [--timing=median|best] [--timing-repeats=N]"
+                << " [--list-kernels]\n";
+      return 0;
+    } else if (std::string(argv[i]) == "--list-kernels") {
+      std::cout << "basic\nbasic-const\ntiled\ntiled-const\n"
+                << "block-stride-stub\nblock-stride-const\n";
+      return 0;
     } else if (std::string(argv[i]) == "--profile") {
       profile_mode = true;
     } else if (std::string(argv[i]).rfind("--kernel=", 0) == 0) {

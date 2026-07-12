@@ -1,5 +1,18 @@
 # `P1_1D_CONVOLUTIONS.cu` Results
 
+## At a Glance
+
+- Recommendation: `bstride_c`.
+- Correctness: all 186 current CPU-backed rows pass.
+- Performance: wins 21 of 26 comparable current benchmark table rows.
+- Status: current raw logs; benchmark rows remain unverified.
+
+Current skip-CPU evidence has 18 exact checked rows and 378 benchmark-only
+rows. `bstride_c` wins both published Tensara rows.
+
+Benchmark-only rows are timing evidence, not correctness evidence. See the
+[repository index](RESULTS_INDEX.md) for cross-problem status.
+
 Updated from regenerated local logs:
 
 - CPU-backed correctness run: [p1_with_cpu.txt](p1_with_cpu.txt)
@@ -46,10 +59,8 @@ From [p1_skip_cpu.txt](p1_skip_cpu.txt):
 
 From [p1_skip_cpu.txt](p1_skip_cpu.txt):
 
-- Across all comparable skip-CPU configurations, `bstride_c` wins `60`
-  of `66`; the remaining `6` are ties.
-- Across default-launch non-scale rows, `bstride_c` wins `20` of `26`;
-  the remaining `6` are ties.
+- Across comparable table rows, `bstride_c` wins `21` of `26`; `5` are ties.
+- Across published Tensara rows, `bstride_c` wins `2` of `2`.
 - Constant memory remains most useful on the large-filter rows.
 
 ## Tensara Summary
@@ -57,18 +68,18 @@ From [p1_skip_cpu.txt](p1_skip_cpu.txt):
 Published-size benchmark rows:
 
 - `tensara_1`: `N=32768`, `K=8191`
-  - default best: `bstride_c = 0.556 ms`
-  - scale best: `bstride_c = 0.483 ms` at `(256, 128)`
+  - default best: `bstride_c = 0.617 ms`
+  - scale best: `bstride_c = 0.537 ms` at `(256, 128)`
 - `tensara_2`: `N=65536`, `K=8191`
-  - default best: `bstride_c = 1.103 ms`
-  - scale best: `bstride_c = 0.948 ms` at `(512, 128)`
+  - default best: `bstride_c = 1.185 ms`
+  - scale best: `bstride_c = 1.097 ms` at `(256, 128)`
 
 Default-launch `kernel_ms` by variant:
 
-- `tensara_1`: `basic 1.137`, `basic_c 1.063`, `tiled 1.433`,
-  `tiled_c 0.866`, `bstride 1.096`, `bstride_c 0.556`
-- `tensara_2`: `basic 2.394`, `basic_c 2.117`, `tiled 2.890`,
-  `tiled_c 1.769`, `bstride 2.184`, `bstride_c 1.103`
+- `tensara_1`: `basic 1.179`, `basic_c 1.168`, `tiled 1.574`,
+  `tiled_c 0.962`, `bstride 1.239`, `bstride_c 0.617`
+- `tensara_2`: `basic 2.587`, `basic_c 2.398`, `tiled 3.283`,
+  `tiled_c 1.938`, `bstride 2.398`, `bstride_c 1.185`
 
 ## Notes
 

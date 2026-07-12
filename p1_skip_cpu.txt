@@ -1,487 +1,487 @@
 Timing samples: mode=median repeats=5 warmup=1 metric=kernel_ms
 
-group   name            kernel    N         K       block_x grid_x  cpu   gpu   total_ms    kernel_ms
+group   name            kernel    N         K       block_x grid_x  cpu   gpu   total_ms    kernel_ms   
 --------------------------------------------------------------------------------------------------------
-small   small_1         basic     4         3       256     32      SKIP  PASS  3.977       0.006
-small   small_1         basic_c   4         3       256     32      SKIP  PASS  0.566       0.005
-small   small_1         tiled     4         3       256     32      SKIP  PASS  0.629       0.020
-small   small_1         tiled_c   4         3       256     32      SKIP  PASS  0.560       0.005
-small   small_1         bstride   4         3       256     32      SKIP  PASS  1.186       0.046
-small   small_1         bstride_c 4         3       256     32      SKIP  PASS  0.538       0.005
-small   small_2         basic     3         3       256     32      SKIP  PASS  0.548       0.005
-small   small_2         basic_c   3         3       256     32      SKIP  PASS  0.534       0.005
-small   small_2         tiled     3         3       256     32      SKIP  PASS  0.581       0.005
-small   small_2         tiled_c   3         3       256     32      SKIP  PASS  0.570       0.005
-small   small_2         bstride   3         3       256     32      SKIP  PASS  0.562       0.005
-small   small_2         bstride_c 3         3       256     32      SKIP  PASS  0.533       0.008
-small   small_3         basic     3         3       256     32      SKIP  PASS  0.535       0.005
-small   small_3         basic_c   3         3       256     32      SKIP  PASS  0.496       0.005
-small   small_3         tiled     3         3       256     32      SKIP  PASS  0.517       0.006
-small   small_3         tiled_c   3         3       256     32      SKIP  PASS  0.502       0.005
-small   small_3         bstride   3         3       256     32      SKIP  PASS  0.506       0.006
-small   small_3         bstride_c 3         3       256     32      SKIP  PASS  0.551       0.006
-medium  medium_1        basic     4096      31      256     32      SKIP  SKIP  0.616       0.006
-medium  medium_1        basic_c   4096      31      256     32      SKIP  SKIP  0.661       0.007
-medium  medium_1        tiled     4096      31      256     32      SKIP  SKIP  0.554       0.007
-medium  medium_1        tiled_c   4096      31      256     32      SKIP  SKIP  0.503       0.006
-medium  medium_1        bstride   4096      31      256     32      SKIP  SKIP  0.731       0.006
-medium  medium_1        bstride_c 4096      31      256     32      SKIP  SKIP  0.665       0.006
-medium  medium_2        basic     4097      63      256     32      SKIP  SKIP  0.520       0.007
-medium  medium_2        basic_c   4097      63      256     32      SKIP  SKIP  0.504       0.007
-medium  medium_2        tiled     4097      63      256     32      SKIP  SKIP  0.577       0.008
-medium  medium_2        tiled_c   4097      63      256     32      SKIP  SKIP  0.544       0.022
-medium  medium_2        bstride   4097      63      256     32      SKIP  SKIP  0.500       0.007
-medium  medium_2        bstride_c 4097      63      256     32      SKIP  SKIP  0.523       0.006
-medium  medium_3        basic     8193      95      256     32      SKIP  SKIP  0.578       0.011
-medium  medium_3        basic_c   8193      95      256     32      SKIP  SKIP  0.579       0.011
-medium  medium_3        tiled     8193      95      256     32      SKIP  SKIP  0.579       0.012
-medium  medium_3        tiled_c   8193      95      256     32      SKIP  SKIP  0.933       0.011
-medium  medium_3        bstride   8193      95      256     32      SKIP  SKIP  0.559       0.012
-medium  medium_3        bstride_c 8193      95      256     32      SKIP  SKIP  0.516       0.009
-medium  medium_4        basic     16384     127     256     32      SKIP  SKIP  0.583       0.017
-medium  medium_4        basic_c   16384     127     256     32      SKIP  SKIP  0.581       0.017
-medium  medium_4        tiled     16384     127     256     32      SKIP  SKIP  0.649       0.020
-medium  medium_4        tiled_c   16384     127     256     32      SKIP  SKIP  0.844       0.039
-medium  medium_4        bstride   16384     127     256     32      SKIP  SKIP  0.606       0.018
-medium  medium_4        bstride_c 16384     127     256     32      SKIP  SKIP  0.765       0.025
-large   large_1         basic     32769     127     256     32      SKIP  SKIP  0.734       0.031
-large   large_1         basic_c   32769     127     256     32      SKIP  SKIP  0.753       0.031
-large   large_1         tiled     32769     127     256     32      SKIP  SKIP  0.757       0.038
-large   large_1         tiled_c   32769     127     256     32      SKIP  SKIP  0.658       0.027
-large   large_1         bstride   32769     127     256     32      SKIP  SKIP  0.765       0.033
-large   large_1         bstride_c 32769     127     256     32      SKIP  SKIP  0.604       0.019
-large   large_2         basic     65537     191     256     32      SKIP  SKIP  1.061       0.080
-large   large_2         basic_c   65537     191     256     32      SKIP  SKIP  1.339       0.073
-large   large_2         tiled     65537     191     256     32      SKIP  SKIP  1.356       0.099
-large   large_2         tiled_c   65537     191     256     32      SKIP  SKIP  1.142       0.067
-large   large_2         bstride   65537     191     256     32      SKIP  SKIP  1.200       0.080
-large   large_2         bstride_c 65537     191     256     32      SKIP  SKIP  0.909       0.044
-webvfy  webvfy_1        basic     8193      8191    256     32      SKIP  SKIP  3.469       0.452
-webvfy  webvfy_1        basic_c   8193      8191    256     32      SKIP  SKIP  3.249       0.427
-webvfy  webvfy_1        tiled     8193      8191    256     32      SKIP  SKIP  4.324       0.599
-webvfy  webvfy_1        tiled_c   8193      8191    256     32      SKIP  SKIP  3.142       0.410
-webvfy  webvfy_1        bstride   8193      8191    256     32      SKIP  SKIP  3.902       0.542
-webvfy  webvfy_1        bstride_c 8193      8191    256     32      SKIP  SKIP  2.307       0.276
-webvfy  webvfy_2        basic     16385     8191    256     32      SKIP  SKIP  5.471       0.800
-webvfy  webvfy_2        basic_c   16385     8191    256     32      SKIP  SKIP  5.082       0.739
-webvfy  webvfy_2        tiled     16385     8191    256     32      SKIP  SKIP  6.747       0.979
-webvfy  webvfy_2        tiled_c   16385     8191    256     32      SKIP  SKIP  4.663       0.662
-webvfy  webvfy_2        bstride   16385     8191    256     32      SKIP  SKIP  6.341       0.902
-webvfy  webvfy_2        bstride_c 16385     8191    256     32      SKIP  SKIP  3.359       0.456
-large   large_1         basic     32768     31      256     32      SKIP  SKIP  0.652       0.011
-large   large_1         basic_c   32768     31      256     32      SKIP  SKIP  0.660       0.011
-large   large_1         tiled     32768     31      256     32      SKIP  SKIP  0.688       0.013
-large   large_1         tiled_c   32768     31      256     32      SKIP  SKIP  0.672       0.011
-large   large_1         bstride   32768     31      256     32      SKIP  SKIP  0.574       0.014
-large   large_1         bstride_c 32768     31      256     32      SKIP  SKIP  0.565       0.009
-large   large_2         basic     65536     63      256     32      SKIP  SKIP  1.079       0.040
-large   large_2         basic_c   65536     63      256     32      SKIP  SKIP  0.978       0.042
-large   large_2         tiled     65536     63      256     32      SKIP  SKIP  1.031       0.041
-large   large_2         tiled_c   65536     63      256     32      SKIP  SKIP  0.971       0.028
-large   large_2         bstride   65536     63      256     32      SKIP  SKIP  1.402       0.040
-large   large_2         bstride_c 65536     63      256     32      SKIP  SKIP  0.754       0.020
-large   large_3         basic     131072    95      256     32      SKIP  SKIP  1.132       0.079
-large   large_3         basic_c   131072    95      256     32      SKIP  SKIP  1.095       0.073
-large   large_3         tiled     131072    95      256     32      SKIP  SKIP  1.275       0.103
-large   large_3         tiled_c   131072    95      256     32      SKIP  SKIP  1.023       0.070
-large   large_3         bstride   131072    95      256     32      SKIP  SKIP  1.080       0.080
-large   large_3         bstride_c 131072    95      256     32      SKIP  SKIP  0.955       0.048
-large   large_4         basic     262144    127     256     32      SKIP  SKIP  2.191       0.201
-large   large_4         basic_c   262144    127     256     32      SKIP  SKIP  1.915       0.183
-large   large_4         tiled     262144    127     256     32      SKIP  SKIP  2.723       0.262
-large   large_4         tiled_c   262144    127     256     32      SKIP  SKIP  2.767       0.173
-large   large_4         bstride   262144    127     256     32      SKIP  SKIP  2.242       0.202
-large   large_4         bstride_c 262144    127     256     32      SKIP  SKIP  3.348       0.114
-large   large_5         basic     524288    191     256     32      SKIP  SKIP  5.294       0.597
-large   large_5         basic_c   524288    191     256     32      SKIP  SKIP  4.720       0.544
-large   large_5         tiled     524288    191     256     32      SKIP  SKIP  6.071       0.752
-large   large_5         tiled_c   524288    191     256     32      SKIP  SKIP  4.502       0.502
-large   large_5         bstride   524288    191     256     32      SKIP  SKIP  5.251       0.593
-large   large_5         bstride_c 524288    191     256     32      SKIP  SKIP  4.782       0.321
-tile    tile_1          basic     262144    127     256     32      SKIP  SKIP  2.264       0.202
-tile    tile_1          basic_c   262144    127     256     32      SKIP  SKIP  2.019       0.183
-tile    tile_1          tiled     262144    127     256     32      SKIP  SKIP  2.608       0.262
-tile    tile_1          tiled_c   262144    127     256     32      SKIP  SKIP  1.859       0.172
-tile    tile_1          bstride   262144    127     256     32      SKIP  SKIP  2.424       0.218
-tile    tile_1          bstride_c 262144    127     256     32      SKIP  SKIP  1.446       0.114
-tile    tile_2          basic     524288    191     256     32      SKIP  SKIP  5.219       0.596
-tile    tile_2          basic_c   524288    191     256     32      SKIP  SKIP  4.762       0.544
-tile    tile_2          tiled     524288    191     256     32      SKIP  SKIP  6.555       0.752
-tile    tile_2          tiled_c   524288    191     256     32      SKIP  SKIP  5.377       0.502
-tile    tile_2          bstride   524288    191     256     32      SKIP  SKIP  5.307       0.593
-tile    tile_2          bstride_c 524288    191     256     32      SKIP  SKIP  3.354       0.321
-tile    tile_3          basic     1048576   255     256     32      SKIP  SKIP  12.980      1.555
-tile    tile_3          basic_c   1048576   255     256     32      SKIP  SKIP  11.020      1.432
-tile    tile_3          tiled     1048576   255     256     32      SKIP  SKIP  14.711      1.955
-tile    tile_3          tiled_c   1048576   255     256     32      SKIP  SKIP  10.187      0.993
-tile    tile_3          bstride   1048576   255     256     32      SKIP  SKIP  9.958       1.156
-tile    tile_3          bstride_c 1048576   255     256     32      SKIP  SKIP  5.916       0.620
-tile    tile_4          basic     1048576   383     256     32      SKIP  SKIP  13.165      1.773
-tile    tile_4          basic_c   1048576   383     256     32      SKIP  SKIP  12.622      1.641
-tile    tile_4          tiled     1048576   383     256     32      SKIP  SKIP  16.907      2.233
-tile    tile_4          tiled_c   1048576   383     256     32      SKIP  SKIP  11.652      1.450
-tile    tile_4          bstride   1048576   383     256     32      SKIP  SKIP  12.952      1.720
-tile    tile_4          bstride_c 1048576   383     256     32      SKIP  SKIP  8.047       0.902
-tile    tile_5          basic     2097152   511     256     32      SKIP  SKIP  32.963      4.691
-tile    tile_5          basic_c   2097152   511     256     32      SKIP  SKIP  31.473      4.449
-tile    tile_5          tiled     2097152   511     256     32      SKIP  SKIP  40.907      6.063
-tile    tile_5          tiled_c   2097152   511     256     32      SKIP  SKIP  29.110      3.873
-tile    tile_5          bstride   2097152   511     256     32      SKIP  SKIP  31.735      4.569
-tile    tile_5          bstride_c 2097152   511     256     32      SKIP  SKIP  18.641      2.380
-tensara tensara_1       basic     32768     8191    256     32      SKIP  SKIP  8.082       1.137
-tensara tensara_1       basic_c   32768     8191    256     32      SKIP  SKIP  7.095       1.063
-tensara tensara_1       tiled     32768     8191    256     32      SKIP  SKIP  9.305       1.433
-tensara tensara_1       tiled_c   32768     8191    256     32      SKIP  SKIP  5.978       0.866
-tensara tensara_1       bstride   32768     8191    256     32      SKIP  SKIP  7.438       1.096
-tensara tensara_1       bstride_c 32768     8191    256     32      SKIP  SKIP  4.042       0.556
-tensara tensara_2       basic     65536     8191    256     32      SKIP  SKIP  15.291      2.394
-tensara tensara_2       basic_c   65536     8191    256     32      SKIP  SKIP  13.463      2.117
-tensara tensara_2       tiled     65536     8191    256     32      SKIP  SKIP  18.674      2.890
-tensara tensara_2       tiled_c   65536     8191    256     32      SKIP  SKIP  11.770      1.769
-tensara tensara_2       bstride   65536     8191    256     32      SKIP  SKIP  14.097      2.184
-tensara tensara_2       bstride_c 65536     8191    256     32      SKIP  SKIP  7.594       1.103
-odd     odd_1           basic     4097      31      256     32      SKIP  SKIP  0.652       0.006
-odd     odd_1           basic_c   4097      31      256     32      SKIP  SKIP  0.974       0.045
-odd     odd_1           tiled     4097      31      256     32      SKIP  SKIP  0.558       0.005
-odd     odd_1           tiled_c   4097      31      256     32      SKIP  SKIP  0.450       0.005
-odd     odd_1           bstride   4097      31      256     32      SKIP  SKIP  0.453       0.005
-odd     odd_1           bstride_c 4097      31      256     32      SKIP  SKIP  0.504       0.005
-odd     odd_2           basic     32769     127     256     32      SKIP  SKIP  0.630       0.038
-odd     odd_2           basic_c   32769     127     256     32      SKIP  SKIP  0.680       0.022
-odd     odd_2           tiled     32769     127     256     32      SKIP  SKIP  0.739       0.031
-odd     odd_2           tiled_c   32769     127     256     32      SKIP  SKIP  0.632       0.035
-odd     odd_2           bstride   32769     127     256     32      SKIP  SKIP  0.677       0.040
-odd     odd_2           bstride_c 32769     127     256     32      SKIP  SKIP  0.736       0.015
-odd     odd_3           basic     262147    383     256     32      SKIP  SKIP  4.054       0.453
-odd     odd_3           basic_c   262147    383     256     32      SKIP  SKIP  3.753       0.414
-odd     odd_3           tiled     262147    383     256     32      SKIP  SKIP  4.606       0.562
-odd     odd_3           tiled_c   262147    383     256     32      SKIP  SKIP  3.596       0.364
-odd     odd_3           bstride   262147    383     256     32      SKIP  SKIP  4.181       0.433
-odd     odd_3           bstride_c 262147    383     256     32      SKIP  SKIP  2.563       0.226
-scale   scale_tensara_1 basic     32768     8191    64      8       SKIP  SKIP  41.075      6.681
-scale   scale_tensara_1 basic_c   32768     8191    64      8       SKIP  SKIP  50.353      8.199
-scale   scale_tensara_1 tiled     32768     8191    64      8       SKIP  SKIP  78.126      12.733
-scale   scale_tensara_1 tiled_c   32768     8191    64      8       SKIP  SKIP  55.271      8.934
-scale   scale_tensara_1 bstride   32768     8191    64      8       SKIP  SKIP  41.522      6.712
-scale   scale_tensara_1 bstride_c 32768     8191    64      8       SKIP  SKIP  23.660      3.755
-scale   scale_tensara_1 basic     32768     8191    64      16      SKIP  SKIP  22.146      3.507
-scale   scale_tensara_1 basic_c   32768     8191    64      16      SKIP  SKIP  26.667      4.218
-scale   scale_tensara_1 tiled     32768     8191    64      16      SKIP  SKIP  39.653      6.352
-scale   scale_tensara_1 tiled_c   32768     8191    64      16      SKIP  SKIP  28.310      4.432
-scale   scale_tensara_1 bstride   32768     8191    64      16      SKIP  SKIP  21.565      3.359
-scale   scale_tensara_1 bstride_c 32768     8191    64      16      SKIP  SKIP  12.204      1.881
-scale   scale_tensara_1 basic     32768     8191    64      32      SKIP  SKIP  12.305      1.905
-scale   scale_tensara_1 basic_c   32768     8191    64      32      SKIP  SKIP  14.190      2.225
-scale   scale_tensara_1 tiled     32768     8191    64      32      SKIP  SKIP  19.883      3.158
-scale   scale_tensara_1 tiled_c   32768     8191    64      32      SKIP  SKIP  14.465      2.272
-scale   scale_tensara_1 bstride   32768     8191    64      32      SKIP  SKIP  12.150      1.894
-scale   scale_tensara_1 bstride_c 32768     8191    64      32      SKIP  SKIP  8.030       1.068
-scale   scale_tensara_1 basic     32768     8191    64      64      SKIP  SKIP  9.041       1.295
-scale   scale_tensara_1 basic_c   32768     8191    64      64      SKIP  SKIP  9.340       1.371
-scale   scale_tensara_1 tiled     32768     8191    64      64      SKIP  SKIP  19.762      3.164
-scale   scale_tensara_1 tiled_c   32768     8191    64      64      SKIP  SKIP  14.471      2.273
-scale   scale_tensara_1 bstride   32768     8191    64      64      SKIP  SKIP  12.443      1.912
-scale   scale_tensara_1 bstride_c 32768     8191    64      64      SKIP  SKIP  6.717       0.980
-scale   scale_tensara_1 basic     32768     8191    64      128     SKIP  SKIP  7.586       1.112
-scale   scale_tensara_1 basic_c   32768     8191    64      128     SKIP  SKIP  7.036       1.022
-scale   scale_tensara_1 tiled     32768     8191    64      128     SKIP  SKIP  15.580      2.444
-scale   scale_tensara_1 tiled_c   32768     8191    64      128     SKIP  SKIP  11.425      1.752
-scale   scale_tensara_1 bstride   32768     8191    64      128     SKIP  SKIP  9.604       1.450
-scale   scale_tensara_1 bstride_c 32768     8191    64      128     SKIP  SKIP  5.820       0.787
-scale   scale_tensara_1 basic     32768     8191    128     8       SKIP  SKIP  22.358      3.585
-scale   scale_tensara_1 basic_c   32768     8191    128     8       SKIP  SKIP  27.157      4.369
-scale   scale_tensara_1 tiled     32768     8191    128     8       SKIP  SKIP  41.139      6.646
-scale   scale_tensara_1 tiled_c   32768     8191    128     8       SKIP  SKIP  27.667      4.457
-scale   scale_tensara_1 bstride   32768     8191    128     8       SKIP  SKIP  23.152      3.622
-scale   scale_tensara_1 bstride_c 32768     8191    128     8       SKIP  SKIP  13.403      1.979
-scale   scale_tensara_1 basic     32768     8191    128     16      SKIP  SKIP  13.141      1.998
-scale   scale_tensara_1 basic_c   32768     8191    128     16      SKIP  SKIP  14.829      2.323
-scale   scale_tensara_1 tiled     32768     8191    128     16      SKIP  SKIP  20.818      3.324
-scale   scale_tensara_1 tiled_c   32768     8191    128     16      SKIP  SKIP  14.161      2.221
-scale   scale_tensara_1 bstride   32768     8191    128     16      SKIP  SKIP  11.577      1.814
-scale   scale_tensara_1 bstride_c 32768     8191    128     16      SKIP  SKIP  6.773       0.969
-scale   scale_tensara_1 basic     32768     8191    128     32      SKIP  SKIP  8.808       1.313
-scale   scale_tensara_1 basic_c   32768     8191    128     32      SKIP  SKIP  8.914       1.373
-scale   scale_tensara_1 tiled     32768     8191    128     32      SKIP  SKIP  12.248      1.883
-scale   scale_tensara_1 tiled_c   32768     8191    128     32      SKIP  SKIP  9.021       1.329
-scale   scale_tensara_1 bstride   32768     8191    128     32      SKIP  SKIP  8.087       1.204
-scale   scale_tensara_1 bstride_c 32768     8191    128     32      SKIP  SKIP  4.300       0.597
-scale   scale_tensara_1 basic     32768     8191    128     64      SKIP  SKIP  7.644       1.147
-scale   scale_tensara_1 basic_c   32768     8191    128     64      SKIP  SKIP  6.929       1.019
-scale   scale_tensara_1 tiled     32768     8191    128     64      SKIP  SKIP  12.190      1.862
-scale   scale_tensara_1 tiled_c   32768     8191    128     64      SKIP  SKIP  8.427       1.288
-scale   scale_tensara_1 bstride   32768     8191    128     64      SKIP  SKIP  8.119       1.182
-scale   scale_tensara_1 bstride_c 32768     8191    128     64      SKIP  SKIP  4.382       0.612
-scale   scale_tensara_1 basic     32768     8191    128     128     SKIP  SKIP  6.625       0.989
-scale   scale_tensara_1 basic_c   32768     8191    128     128     SKIP  SKIP  6.434       0.948
-scale   scale_tensara_1 tiled     32768     8191    128     128     SKIP  SKIP  12.030      1.841
-scale   scale_tensara_1 tiled_c   32768     8191    128     128     SKIP  SKIP  8.630       1.261
-scale   scale_tensara_1 bstride   32768     8191    128     128     SKIP  SKIP  7.017       1.033
-scale   scale_tensara_1 bstride_c 32768     8191    128     128     SKIP  SKIP  4.356       0.584
-scale   scale_tensara_1 basic     32768     8191    256     8       SKIP  SKIP  15.990      2.445
-scale   scale_tensara_1 basic_c   32768     8191    256     8       SKIP  SKIP  17.451      2.728
-scale   scale_tensara_1 tiled     32768     8191    256     8       SKIP  SKIP  23.691      3.761
-scale   scale_tensara_1 tiled_c   32768     8191    256     8       SKIP  SKIP  15.787      2.412
-scale   scale_tensara_1 bstride   32768     8191    256     8       SKIP  SKIP  14.233      2.224
-scale   scale_tensara_1 bstride_c 32768     8191    256     8       SKIP  SKIP  7.936       1.170
-scale   scale_tensara_1 basic     32768     8191    256     16      SKIP  SKIP  9.230       1.405
-scale   scale_tensara_1 basic_c   32768     8191    256     16      SKIP  SKIP  10.270      1.575
-scale   scale_tensara_1 tiled     32768     8191    256     16      SKIP  SKIP  12.136      1.892
-scale   scale_tensara_1 tiled_c   32768     8191    256     16      SKIP  SKIP  8.731       1.296
-scale   scale_tensara_1 bstride   32768     8191    256     16      SKIP  SKIP  7.753       1.115
-scale   scale_tensara_1 bstride_c 32768     8191    256     16      SKIP  SKIP  4.443       0.580
-scale   scale_tensara_1 basic     32768     8191    256     32      SKIP  SKIP  7.743       1.135
-scale   scale_tensara_1 basic_c   32768     8191    256     32      SKIP  SKIP  7.178       1.062
-scale   scale_tensara_1 tiled     32768     8191    256     32      SKIP  SKIP  9.364       1.435
-scale   scale_tensara_1 tiled_c   32768     8191    256     32      SKIP  SKIP  5.981       0.862
-scale   scale_tensara_1 bstride   32768     8191    256     32      SKIP  SKIP  7.815       1.096
-scale   scale_tensara_1 bstride_c 32768     8191    256     32      SKIP  SKIP  4.085       0.555
-scale   scale_tensara_1 basic     32768     8191    256     64      SKIP  SKIP  7.443       1.093
-scale   scale_tensara_1 basic_c   32768     8191    256     64      SKIP  SKIP  6.972       1.022
-scale   scale_tensara_1 tiled     32768     8191    256     64      SKIP  SKIP  9.186       1.406
-scale   scale_tensara_1 tiled_c   32768     8191    256     64      SKIP  SKIP  6.128       0.854
-scale   scale_tensara_1 bstride   32768     8191    256     64      SKIP  SKIP  7.691       1.085
-scale   scale_tensara_1 bstride_c 32768     8191    256     64      SKIP  SKIP  4.106       0.553
-scale   scale_tensara_1 basic     32768     8191    256     128     SKIP  SKIP  6.478       0.963
-scale   scale_tensara_1 basic_c   32768     8191    256     128     SKIP  SKIP  5.853       0.859
-scale   scale_tensara_1 tiled     32768     8191    256     128     SKIP  SKIP  8.288       1.247
-scale   scale_tensara_1 tiled_c   32768     8191    256     128     SKIP  SKIP  5.905       0.800
-scale   scale_tensara_1 bstride   32768     8191    256     128     SKIP  SKIP  6.612       0.950
-scale   scale_tensara_1 bstride_c 32768     8191    256     128     SKIP  SKIP  3.613       0.483
-scale   scale_tensara_1 basic     32768     8191    512     8       SKIP  SKIP  13.785      2.144
-scale   scale_tensara_1 basic_c   32768     8191    512     8       SKIP  SKIP  12.547      1.956
-scale   scale_tensara_1 tiled     32768     8191    512     8       SKIP  SKIP  18.557      2.940
-scale   scale_tensara_1 tiled_c   32768     8191    512     8       SKIP  SKIP  11.728      1.815
-scale   scale_tensara_1 bstride   32768     8191    512     8       SKIP  SKIP  14.363      2.170
-scale   scale_tensara_1 bstride_c 32768     8191    512     8       SKIP  SKIP  7.574       1.091
-scale   scale_tensara_1 basic     32768     8191    512     16      SKIP  SKIP  7.236       1.078
-scale   scale_tensara_1 basic_c   32768     8191    512     16      SKIP  SKIP  6.947       1.043
-scale   scale_tensara_1 tiled     32768     8191    512     16      SKIP  SKIP  9.619       1.481
-scale   scale_tensara_1 tiled_c   32768     8191    512     16      SKIP  SKIP  6.304       0.936
-scale   scale_tensara_1 bstride   32768     8191    512     16      SKIP  SKIP  7.650       1.087
-scale   scale_tensara_1 bstride_c 32768     8191    512     16      SKIP  SKIP  4.089       0.549
-scale   scale_tensara_1 basic     32768     8191    512     32      SKIP  SKIP  7.458       1.075
-scale   scale_tensara_1 basic_c   32768     8191    512     32      SKIP  SKIP  6.842       0.993
-scale   scale_tensara_1 tiled     32768     8191    512     32      SKIP  SKIP  8.765       1.295
-scale   scale_tensara_1 tiled_c   32768     8191    512     32      SKIP  SKIP  5.720       0.759
-scale   scale_tensara_1 bstride   32768     8191    512     32      SKIP  SKIP  7.424       1.081
-scale   scale_tensara_1 bstride_c 32768     8191    512     32      SKIP  SKIP  4.192       0.545
-scale   scale_tensara_1 basic     32768     8191    512     64      SKIP  SKIP  7.183       1.075
-scale   scale_tensara_1 basic_c   32768     8191    512     64      SKIP  SKIP  6.228       0.903
-scale   scale_tensara_1 tiled     32768     8191    512     64      SKIP  SKIP  8.468       1.247
-scale   scale_tensara_1 tiled_c   32768     8191    512     64      SKIP  SKIP  5.236       0.714
-scale   scale_tensara_1 bstride   32768     8191    512     64      SKIP  SKIP  7.213       1.079
-scale   scale_tensara_1 bstride_c 32768     8191    512     64      SKIP  SKIP  3.945       0.543
-scale   scale_tensara_1 basic     32768     8191    512     128     SKIP  SKIP  7.091       1.074
-scale   scale_tensara_1 basic_c   32768     8191    512     128     SKIP  SKIP  6.287       0.911
-scale   scale_tensara_1 tiled     32768     8191    512     128     SKIP  SKIP  8.324       1.271
-scale   scale_tensara_1 tiled_c   32768     8191    512     128     SKIP  SKIP  5.142       0.730
-scale   scale_tensara_1 bstride   32768     8191    512     128     SKIP  SKIP  7.616       1.079
-scale   scale_tensara_1 bstride_c 32768     8191    512     128     SKIP  SKIP  4.094       0.543
-scale   scale_tensara_2 basic     65536     8191    64      8       SKIP  SKIP  80.997      13.337
-scale   scale_tensara_2 basic_c   65536     8191    64      8       SKIP  SKIP  99.761      16.434
-scale   scale_tensara_2 tiled     65536     8191    64      8       SKIP  SKIP  155.201     25.637
-scale   scale_tensara_2 tiled_c   65536     8191    64      8       SKIP  SKIP  110.442     18.130
-scale   scale_tensara_2 bstride   65536     8191    64      8       SKIP  SKIP  83.027      13.467
-scale   scale_tensara_2 bstride_c 65536     8191    64      8       SKIP  SKIP  47.672      7.597
-scale   scale_tensara_2 basic     65536     8191    64      16      SKIP  SKIP  43.388      6.981
-scale   scale_tensara_2 basic_c   65536     8191    64      16      SKIP  SKIP  51.926      8.470
-scale   scale_tensara_2 tiled     65536     8191    64      16      SKIP  SKIP  78.183      12.800
-scale   scale_tensara_2 tiled_c   65536     8191    64      16      SKIP  SKIP  55.001      8.974
-scale   scale_tensara_2 bstride   65536     8191    64      16      SKIP  SKIP  41.656      6.736
-scale   scale_tensara_2 bstride_c 65536     8191    64      16      SKIP  SKIP  24.164      3.805
-scale   scale_tensara_2 basic     65536     8191    64      32      SKIP  SKIP  23.578      3.780
-scale   scale_tensara_2 basic_c   65536     8191    64      32      SKIP  SKIP  27.717      4.464
-scale   scale_tensara_2 tiled     65536     8191    64      32      SKIP  SKIP  39.525      6.376
-scale   scale_tensara_2 tiled_c   65536     8191    64      32      SKIP  SKIP  29.495      4.618
-scale   scale_tensara_2 bstride   65536     8191    64      32      SKIP  SKIP  24.217      3.796
-scale   scale_tensara_2 bstride_c 65536     8191    64      32      SKIP  SKIP  14.715      2.126
-scale   scale_tensara_2 basic     65536     8191    64      64      SKIP  SKIP  17.067      2.587
-scale   scale_tensara_2 basic_c   65536     8191    64      64      SKIP  SKIP  17.831      2.764
-scale   scale_tensara_2 tiled     65536     8191    64      64      SKIP  SKIP  39.265      6.331
-scale   scale_tensara_2 tiled_c   65536     8191    64      64      SKIP  SKIP  29.094      4.576
-scale   scale_tensara_2 bstride   65536     8191    64      64      SKIP  SKIP  24.446      3.833
-scale   scale_tensara_2 bstride_c 65536     8191    64      64      SKIP  SKIP  13.011      1.942
-scale   scale_tensara_2 basic     65536     8191    64      128     SKIP  SKIP  15.208      2.393
-scale   scale_tensara_2 basic_c   65536     8191    64      128     SKIP  SKIP  13.362      2.070
-scale   scale_tensara_2 tiled     65536     8191    64      128     SKIP  SKIP  30.980      4.907
-scale   scale_tensara_2 tiled_c   65536     8191    64      128     SKIP  SKIP  22.214      3.530
-scale   scale_tensara_2 bstride   65536     8191    64      128     SKIP  SKIP  18.428      2.894
-scale   scale_tensara_2 bstride_c 65536     8191    64      128     SKIP  SKIP  11.102      1.582
-scale   scale_tensara_2 basic     65536     8191    128     8       SKIP  SKIP  43.871      7.138
-scale   scale_tensara_2 basic_c   65536     8191    128     8       SKIP  SKIP  54.361      8.778
-scale   scale_tensara_2 tiled     65536     8191    128     8       SKIP  SKIP  82.051      13.387
-scale   scale_tensara_2 tiled_c   65536     8191    128     8       SKIP  SKIP  55.468      8.997
-scale   scale_tensara_2 bstride   65536     8191    128     8       SKIP  SKIP  44.553      7.250
-scale   scale_tensara_2 bstride_c 65536     8191    128     8       SKIP  SKIP  25.505      3.963
-scale   scale_tensara_2 basic     65536     8191    128     16      SKIP  SKIP  25.074      3.930
-scale   scale_tensara_2 basic_c   65536     8191    128     16      SKIP  SKIP  29.636      4.635
-scale   scale_tensara_2 tiled     65536     8191    128     16      SKIP  SKIP  42.353      6.688
-scale   scale_tensara_2 tiled_c   65536     8191    128     16      SKIP  SKIP  28.744      4.472
-scale   scale_tensara_2 bstride   65536     8191    128     16      SKIP  SKIP  23.009      3.627
-scale   scale_tensara_2 bstride_c 65536     8191    128     16      SKIP  SKIP  12.637      1.932
-scale   scale_tensara_2 basic     65536     8191    128     32      SKIP  SKIP  17.069      2.608
-scale   scale_tensara_2 basic_c   65536     8191    128     32      SKIP  SKIP  17.991      2.738
-scale   scale_tensara_2 tiled     65536     8191    128     32      SKIP  SKIP  24.638      3.833
-scale   scale_tensara_2 tiled_c   65536     8191    128     32      SKIP  SKIP  17.189      2.711
-scale   scale_tensara_2 bstride   65536     8191    128     32      SKIP  SKIP  15.328      2.408
-scale   scale_tensara_2 bstride_c 65536     8191    128     32      SKIP  SKIP  8.189       1.193
-scale   scale_tensara_2 basic     65536     8191    128     64      SKIP  SKIP  15.697      2.466
-scale   scale_tensara_2 basic_c   65536     8191    128     64      SKIP  SKIP  13.259      2.061
-scale   scale_tensara_2 tiled     65536     8191    128     64      SKIP  SKIP  23.923      3.818
-scale   scale_tensara_2 tiled_c   65536     8191    128     64      SKIP  SKIP  16.650      2.609
-scale   scale_tensara_2 bstride   65536     8191    128     64      SKIP  SKIP  15.548      2.364
-scale   scale_tensara_2 bstride_c 65536     8191    128     64      SKIP  SKIP  8.848       1.220
-scale   scale_tensara_2 basic     65536     8191    128     128     SKIP  SKIP  12.789      1.989
-scale   scale_tensara_2 basic_c   65536     8191    128     128     SKIP  SKIP  12.947      2.029
-scale   scale_tensara_2 tiled     65536     8191    128     128     SKIP  SKIP  23.318      3.680
-scale   scale_tensara_2 tiled_c   65536     8191    128     128     SKIP  SKIP  16.749      2.569
-scale   scale_tensara_2 bstride   65536     8191    128     128     SKIP  SKIP  13.877      2.082
-scale   scale_tensara_2 bstride_c 65536     8191    128     128     SKIP  SKIP  8.417       1.220
-scale   scale_tensara_2 basic     65536     8191    256     8       SKIP  SKIP  30.002      4.844
-scale   scale_tensara_2 basic_c   65536     8191    256     8       SKIP  SKIP  33.856      5.444
-scale   scale_tensara_2 tiled     65536     8191    256     8       SKIP  SKIP  46.661      7.577
-scale   scale_tensara_2 tiled_c   65536     8191    256     8       SKIP  SKIP  30.675      4.868
-scale   scale_tensara_2 bstride   65536     8191    256     8       SKIP  SKIP  27.935      4.447
-scale   scale_tensara_2 bstride_c 65536     8191    256     8       SKIP  SKIP  14.757      2.297
-scale   scale_tensara_2 basic     65536     8191    256     16      SKIP  SKIP  17.730      2.764
-scale   scale_tensara_2 basic_c   65536     8191    256     16      SKIP  SKIP  19.658      3.143
-scale   scale_tensara_2 tiled     65536     8191    256     16      SKIP  SKIP  23.645      3.788
-scale   scale_tensara_2 tiled_c   65536     8191    256     16      SKIP  SKIP  16.913      2.611
-scale   scale_tensara_2 bstride   65536     8191    256     16      SKIP  SKIP  14.637      2.227
-scale   scale_tensara_2 bstride_c 65536     8191    256     16      SKIP  SKIP  7.885       1.150
-scale   scale_tensara_2 basic     65536     8191    256     32      SKIP  SKIP  15.263      2.395
-scale   scale_tensara_2 basic_c   65536     8191    256     32      SKIP  SKIP  13.904      2.119
-scale   scale_tensara_2 tiled     65536     8191    256     32      SKIP  SKIP  18.609      2.879
-scale   scale_tensara_2 tiled_c   65536     8191    256     32      SKIP  SKIP  11.851      1.765
-scale   scale_tensara_2 bstride   65536     8191    256     32      SKIP  SKIP  15.565      2.185
-scale   scale_tensara_2 bstride_c 65536     8191    256     32      SKIP  SKIP  7.418       1.103
-scale   scale_tensara_2 basic     65536     8191    256     64      SKIP  SKIP  14.087      2.220
-scale   scale_tensara_2 basic_c   65536     8191    256     64      SKIP  SKIP  13.806      2.126
-scale   scale_tensara_2 tiled     65536     8191    256     64      SKIP  SKIP  18.091      2.884
-scale   scale_tensara_2 tiled_c   65536     8191    256     64      SKIP  SKIP  11.631      1.731
-scale   scale_tensara_2 bstride   65536     8191    256     64      SKIP  SKIP  14.048      2.169
-scale   scale_tensara_2 bstride_c 65536     8191    256     64      SKIP  SKIP  7.588       1.101
-scale   scale_tensara_2 basic     65536     8191    256     128     SKIP  SKIP  12.438      1.944
-scale   scale_tensara_2 basic_c   65536     8191    256     128     SKIP  SKIP  12.538      1.901
-scale   scale_tensara_2 tiled     65536     8191    256     128     SKIP  SKIP  16.666      2.527
-scale   scale_tensara_2 tiled_c   65536     8191    256     128     SKIP  SKIP  11.041      1.602
-scale   scale_tensara_2 bstride   65536     8191    256     128     SKIP  SKIP  12.294      1.895
-scale   scale_tensara_2 bstride_c 65536     8191    256     128     SKIP  SKIP  6.968       0.958
-scale   scale_tensara_2 basic     65536     8191    512     8       SKIP  SKIP  26.805      4.304
-scale   scale_tensara_2 basic_c   65536     8191    512     8       SKIP  SKIP  24.901      3.930
-scale   scale_tensara_2 tiled     65536     8191    512     8       SKIP  SKIP  36.175      5.884
-scale   scale_tensara_2 tiled_c   65536     8191    512     8       SKIP  SKIP  23.395      3.654
-scale   scale_tensara_2 bstride   65536     8191    512     8       SKIP  SKIP  27.040      4.335
-scale   scale_tensara_2 bstride_c 65536     8191    512     8       SKIP  SKIP  14.318      2.178
-scale   scale_tensara_2 basic     65536     8191    512     16      SKIP  SKIP  13.840      2.150
-scale   scale_tensara_2 basic_c   65536     8191    512     16      SKIP  SKIP  13.540      2.098
-scale   scale_tensara_2 tiled     65536     8191    512     16      SKIP  SKIP  19.219      2.956
-scale   scale_tensara_2 tiled_c   65536     8191    512     16      SKIP  SKIP  12.495      1.855
-scale   scale_tensara_2 bstride   65536     8191    512     16      SKIP  SKIP  14.003      2.171
-scale   scale_tensara_2 bstride_c 65536     8191    512     16      SKIP  SKIP  7.775       1.094
-scale   scale_tensara_2 basic     65536     8191    512     32      SKIP  SKIP  14.121      2.142
-scale   scale_tensara_2 basic_c   65536     8191    512     32      SKIP  SKIP  13.668      2.125
-scale   scale_tensara_2 tiled     65536     8191    512     32      SKIP  SKIP  16.526      2.595
-scale   scale_tensara_2 tiled_c   65536     8191    512     32      SKIP  SKIP  10.086      1.510
-scale   scale_tensara_2 bstride   65536     8191    512     32      SKIP  SKIP  13.829      2.160
-scale   scale_tensara_2 bstride_c 65536     8191    512     32      SKIP  SKIP  7.600       1.084
-scale   scale_tensara_2 basic     65536     8191    512     64      SKIP  SKIP  13.783      2.142
-scale   scale_tensara_2 basic_c   65536     8191    512     64      SKIP  SKIP  12.739      1.975
-scale   scale_tensara_2 tiled     65536     8191    512     64      SKIP  SKIP  16.249      2.541
-scale   scale_tensara_2 tiled_c   65536     8191    512     64      SKIP  SKIP  9.698       1.459
-scale   scale_tensara_2 bstride   65536     8191    512     64      SKIP  SKIP  14.074      2.151
-scale   scale_tensara_2 bstride_c 65536     8191    512     64      SKIP  SKIP  7.660       1.081
-scale   scale_tensara_2 basic     65536     8191    512     128     SKIP  SKIP  12.335      1.874
-scale   scale_tensara_2 basic_c   65536     8191    512     128     SKIP  SKIP  10.503      1.563
-scale   scale_tensara_2 tiled     65536     8191    512     128     SKIP  SKIP  15.085      2.351
-scale   scale_tensara_2 tiled_c   65536     8191    512     128     SKIP  SKIP  9.374       1.372
-scale   scale_tensara_2 bstride   65536     8191    512     128     SKIP  SKIP  12.576      1.913
-scale   scale_tensara_2 bstride_c 65536     8191    512     128     SKIP  SKIP  6.519       0.948
+small   small_1         basic     4         3       256     32      SKIP  PASS  4.356       0.005       
+small   small_1         basic_c   4         3       256     32      SKIP  PASS  0.649       0.005       
+small   small_1         tiled     4         3       256     32      SKIP  PASS  0.647       0.006       
+small   small_1         tiled_c   4         3       256     32      SKIP  PASS  0.666       0.007       
+small   small_1         bstride   4         3       256     32      SKIP  PASS  0.655       0.006       
+small   small_1         bstride_c 4         3       256     32      SKIP  PASS  0.738       0.006       
+small   small_2         basic     3         3       256     32      SKIP  PASS  0.519       0.005       
+small   small_2         basic_c   3         3       256     32      SKIP  PASS  0.522       0.005       
+small   small_2         tiled     3         3       256     32      SKIP  PASS  0.606       0.005       
+small   small_2         tiled_c   3         3       256     32      SKIP  PASS  0.585       0.005       
+small   small_2         bstride   3         3       256     32      SKIP  PASS  0.793       0.026       
+small   small_2         bstride_c 3         3       256     32      SKIP  PASS  0.733       0.027       
+small   small_3         basic     3         3       256     32      SKIP  PASS  0.744       0.044       
+small   small_3         basic_c   3         3       256     32      SKIP  PASS  1.020       0.047       
+small   small_3         tiled     3         3       256     32      SKIP  PASS  0.754       0.026       
+small   small_3         tiled_c   3         3       256     32      SKIP  PASS  0.743       0.039       
+small   small_3         bstride   3         3       256     32      SKIP  PASS  0.772       0.043       
+small   small_3         bstride_c 3         3       256     32      SKIP  PASS  0.744       0.027       
+medium  medium_1        basic     4096      31      256     32      SKIP  SKIP  0.714       0.026       
+medium  medium_1        basic_c   4096      31      256     32      SKIP  SKIP  0.692       0.025       
+medium  medium_1        tiled     4096      31      256     32      SKIP  SKIP  0.686       0.026       
+medium  medium_1        tiled_c   4096      31      256     32      SKIP  SKIP  0.737       0.026       
+medium  medium_1        bstride   4096      31      256     32      SKIP  SKIP  0.752       0.026       
+medium  medium_1        bstride_c 4096      31      256     32      SKIP  SKIP  0.725       0.025       
+medium  medium_2        basic     4097      63      256     32      SKIP  SKIP  0.736       0.026       
+medium  medium_2        basic_c   4097      63      256     32      SKIP  SKIP  0.703       0.032       
+medium  medium_2        tiled     4097      63      256     32      SKIP  SKIP  0.563       0.008       
+medium  medium_2        tiled_c   4097      63      256     32      SKIP  SKIP  0.587       0.007       
+medium  medium_2        bstride   4097      63      256     32      SKIP  SKIP  0.574       0.009       
+medium  medium_2        bstride_c 4097      63      256     32      SKIP  SKIP  0.538       0.006       
+medium  medium_3        basic     8193      95      256     32      SKIP  SKIP  0.582       0.028       
+medium  medium_3        basic_c   8193      95      256     32      SKIP  SKIP  0.578       0.011       
+medium  medium_3        tiled     8193      95      256     32      SKIP  SKIP  0.599       0.030       
+medium  medium_3        tiled_c   8193      95      256     32      SKIP  SKIP  0.544       0.010       
+medium  medium_3        bstride   8193      95      256     32      SKIP  SKIP  0.598       0.013       
+medium  medium_3        bstride_c 8193      95      256     32      SKIP  SKIP  0.548       0.009       
+medium  medium_4        basic     16384     127     256     32      SKIP  SKIP  0.620       0.019       
+medium  medium_4        basic_c   16384     127     256     32      SKIP  SKIP  0.660       0.017       
+medium  medium_4        tiled     16384     127     256     32      SKIP  SKIP  0.666       0.022       
+medium  medium_4        tiled_c   16384     127     256     32      SKIP  SKIP  0.685       0.016       
+medium  medium_4        bstride   16384     127     256     32      SKIP  SKIP  0.658       0.018       
+medium  medium_4        bstride_c 16384     127     256     32      SKIP  SKIP  1.044       0.012       
+large   large_1         basic     32769     127     256     32      SKIP  SKIP  1.143       0.031       
+large   large_1         basic_c   32769     127     256     32      SKIP  SKIP  0.854       0.030       
+large   large_1         tiled     32769     127     256     32      SKIP  SKIP  1.222       0.039       
+large   large_1         tiled_c   32769     127     256     32      SKIP  SKIP  0.705       0.026       
+large   large_1         bstride   32769     127     256     32      SKIP  SKIP  0.773       0.034       
+large   large_1         bstride_c 32769     127     256     32      SKIP  SKIP  0.612       0.019       
+large   large_2         basic     65537     191     256     32      SKIP  SKIP  1.018       0.080       
+large   large_2         basic_c   65537     191     256     32      SKIP  SKIP  1.016       0.073       
+large   large_2         tiled     65537     191     256     32      SKIP  SKIP  1.160       0.100       
+large   large_2         tiled_c   65537     191     256     32      SKIP  SKIP  0.970       0.067       
+large   large_2         bstride   65537     191     256     32      SKIP  SKIP  1.035       0.080       
+large   large_2         bstride_c 65537     191     256     32      SKIP  SKIP  0.812       0.045       
+webvfy  webvfy_1        basic     8193      8191    256     32      SKIP  SKIP  3.370       0.452       
+webvfy  webvfy_1        basic_c   8193      8191    256     32      SKIP  SKIP  3.197       0.426       
+webvfy  webvfy_1        tiled     8193      8191    256     32      SKIP  SKIP  4.307       0.599       
+webvfy  webvfy_1        tiled_c   8193      8191    256     32      SKIP  SKIP  3.078       0.410       
+webvfy  webvfy_1        bstride   8193      8191    256     32      SKIP  SKIP  3.991       0.542       
+webvfy  webvfy_1        bstride_c 8193      8191    256     32      SKIP  SKIP  2.594       0.278       
+webvfy  webvfy_2        basic     16385     8191    256     32      SKIP  SKIP  6.190       0.800       
+webvfy  webvfy_2        basic_c   16385     8191    256     32      SKIP  SKIP  5.165       0.735       
+webvfy  webvfy_2        tiled     16385     8191    256     32      SKIP  SKIP  6.635       0.977       
+webvfy  webvfy_2        tiled_c   16385     8191    256     32      SKIP  SKIP  4.715       0.663       
+webvfy  webvfy_2        bstride   16385     8191    256     32      SKIP  SKIP  6.345       0.903       
+webvfy  webvfy_2        bstride_c 16385     8191    256     32      SKIP  SKIP  3.870       0.474       
+large   large_1         basic     32768     31      256     32      SKIP  SKIP  0.824       0.012       
+large   large_1         basic_c   32768     31      256     32      SKIP  SKIP  0.761       0.012       
+large   large_1         tiled     32768     31      256     32      SKIP  SKIP  0.724       0.014       
+large   large_1         tiled_c   32768     31      256     32      SKIP  SKIP  0.864       0.024       
+large   large_1         bstride   32768     31      256     32      SKIP  SKIP  0.623       0.012       
+large   large_1         bstride_c 32768     31      256     32      SKIP  SKIP  0.618       0.009       
+large   large_2         basic     65536     63      256     32      SKIP  SKIP  0.754       0.031       
+large   large_2         basic_c   65536     63      256     32      SKIP  SKIP  0.776       0.029       
+large   large_2         tiled     65536     63      256     32      SKIP  SKIP  0.821       0.039       
+large   large_2         tiled_c   65536     63      256     32      SKIP  SKIP  1.214       0.028       
+large   large_2         bstride   65536     63      256     32      SKIP  SKIP  0.863       0.032       
+large   large_2         bstride_c 65536     63      256     32      SKIP  SKIP  0.712       0.020       
+large   large_3         basic     131072    95      256     32      SKIP  SKIP  1.302       0.080       
+large   large_3         basic_c   131072    95      256     32      SKIP  SKIP  1.116       0.074       
+large   large_3         tiled     131072    95      256     32      SKIP  SKIP  1.317       0.104       
+large   large_3         tiled_c   131072    95      256     32      SKIP  SKIP  1.053       0.070       
+large   large_3         bstride   131072    95      256     32      SKIP  SKIP  1.511       0.082       
+large   large_3         bstride_c 131072    95      256     32      SKIP  SKIP  0.987       0.048       
+large   large_4         basic     262144    127     256     32      SKIP  SKIP  3.799       0.205       
+large   large_4         basic_c   262144    127     256     32      SKIP  SKIP  2.185       0.183       
+large   large_4         tiled     262144    127     256     32      SKIP  SKIP  2.764       0.263       
+large   large_4         tiled_c   262144    127     256     32      SKIP  SKIP  2.027       0.172       
+large   large_4         bstride   262144    127     256     32      SKIP  SKIP  2.314       0.202       
+large   large_4         bstride_c 262144    127     256     32      SKIP  SKIP  1.539       0.115       
+large   large_5         basic     524288    191     256     32      SKIP  SKIP  5.390       0.596       
+large   large_5         basic_c   524288    191     256     32      SKIP  SKIP  4.876       0.544       
+large   large_5         tiled     524288    191     256     32      SKIP  SKIP  6.874       0.751       
+large   large_5         tiled_c   524288    191     256     32      SKIP  SKIP  5.251       0.502       
+large   large_5         bstride   524288    191     256     32      SKIP  SKIP  5.573       0.595       
+large   large_5         bstride_c 524288    191     256     32      SKIP  SKIP  3.546       0.319       
+tile    tile_1          basic     262144    127     256     32      SKIP  SKIP  2.423       0.203       
+tile    tile_1          basic_c   262144    127     256     32      SKIP  SKIP  1.899       0.183       
+tile    tile_1          tiled     262144    127     256     32      SKIP  SKIP  3.040       0.264       
+tile    tile_1          tiled_c   262144    127     256     32      SKIP  SKIP  2.375       0.173       
+tile    tile_1          bstride   262144    127     256     32      SKIP  SKIP  2.572       0.202       
+tile    tile_1          bstride_c 262144    127     256     32      SKIP  SKIP  1.667       0.114       
+tile    tile_2          basic     524288    191     256     32      SKIP  SKIP  5.192       0.597       
+tile    tile_2          basic_c   524288    191     256     32      SKIP  SKIP  4.750       0.545       
+tile    tile_2          tiled     524288    191     256     32      SKIP  SKIP  6.340       0.751       
+tile    tile_2          tiled_c   524288    191     256     32      SKIP  SKIP  4.588       0.500       
+tile    tile_2          bstride   524288    191     256     32      SKIP  SKIP  5.220       0.458       
+tile    tile_2          bstride_c 524288    191     256     32      SKIP  SKIP  2.951       0.259       
+tile    tile_3          basic     1048576   255     256     32      SKIP  SKIP  9.694       1.228       
+tile    tile_3          basic_c   1048576   255     256     32      SKIP  SKIP  9.144       1.100       
+tile    tile_3          tiled     1048576   255     256     32      SKIP  SKIP  12.974      1.554       
+tile    tile_3          tiled_c   1048576   255     256     32      SKIP  SKIP  8.345       1.017       
+tile    tile_3          bstride   1048576   255     256     32      SKIP  SKIP  17.965      1.241       
+tile    tile_3          bstride_c 1048576   255     256     32      SKIP  SKIP  6.134       0.641       
+tile    tile_4          basic     1048576   383     256     32      SKIP  SKIP  14.136      1.786       
+tile    tile_4          basic_c   1048576   383     256     32      SKIP  SKIP  12.374      1.650       
+tile    tile_4          tiled     1048576   383     256     32      SKIP  SKIP  18.029      2.531       
+tile    tile_4          tiled_c   1048576   383     256     32      SKIP  SKIP  12.241      1.646       
+tile    tile_4          bstride   1048576   383     256     32      SKIP  SKIP  14.674      1.881       
+tile    tile_4          bstride_c 1048576   383     256     32      SKIP  SKIP  8.271       0.985       
+tile    tile_5          basic     2097152   511     256     32      SKIP  SKIP  36.107      4.786       
+tile    tile_5          basic_c   2097152   511     256     32      SKIP  SKIP  38.448      5.098       
+tile    tile_5          tiled     2097152   511     256     32      SKIP  SKIP  47.155      6.452       
+tile    tile_5          tiled_c   2097152   511     256     32      SKIP  SKIP  29.944      4.012       
+tile    tile_5          bstride   2097152   511     256     32      SKIP  SKIP  35.471      4.784       
+tile    tile_5          bstride_c 2097152   511     256     32      SKIP  SKIP  19.980      2.572       
+tensara tensara_1       basic     32768     8191    256     32      SKIP  SKIP  8.405       1.218       
+tensara tensara_1       basic_c   32768     8191    256     32      SKIP  SKIP  7.898       1.120       
+tensara tensara_1       tiled     32768     8191    256     32      SKIP  SKIP  10.358      1.591       
+tensara tensara_1       tiled_c   32768     8191    256     32      SKIP  SKIP  6.662       0.958       
+tensara tensara_1       bstride   32768     8191    256     32      SKIP  SKIP  8.375       1.224       
+tensara tensara_1       bstride_c 32768     8191    256     32      SKIP  SKIP  4.399       0.607       
+tensara tensara_2       basic     65536     8191    256     32      SKIP  SKIP  16.430      2.608       
+tensara tensara_2       basic_c   65536     8191    256     32      SKIP  SKIP  14.919      2.294       
+tensara tensara_2       tiled     65536     8191    256     32      SKIP  SKIP  21.067      3.344       
+tensara tensara_2       tiled_c   65536     8191    256     32      SKIP  SKIP  13.011      1.989       
+tensara tensara_2       bstride   65536     8191    256     32      SKIP  SKIP  15.332      2.385       
+tensara tensara_2       bstride_c 65536     8191    256     32      SKIP  SKIP  8.416       1.205       
+odd     odd_1           basic     4097      31      256     32      SKIP  SKIP  1.093       0.025       
+odd     odd_1           basic_c   4097      31      256     32      SKIP  SKIP  0.588       0.005       
+odd     odd_1           tiled     4097      31      256     32      SKIP  SKIP  0.786       0.007       
+odd     odd_1           tiled_c   4097      31      256     32      SKIP  SKIP  0.558       0.006       
+odd     odd_1           bstride   4097      31      256     32      SKIP  SKIP  1.132       0.047       
+odd     odd_1           bstride_c 4097      31      256     32      SKIP  SKIP  0.622       0.006       
+odd     odd_2           basic     32769     127     256     32      SKIP  SKIP  0.759       0.040       
+odd     odd_2           basic_c   32769     127     256     32      SKIP  SKIP  0.711       0.025       
+odd     odd_2           tiled     32769     127     256     32      SKIP  SKIP  0.824       0.031       
+odd     odd_2           tiled_c   32769     127     256     32      SKIP  SKIP  0.700       0.038       
+odd     odd_2           bstride   32769     127     256     32      SKIP  SKIP  0.719       0.027       
+odd     odd_2           bstride_c 32769     127     256     32      SKIP  SKIP  0.646       0.033       
+odd     odd_3           basic     262147    383     256     32      SKIP  SKIP  4.140       0.487       
+odd     odd_3           basic_c   262147    383     256     32      SKIP  SKIP  3.784       0.426       
+odd     odd_3           tiled     262147    383     256     32      SKIP  SKIP  5.128       0.579       
+odd     odd_3           tiled_c   262147    383     256     32      SKIP  SKIP  3.410       0.374       
+odd     odd_3           bstride   262147    383     256     32      SKIP  SKIP  4.727       0.450       
+odd     odd_3           bstride_c 262147    383     256     32      SKIP  SKIP  2.780       0.233       
+scale   scale_tensara_1 basic     32768     8191    64      8       SKIP  SKIP  41.574      6.707       
+scale   scale_tensara_1 basic_c   32768     8191    64      8       SKIP  SKIP  50.087      8.164       
+scale   scale_tensara_1 tiled     32768     8191    64      8       SKIP  SKIP  77.900      12.707      
+scale   scale_tensara_1 tiled_c   32768     8191    64      8       SKIP  SKIP  56.195      8.955       
+scale   scale_tensara_1 bstride   32768     8191    64      8       SKIP  SKIP  45.141      6.704       
+scale   scale_tensara_1 bstride_c 32768     8191    64      8       SKIP  SKIP  27.616      3.753       
+scale   scale_tensara_1 basic     32768     8191    64      16      SKIP  SKIP  25.025      3.502       
+scale   scale_tensara_1 basic_c   32768     8191    64      16      SKIP  SKIP  27.955      4.213       
+scale   scale_tensara_1 tiled     32768     8191    64      16      SKIP  SKIP  40.363      6.342       
+scale   scale_tensara_1 tiled_c   32768     8191    64      16      SKIP  SKIP  27.655      4.431       
+scale   scale_tensara_1 bstride   32768     8191    64      16      SKIP  SKIP  21.197      3.354       
+scale   scale_tensara_1 bstride_c 32768     8191    64      16      SKIP  SKIP  12.332      1.877       
+scale   scale_tensara_1 basic     32768     8191    64      32      SKIP  SKIP  12.319      1.902       
+scale   scale_tensara_1 basic_c   32768     8191    64      32      SKIP  SKIP  14.257      2.256       
+scale   scale_tensara_1 tiled     32768     8191    64      32      SKIP  SKIP  20.481      3.260       
+scale   scale_tensara_1 tiled_c   32768     8191    64      32      SKIP  SKIP  14.799      2.313       
+scale   scale_tensara_1 bstride   32768     8191    64      32      SKIP  SKIP  12.715      1.927       
+scale   scale_tensara_1 bstride_c 32768     8191    64      32      SKIP  SKIP  7.281       1.083       
+scale   scale_tensara_1 basic     32768     8191    64      64      SKIP  SKIP  8.642       1.311       
+scale   scale_tensara_1 basic_c   32768     8191    64      64      SKIP  SKIP  9.305       1.422       
+scale   scale_tensara_1 tiled     32768     8191    64      64      SKIP  SKIP  21.200      3.324       
+scale   scale_tensara_1 tiled_c   32768     8191    64      64      SKIP  SKIP  15.888      2.405       
+scale   scale_tensara_1 bstride   32768     8191    64      64      SKIP  SKIP  13.411      1.978       
+scale   scale_tensara_1 bstride_c 32768     8191    64      64      SKIP  SKIP  7.620       0.992       
+scale   scale_tensara_1 basic     32768     8191    64      128     SKIP  SKIP  8.078       1.130       
+scale   scale_tensara_1 basic_c   32768     8191    64      128     SKIP  SKIP  7.585       1.055       
+scale   scale_tensara_1 tiled     32768     8191    64      128     SKIP  SKIP  17.417      2.535       
+scale   scale_tensara_1 tiled_c   32768     8191    64      128     SKIP  SKIP  13.524      1.876       
+scale   scale_tensara_1 bstride   32768     8191    64      128     SKIP  SKIP  10.863      1.511       
+scale   scale_tensara_1 bstride_c 32768     8191    64      128     SKIP  SKIP  6.027       0.819       
+scale   scale_tensara_1 basic     32768     8191    128     8       SKIP  SKIP  24.802      3.687       
+scale   scale_tensara_1 basic_c   32768     8191    128     8       SKIP  SKIP  28.782      4.390       
+scale   scale_tensara_1 tiled     32768     8191    128     8       SKIP  SKIP  42.486      6.636       
+scale   scale_tensara_1 tiled_c   32768     8191    128     8       SKIP  SKIP  29.246      4.437       
+scale   scale_tensara_1 bstride   32768     8191    128     8       SKIP  SKIP  23.063      3.617       
+scale   scale_tensara_1 bstride_c 32768     8191    128     8       SKIP  SKIP  12.870      1.971       
+scale   scale_tensara_1 basic     32768     8191    128     16      SKIP  SKIP  12.894      1.979       
+scale   scale_tensara_1 basic_c   32768     8191    128     16      SKIP  SKIP  14.911      2.367       
+scale   scale_tensara_1 tiled     32768     8191    128     16      SKIP  SKIP  21.405      3.401       
+scale   scale_tensara_1 tiled_c   32768     8191    128     16      SKIP  SKIP  14.358      2.256       
+scale   scale_tensara_1 bstride   32768     8191    128     16      SKIP  SKIP  11.989      1.815       
+scale   scale_tensara_1 bstride_c 32768     8191    128     16      SKIP  SKIP  6.847       0.968       
+scale   scale_tensara_1 basic     32768     8191    128     32      SKIP  SKIP  9.275       1.314       
+scale   scale_tensara_1 basic_c   32768     8191    128     32      SKIP  SKIP  9.767       1.436       
+scale   scale_tensara_1 tiled     32768     8191    128     32      SKIP  SKIP  13.684      1.968       
+scale   scale_tensara_1 tiled_c   32768     8191    128     32      SKIP  SKIP  10.115      1.396       
+scale   scale_tensara_1 bstride   32768     8191    128     32      SKIP  SKIP  9.260       1.264       
+scale   scale_tensara_1 bstride_c 32768     8191    128     32      SKIP  SKIP  5.471       0.616       
+scale   scale_tensara_1 basic     32768     8191    128     64      SKIP  SKIP  9.558       1.182       
+scale   scale_tensara_1 basic_c   32768     8191    128     64      SKIP  SKIP  8.834       1.075       
+scale   scale_tensara_1 tiled     32768     8191    128     64      SKIP  SKIP  13.843      1.975       
+scale   scale_tensara_1 tiled_c   32768     8191    128     64      SKIP  SKIP  9.684       1.360       
+scale   scale_tensara_1 bstride   32768     8191    128     64      SKIP  SKIP  9.278       1.253       
+scale   scale_tensara_1 bstride_c 32768     8191    128     64      SKIP  SKIP  5.053       0.635       
+scale   scale_tensara_1 basic     32768     8191    128     128     SKIP  SKIP  7.883       1.026       
+scale   scale_tensara_1 basic_c   32768     8191    128     128     SKIP  SKIP  7.968       1.030       
+scale   scale_tensara_1 tiled     32768     8191    128     128     SKIP  SKIP  13.286      1.982       
+scale   scale_tensara_1 tiled_c   32768     8191    128     128     SKIP  SKIP  11.002      1.383       
+scale   scale_tensara_1 bstride   32768     8191    128     128     SKIP  SKIP  8.497       1.125       
+scale   scale_tensara_1 bstride_c 32768     8191    128     128     SKIP  SKIP  5.244       0.611       
+scale   scale_tensara_1 basic     32768     8191    256     8       SKIP  SKIP  16.527      2.548       
+scale   scale_tensara_1 basic_c   32768     8191    256     8       SKIP  SKIP  18.686      2.836       
+scale   scale_tensara_1 tiled     32768     8191    256     8       SKIP  SKIP  25.156      3.854       
+scale   scale_tensara_1 tiled_c   32768     8191    256     8       SKIP  SKIP  16.727      2.425       
+scale   scale_tensara_1 bstride   32768     8191    256     8       SKIP  SKIP  16.279      2.221       
+scale   scale_tensara_1 bstride_c 32768     8191    256     8       SKIP  SKIP  8.128       1.151       
+scale   scale_tensara_1 basic     32768     8191    256     16      SKIP  SKIP  9.956       1.404       
+scale   scale_tensara_1 basic_c   32768     8191    256     16      SKIP  SKIP  11.238      1.574       
+scale   scale_tensara_1 tiled     32768     8191    256     16      SKIP  SKIP  13.510      2.034       
+scale   scale_tensara_1 tiled_c   32768     8191    256     16      SKIP  SKIP  10.048      1.395       
+scale   scale_tensara_1 bstride   32768     8191    256     16      SKIP  SKIP  8.461       1.156       
+scale   scale_tensara_1 bstride_c 32768     8191    256     16      SKIP  SKIP  4.541       0.601       
+scale   scale_tensara_1 basic     32768     8191    256     32      SKIP  SKIP  8.218       1.181       
+scale   scale_tensara_1 basic_c   32768     8191    256     32      SKIP  SKIP  7.634       1.104       
+scale   scale_tensara_1 tiled     32768     8191    256     32      SKIP  SKIP  9.834       1.485       
+scale   scale_tensara_1 tiled_c   32768     8191    256     32      SKIP  SKIP  6.742       0.969       
+scale   scale_tensara_1 bstride   32768     8191    256     32      SKIP  SKIP  8.363       1.222       
+scale   scale_tensara_1 bstride_c 32768     8191    256     32      SKIP  SKIP  5.147       0.620       
+scale   scale_tensara_1 basic     32768     8191    256     64      SKIP  SKIP  8.043       1.190       
+scale   scale_tensara_1 basic_c   32768     8191    256     64      SKIP  SKIP  7.505       1.107       
+scale   scale_tensara_1 tiled     32768     8191    256     64      SKIP  SKIP  10.931      1.563       
+scale   scale_tensara_1 tiled_c   32768     8191    256     64      SKIP  SKIP  6.983       0.952       
+scale   scale_tensara_1 bstride   32768     8191    256     64      SKIP  SKIP  9.775       1.177       
+scale   scale_tensara_1 bstride_c 32768     8191    256     64      SKIP  SKIP  4.998       0.601       
+scale   scale_tensara_1 basic     32768     8191    256     128     SKIP  SKIP  36.699      0.974       
+scale   scale_tensara_1 basic_c   32768     8191    256     128     SKIP  SKIP  6.683       0.879       
+scale   scale_tensara_1 tiled     32768     8191    256     128     SKIP  SKIP  9.684       1.337       
+scale   scale_tensara_1 tiled_c   32768     8191    256     128     SKIP  SKIP  9.452       0.864       
+scale   scale_tensara_1 bstride   32768     8191    256     128     SKIP  SKIP  7.478       1.005       
+scale   scale_tensara_1 bstride_c 32768     8191    256     128     SKIP  SKIP  4.364       0.511       
+scale   scale_tensara_1 basic     32768     8191    512     8       SKIP  SKIP  16.161      2.253       
+scale   scale_tensara_1 basic_c   32768     8191    512     8       SKIP  SKIP  13.712      2.049       
+scale   scale_tensara_1 tiled     32768     8191    512     8       SKIP  SKIP  20.325      3.046       
+scale   scale_tensara_1 tiled_c   32768     8191    512     8       SKIP  SKIP  12.623      1.845       
+scale   scale_tensara_1 bstride   32768     8191    512     8       SKIP  SKIP  15.677      2.171       
+scale   scale_tensara_1 bstride_c 32768     8191    512     8       SKIP  SKIP  8.585       1.104       
+scale   scale_tensara_1 basic     32768     8191    512     16      SKIP  SKIP  8.612       1.079       
+scale   scale_tensara_1 basic_c   32768     8191    512     16      SKIP  SKIP  7.784       1.045       
+scale   scale_tensara_1 tiled     32768     8191    512     16      SKIP  SKIP  10.026      1.540       
+scale   scale_tensara_1 tiled_c   32768     8191    512     16      SKIP  SKIP  6.861       0.974       
+scale   scale_tensara_1 bstride   32768     8191    512     16      SKIP  SKIP  8.557       1.164       
+scale   scale_tensara_1 bstride_c 32768     8191    512     16      SKIP  SKIP  4.612       0.588       
+scale   scale_tensara_1 basic     32768     8191    512     32      SKIP  SKIP  7.653       1.150       
+scale   scale_tensara_1 basic_c   32768     8191    512     32      SKIP  SKIP  7.030       1.061       
+scale   scale_tensara_1 tiled     32768     8191    512     32      SKIP  SKIP  9.525       1.377       
+scale   scale_tensara_1 tiled_c   32768     8191    512     32      SKIP  SKIP  6.564       0.865       
+scale   scale_tensara_1 bstride   32768     8191    512     32      SKIP  SKIP  8.421       1.232       
+scale   scale_tensara_1 bstride_c 32768     8191    512     32      SKIP  SKIP  5.028       0.620       
+scale   scale_tensara_1 basic     32768     8191    512     64      SKIP  SKIP  8.706       1.178       
+scale   scale_tensara_1 basic_c   32768     8191    512     64      SKIP  SKIP  7.277       1.004       
+scale   scale_tensara_1 tiled     32768     8191    512     64      SKIP  SKIP  10.735      1.392       
+scale   scale_tensara_1 tiled_c   32768     8191    512     64      SKIP  SKIP  7.055       0.794       
+scale   scale_tensara_1 bstride   32768     8191    512     64      SKIP  SKIP  8.638       1.164       
+scale   scale_tensara_1 bstride_c 32768     8191    512     64      SKIP  SKIP  5.129       0.587       
+scale   scale_tensara_1 basic     32768     8191    512     128     SKIP  SKIP  8.729       1.158       
+scale   scale_tensara_1 basic_c   32768     8191    512     128     SKIP  SKIP  6.866       0.960       
+scale   scale_tensara_1 tiled     32768     8191    512     128     SKIP  SKIP  9.901       1.343       
+scale   scale_tensara_1 tiled_c   32768     8191    512     128     SKIP  SKIP  5.976       0.822       
+scale   scale_tensara_1 bstride   32768     8191    512     128     SKIP  SKIP  9.106       1.215       
+scale   scale_tensara_1 bstride_c 32768     8191    512     128     SKIP  SKIP  5.317       0.601       
+scale   scale_tensara_2 basic     65536     8191    64      8       SKIP  SKIP  84.450      13.452      
+scale   scale_tensara_2 basic_c   65536     8191    64      8       SKIP  SKIP  100.998     16.399      
+scale   scale_tensara_2 tiled     65536     8191    64      8       SKIP  SKIP  155.174     25.593      
+scale   scale_tensara_2 tiled_c   65536     8191    64      8       SKIP  SKIP  110.362     18.141      
+scale   scale_tensara_2 bstride   65536     8191    64      8       SKIP  SKIP  82.219      13.446      
+scale   scale_tensara_2 bstride_c 65536     8191    64      8       SKIP  SKIP  46.734      7.564       
+scale   scale_tensara_2 basic     65536     8191    64      16      SKIP  SKIP  43.194      6.968       
+scale   scale_tensara_2 basic_c   65536     8191    64      16      SKIP  SKIP  52.387      8.459       
+scale   scale_tensara_2 tiled     65536     8191    64      16      SKIP  SKIP  78.392      12.777      
+scale   scale_tensara_2 tiled_c   65536     8191    64      16      SKIP  SKIP  55.415      8.935       
+scale   scale_tensara_2 bstride   65536     8191    64      16      SKIP  SKIP  41.841      6.725       
+scale   scale_tensara_2 bstride_c 65536     8191    64      16      SKIP  SKIP  24.559      3.798       
+scale   scale_tensara_2 basic     65536     8191    64      32      SKIP  SKIP  25.186      3.774       
+scale   scale_tensara_2 basic_c   65536     8191    64      32      SKIP  SKIP  29.401      4.754       
+scale   scale_tensara_2 tiled     65536     8191    64      32      SKIP  SKIP  41.146      6.534       
+scale   scale_tensara_2 tiled_c   65536     8191    64      32      SKIP  SKIP  29.727      4.637       
+scale   scale_tensara_2 bstride   65536     8191    64      32      SKIP  SKIP  24.511      3.822       
+scale   scale_tensara_2 bstride_c 65536     8191    64      32      SKIP  SKIP  13.931      2.157       
+scale   scale_tensara_2 basic     65536     8191    64      64      SKIP  SKIP  16.686      2.622       
+scale   scale_tensara_2 basic_c   65536     8191    64      64      SKIP  SKIP  19.437      3.142       
+scale   scale_tensara_2 tiled     65536     8191    64      64      SKIP  SKIP  43.388      7.028       
+scale   scale_tensara_2 tiled_c   65536     8191    64      64      SKIP  SKIP  29.452      4.696       
+scale   scale_tensara_2 bstride   65536     8191    64      64      SKIP  SKIP  24.592      3.896       
+scale   scale_tensara_2 bstride_c 65536     8191    64      64      SKIP  SKIP  13.100      1.960       
+scale   scale_tensara_2 basic     65536     8191    64      128     SKIP  SKIP  15.577      2.433       
+scale   scale_tensara_2 basic_c   65536     8191    64      128     SKIP  SKIP  14.723      2.269       
+scale   scale_tensara_2 tiled     65536     8191    64      128     SKIP  SKIP  34.505      5.729       
+scale   scale_tensara_2 tiled_c   65536     8191    64      128     SKIP  SKIP  23.800      3.720       
+scale   scale_tensara_2 bstride   65536     8191    64      128     SKIP  SKIP  19.078      3.022       
+scale   scale_tensara_2 bstride_c 65536     8191    64      128     SKIP  SKIP  10.822      1.638       
+scale   scale_tensara_2 basic     65536     8191    128     8       SKIP  SKIP  45.496      7.395       
+scale   scale_tensara_2 basic_c   65536     8191    128     8       SKIP  SKIP  54.140      8.801       
+scale   scale_tensara_2 tiled     65536     8191    128     8       SKIP  SKIP  84.985      13.361      
+scale   scale_tensara_2 tiled_c   65536     8191    128     8       SKIP  SKIP  55.572      8.969       
+scale   scale_tensara_2 bstride   65536     8191    128     8       SKIP  SKIP  45.002      7.238       
+scale   scale_tensara_2 bstride_c 65536     8191    128     8       SKIP  SKIP  25.232      3.961       
+scale   scale_tensara_2 basic     65536     8191    128     16      SKIP  SKIP  24.938      3.917       
+scale   scale_tensara_2 basic_c   65536     8191    128     16      SKIP  SKIP  30.386      4.843       
+scale   scale_tensara_2 tiled     65536     8191    128     16      SKIP  SKIP  42.474      6.826       
+scale   scale_tensara_2 tiled_c   65536     8191    128     16      SKIP  SKIP  28.601      4.471       
+scale   scale_tensara_2 bstride   65536     8191    128     16      SKIP  SKIP  23.068      3.622       
+scale   scale_tensara_2 bstride_c 65536     8191    128     16      SKIP  SKIP  12.586      1.937       
+scale   scale_tensara_2 basic     65536     8191    128     32      SKIP  SKIP  17.496      2.637       
+scale   scale_tensara_2 basic_c   65536     8191    128     32      SKIP  SKIP  18.964      2.959       
+scale   scale_tensara_2 tiled     65536     8191    128     32      SKIP  SKIP  26.555      4.276       
+scale   scale_tensara_2 tiled_c   65536     8191    128     32      SKIP  SKIP  19.273      2.904       
+scale   scale_tensara_2 bstride   65536     8191    128     32      SKIP  SKIP  16.822      2.541       
+scale   scale_tensara_2 bstride_c 65536     8191    128     32      SKIP  SKIP  8.527       1.247       
+scale   scale_tensara_2 basic     65536     8191    128     64      SKIP  SKIP  17.348      2.646       
+scale   scale_tensara_2 basic_c   65536     8191    128     64      SKIP  SKIP  15.188      2.318       
+scale   scale_tensara_2 tiled     65536     8191    128     64      SKIP  SKIP  26.924      4.256       
+scale   scale_tensara_2 tiled_c   65536     8191    128     64      SKIP  SKIP  18.415      2.807       
+scale   scale_tensara_2 bstride   65536     8191    128     64      SKIP  SKIP  16.355      2.500       
+scale   scale_tensara_2 bstride_c 65536     8191    128     64      SKIP  SKIP  9.896       1.289       
+scale   scale_tensara_2 basic     65536     8191    128     128     SKIP  SKIP  14.239      2.084       
+scale   scale_tensara_2 basic_c   65536     8191    128     128     SKIP  SKIP  19.401      2.287       
+scale   scale_tensara_2 tiled     65536     8191    128     128     SKIP  SKIP  27.191      4.167       
+scale   scale_tensara_2 tiled_c   65536     8191    128     128     SKIP  SKIP  18.817      2.759       
+scale   scale_tensara_2 bstride   65536     8191    128     128     SKIP  SKIP  14.301      2.181       
+scale   scale_tensara_2 bstride_c 65536     8191    128     128     SKIP  SKIP  8.618       1.280       
+scale   scale_tensara_2 basic     65536     8191    256     8       SKIP  SKIP  31.712      5.144       
+scale   scale_tensara_2 basic_c   65536     8191    256     8       SKIP  SKIP  35.192      5.637       
+scale   scale_tensara_2 tiled     65536     8191    256     8       SKIP  SKIP  47.048      7.587       
+scale   scale_tensara_2 tiled_c   65536     8191    256     8       SKIP  SKIP  30.262      4.861       
+scale   scale_tensara_2 bstride   65536     8191    256     8       SKIP  SKIP  27.807      4.438       
+scale   scale_tensara_2 bstride_c 65536     8191    256     8       SKIP  SKIP  14.857      2.293       
+scale   scale_tensara_2 basic     65536     8191    256     16      SKIP  SKIP  17.751      2.760       
+scale   scale_tensara_2 basic_c   65536     8191    256     16      SKIP  SKIP  21.794      3.438       
+scale   scale_tensara_2 tiled     65536     8191    256     16      SKIP  SKIP  26.311      4.135       
+scale   scale_tensara_2 tiled_c   65536     8191    256     16      SKIP  SKIP  17.733      2.768       
+scale   scale_tensara_2 bstride   65536     8191    256     16      SKIP  SKIP  14.821      2.306       
+scale   scale_tensara_2 bstride_c 65536     8191    256     16      SKIP  SKIP  8.170       1.196       
+scale   scale_tensara_2 basic     65536     8191    256     32      SKIP  SKIP  16.228      2.515       
+scale   scale_tensara_2 basic_c   65536     8191    256     32      SKIP  SKIP  14.843      2.313       
+scale   scale_tensara_2 tiled     65536     8191    256     32      SKIP  SKIP  21.487      3.401       
+scale   scale_tensara_2 tiled_c   65536     8191    256     32      SKIP  SKIP  13.437      2.035       
+scale   scale_tensara_2 bstride   65536     8191    256     32      SKIP  SKIP  15.777      2.425       
+scale   scale_tensara_2 bstride_c 65536     8191    256     32      SKIP  SKIP  8.588       1.225       
+scale   scale_tensara_2 basic     65536     8191    256     64      SKIP  SKIP  15.746      2.416       
+scale   scale_tensara_2 basic_c   65536     8191    256     64      SKIP  SKIP  15.429      2.409       
+scale   scale_tensara_2 tiled     65536     8191    256     64      SKIP  SKIP  21.411      3.411       
+scale   scale_tensara_2 tiled_c   65536     8191    256     64      SKIP  SKIP  12.588      1.938       
+scale   scale_tensara_2 bstride   65536     8191    256     64      SKIP  SKIP  15.609      2.441       
+scale   scale_tensara_2 bstride_c 65536     8191    256     64      SKIP  SKIP  8.867       1.217       
+scale   scale_tensara_2 basic     65536     8191    256     128     SKIP  SKIP  14.133      2.137       
+scale   scale_tensara_2 basic_c   65536     8191    256     128     SKIP  SKIP  13.893      2.078       
+scale   scale_tensara_2 tiled     65536     8191    256     128     SKIP  SKIP  19.224      3.049       
+scale   scale_tensara_2 tiled_c   65536     8191    256     128     SKIP  SKIP  12.355      1.910       
+scale   scale_tensara_2 bstride   65536     8191    256     128     SKIP  SKIP  14.432      2.176       
+scale   scale_tensara_2 bstride_c 65536     8191    256     128     SKIP  SKIP  7.452       1.101       
+scale   scale_tensara_2 basic     65536     8191    512     8       SKIP  SKIP  29.694      4.818       
+scale   scale_tensara_2 basic_c   65536     8191    512     8       SKIP  SKIP  26.718      4.221       
+scale   scale_tensara_2 tiled     65536     8191    512     8       SKIP  SKIP  38.040      6.160       
+scale   scale_tensara_2 tiled_c   65536     8191    512     8       SKIP  SKIP  23.068      3.668       
+scale   scale_tensara_2 bstride   65536     8191    512     8       SKIP  SKIP  27.459      4.324       
+scale   scale_tensara_2 bstride_c 65536     8191    512     8       SKIP  SKIP  13.955      2.174       
+scale   scale_tensara_2 basic     65536     8191    512     16      SKIP  SKIP  13.996      2.160       
+scale   scale_tensara_2 basic_c   65536     8191    512     16      SKIP  SKIP  13.595      2.115       
+scale   scale_tensara_2 tiled     65536     8191    512     16      SKIP  SKIP  18.864      2.979       
+scale   scale_tensara_2 tiled_c   65536     8191    512     16      SKIP  SKIP  13.414      2.107       
+scale   scale_tensara_2 bstride   65536     8191    512     16      SKIP  SKIP  15.359      2.388       
+scale   scale_tensara_2 bstride_c 65536     8191    512     16      SKIP  SKIP  7.952       1.190       
+scale   scale_tensara_2 basic     65536     8191    512     32      SKIP  SKIP  14.932      2.332       
+scale   scale_tensara_2 basic_c   65536     8191    512     32      SKIP  SKIP  15.792      2.461       
+scale   scale_tensara_2 tiled     65536     8191    512     32      SKIP  SKIP  20.022      3.168       
+scale   scale_tensara_2 tiled_c   65536     8191    512     32      SKIP  SKIP  11.441      1.748       
+scale   scale_tensara_2 bstride   65536     8191    512     32      SKIP  SKIP  15.816      2.474       
+scale   scale_tensara_2 bstride_c 65536     8191    512     32      SKIP  SKIP  8.187       1.219       
+scale   scale_tensara_2 basic     65536     8191    512     64      SKIP  SKIP  15.128      2.378       
+scale   scale_tensara_2 basic_c   65536     8191    512     64      SKIP  SKIP  14.548      2.222       
+scale   scale_tensara_2 tiled     65536     8191    512     64      SKIP  SKIP  19.970      3.116       
+scale   scale_tensara_2 tiled_c   65536     8191    512     64      SKIP  SKIP  12.365      1.767       
+scale   scale_tensara_2 bstride   65536     8191    512     64      SKIP  SKIP  16.700      2.486       
+scale   scale_tensara_2 bstride_c 65536     8191    512     64      SKIP  SKIP  9.128       1.213       
+scale   scale_tensara_2 basic     65536     8191    512     128     SKIP  SKIP  15.772      2.099       
+scale   scale_tensara_2 basic_c   65536     8191    512     128     SKIP  SKIP  12.349      1.743       
+scale   scale_tensara_2 tiled     65536     8191    512     128     SKIP  SKIP  18.725      2.905       
+scale   scale_tensara_2 tiled_c   65536     8191    512     128     SKIP  SKIP  11.280      1.582       
+scale   scale_tensara_2 bstride   65536     8191    512     128     SKIP  SKIP  14.977      2.244       
+scale   scale_tensara_2 bstride_c 65536     8191    512     128     SKIP  SKIP  8.445       1.080       
 
 Scaling Heatmaps (kernel_ms, lower is better)
 ============================================================
 
-scale_tensara_1 / basic  best=(256,128) 0.963 ms
-block\grid8         16        32        64        128
-64        6.681     3.507     1.905     1.295     1.112
-128       3.585     1.998     1.313     1.147     0.989
-256       2.445     1.405     1.135     1.093     0.963
-512       2.144     1.078     1.075     1.075     1.074
+scale_tensara_1 / basic  best=(256,128) 0.974 ms
+block\grid8         16        32        64        128       
+64        6.707     3.502     1.902     1.311     1.130     
+128       3.687     1.979     1.314     1.182     1.026     
+256       2.548     1.404     1.181     1.190     0.974     
+512       2.253     1.079     1.150     1.178     1.158     
 
-scale_tensara_1 / basic_c  best=(256,128) 0.859 ms
-block\grid8         16        32        64        128
-64        8.199     4.218     2.225     1.371     1.022
-128       4.369     2.323     1.373     1.019     0.948
-256       2.728     1.575     1.062     1.022     0.859
-512       1.956     1.043     0.993     0.903     0.911
+scale_tensara_1 / basic_c  best=(256,128) 0.879 ms
+block\grid8         16        32        64        128       
+64        8.164     4.213     2.256     1.422     1.055     
+128       4.390     2.367     1.436     1.075     1.030     
+256       2.836     1.574     1.104     1.107     0.879     
+512       2.049     1.045     1.061     1.004     0.960     
 
-scale_tensara_1 / tiled  best=(256,128) 1.247 ms
-block\grid8         16        32        64        128
-64        12.733    6.352     3.158     3.164     2.444
-128       6.646     3.324     1.883     1.862     1.841
-256       3.761     1.892     1.435     1.406     1.247
-512       2.940     1.481     1.295     1.247     1.271
+scale_tensara_1 / tiled  best=(256,128) 1.337 ms
+block\grid8         16        32        64        128       
+64        12.707    6.342     3.260     3.324     2.535     
+128       6.636     3.401     1.968     1.975     1.982     
+256       3.854     2.034     1.485     1.563     1.337     
+512       3.046     1.540     1.377     1.392     1.343     
 
-scale_tensara_1 / tiled_c  best=(512,64) 0.714 ms
-block\grid8         16        32        64        128
-64        8.934     4.432     2.272     2.273     1.752
-128       4.457     2.221     1.329     1.288     1.261
-256       2.412     1.296     0.862     0.854     0.800
-512       1.815     0.936     0.759     0.714     0.730
+scale_tensara_1 / tiled_c  best=(512,64) 0.794 ms
+block\grid8         16        32        64        128       
+64        8.955     4.431     2.313     2.405     1.876     
+128       4.437     2.256     1.396     1.360     1.383     
+256       2.425     1.395     0.969     0.952     0.864     
+512       1.845     0.974     0.865     0.794     0.822     
 
-scale_tensara_1 / bstride  best=(256,128) 0.950 ms
-block\grid8         16        32        64        128
-64        6.712     3.359     1.894     1.912     1.450
-128       3.622     1.814     1.204     1.182     1.033
-256       2.224     1.115     1.096     1.085     0.950
-512       2.170     1.087     1.081     1.079     1.079
+scale_tensara_1 / bstride  best=(256,128) 1.005 ms
+block\grid8         16        32        64        128       
+64        6.704     3.354     1.927     1.978     1.511     
+128       3.617     1.815     1.264     1.253     1.125     
+256       2.221     1.156     1.222     1.177     1.005     
+512       2.171     1.164     1.232     1.164     1.215     
 
-scale_tensara_1 / bstride_c  best=(256,128) 0.483 ms
-block\grid8         16        32        64        128
-64        3.755     1.881     1.068     0.980     0.787
-128       1.979     0.969     0.597     0.612     0.584
-256       1.170     0.580     0.555     0.553     0.483
-512       1.091     0.549     0.545     0.543     0.543
+scale_tensara_1 / bstride_c  best=(256,128) 0.511 ms
+block\grid8         16        32        64        128       
+64        3.753     1.877     1.083     0.992     0.819     
+128       1.971     0.968     0.616     0.635     0.611     
+256       1.151     0.601     0.620     0.601     0.511     
+512       1.104     0.588     0.620     0.587     0.601     
 
-scale_tensara_2 / basic  best=(512,128) 1.874 ms
-block\grid8         16        32        64        128
-64        13.337    6.981     3.780     2.587     2.393
-128       7.138     3.930     2.608     2.466     1.989
-256       4.844     2.764     2.395     2.220     1.944
-512       4.304     2.150     2.142     2.142     1.874
+scale_tensara_2 / basic  best=(128,128) 2.084 ms
+block\grid8         16        32        64        128       
+64        13.452    6.968     3.774     2.622     2.433     
+128       7.395     3.917     2.637     2.646     2.084     
+256       5.144     2.760     2.515     2.416     2.137     
+512       4.818     2.160     2.332     2.378     2.099     
 
-scale_tensara_2 / basic_c  best=(512,128) 1.563 ms
-block\grid8         16        32        64        128
-64        16.434    8.470     4.464     2.764     2.070
-128       8.778     4.635     2.738     2.061     2.029
-256       5.444     3.143     2.119     2.126     1.901
-512       3.930     2.098     2.125     1.975     1.563
+scale_tensara_2 / basic_c  best=(512,128) 1.743 ms
+block\grid8         16        32        64        128       
+64        16.399    8.459     4.754     3.142     2.269     
+128       8.801     4.843     2.959     2.318     2.287     
+256       5.637     3.438     2.313     2.409     2.078     
+512       4.221     2.115     2.461     2.222     1.743     
 
-scale_tensara_2 / tiled  best=(512,128) 2.351 ms
-block\grid8         16        32        64        128
-64        25.637    12.800    6.376     6.331     4.907
-128       13.387    6.688     3.833     3.818     3.680
-256       7.577     3.788     2.879     2.884     2.527
-512       5.884     2.956     2.595     2.541     2.351
+scale_tensara_2 / tiled  best=(512,128) 2.905 ms
+block\grid8         16        32        64        128       
+64        25.593    12.777    6.534     7.028     5.729     
+128       13.361    6.826     4.276     4.256     4.167     
+256       7.587     4.135     3.401     3.411     3.049     
+512       6.160     2.979     3.168     3.116     2.905     
 
-scale_tensara_2 / tiled_c  best=(512,128) 1.372 ms
-block\grid8         16        32        64        128
-64        18.130    8.974     4.618     4.576     3.530
-128       8.997     4.472     2.711     2.609     2.569
-256       4.868     2.611     1.765     1.731     1.602
-512       3.654     1.855     1.510     1.459     1.372
+scale_tensara_2 / tiled_c  best=(512,128) 1.582 ms
+block\grid8         16        32        64        128       
+64        18.141    8.935     4.637     4.696     3.720     
+128       8.969     4.471     2.904     2.807     2.759     
+256       4.861     2.768     2.035     1.938     1.910     
+512       3.668     2.107     1.748     1.767     1.582     
 
-scale_tensara_2 / bstride  best=(256,128) 1.895 ms
-block\grid8         16        32        64        128
-64        13.467    6.736     3.796     3.833     2.894
-128       7.250     3.627     2.408     2.364     2.082
-256       4.447     2.227     2.185     2.169     1.895
-512       4.335     2.171     2.160     2.151     1.913
+scale_tensara_2 / bstride  best=(256,128) 2.176 ms
+block\grid8         16        32        64        128       
+64        13.446    6.725     3.822     3.896     3.022     
+128       7.238     3.622     2.541     2.500     2.181     
+256       4.438     2.306     2.425     2.441     2.176     
+512       4.324     2.388     2.474     2.486     2.244     
 
-scale_tensara_2 / bstride_c  best=(512,128) 0.948 ms
-block\grid8         16        32        64        128
-64        7.597     3.805     2.126     1.942     1.582
-128       3.963     1.932     1.193     1.220     1.220
-256       2.297     1.150     1.103     1.101     0.958
-512       2.178     1.094     1.084     1.081     0.948
+scale_tensara_2 / bstride_c  best=(512,128) 1.080 ms
+block\grid8         16        32        64        128       
+64        7.564     3.798     2.157     1.960     1.638     
+128       3.961     1.937     1.247     1.289     1.280     
+256       2.293     1.196     1.225     1.217     1.101     
+512       2.174     1.190     1.219     1.213     1.080     

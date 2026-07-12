@@ -1,5 +1,18 @@
 # `P5_LEAKY_RELU.cu` Results
 
+## At a Glance
+
+- Recommendation: `float4`.
+- Correctness: all 100 current CPU-backed rows pass.
+- Performance: wins 63 of 73 comparable current benchmark table rows.
+- Status: current raw logs; benchmark rows remain unverified.
+
+Current skip-CPU evidence has 6 exact checked rows and 484 benchmark-only
+rows. `float4` wins all eight published Tensara rows.
+
+Benchmark-only rows are timing evidence, not correctness evidence. See the
+[repository index](RESULTS_INDEX.md) for cross-problem status.
+
 Updated from regenerated local logs:
 
 - CPU-backed correctness run: [p5_with_cpu.txt](p5_with_cpu.txt)
@@ -40,10 +53,9 @@ From [p5_skip_cpu.txt](p5_skip_cpu.txt):
 
 From [p5_skip_cpu.txt](p5_skip_cpu.txt):
 
-- Across all comparable skip-CPU configurations, `float4` wins `240`
-  of `245`; `basic` wins `3`; `2` are ties.
-- Across default-launch non-scale rows, `float4` wins `20` of `25`;
-  `basic` wins `3`; `2` are ties.
+- Across comparable table rows, `float4` wins `63` of `73`; `basic` wins `2`;
+  `8` are ties.
+- Across published Tensara rows, `float4` wins `8` of `8`.
 - `float4` wins every published Tensara row.
 
 ## Tensara Summary
@@ -51,40 +63,40 @@ From [p5_skip_cpu.txt](p5_skip_cpu.txt):
 Published-size benchmark rows:
 
 - `tensara_1`: `4096 x 4096`, `alpha=0.01`
-  - default best: `float4 = 0.756 ms`
-  - scale best: `float4 = 0.754 ms` at `(64, 128)`
+  - default best: `float4 = 0.752 ms`
+  - scale best: `float4 = 0.751 ms` at `(512, 128)`
 - `tensara_2`: `4096 x 4096`, `alpha=0.05`
-  - default best: `float4 = 0.753 ms`
-  - scale best: `float4 = 0.752 ms` at `(128, 128)`
+  - default best: `float4 = 0.752 ms`
+  - scale best: `float4 = 0.753 ms` at `(64, 128)`
 - `tensara_3`: `4096 x 4096`, `alpha=0.10`
-  - default best: `float4 = 0.753 ms`
-  - scale best: `float4 = 0.751 ms` at `(128, 128)`
+  - default best: `float4 = 0.755 ms`
+  - scale best: `float4 = 0.750 ms` at `(512, 128)`
 - `tensara_4`: `4096 x 4096`, `alpha=0.20`
-  - default best: `float4 = 0.753 ms`
+  - default best: `float4 = 0.754 ms`
   - scale best: `float4 = 0.751 ms` at `(128, 128)`
 - `tensara_5`: `6144 x 4096`, `alpha=0.01`
-  - default best: `float4 = 1.125 ms`
-  - scale best: `float4 = 1.119 ms` at `(512, 128)`
-- `tensara_6`: `6144 x 4096`, `alpha=0.05`
-  - default best: `float4 = 1.125 ms`
-  - scale best: `float4 = 1.120 ms` at `(512, 128)`
-- `tensara_7`: `6144 x 4096`, `alpha=0.10`
   - default best: `float4 = 1.126 ms`
+  - scale best: `float4 = 1.120 ms` at `(512, 128)`
+- `tensara_6`: `6144 x 4096`, `alpha=0.05`
+  - default best: `float4 = 1.128 ms`
+  - scale best: `float4 = 1.121 ms` at `(512, 128)`
+- `tensara_7`: `6144 x 4096`, `alpha=0.10`
+  - default best: `float4 = 1.125 ms`
   - scale best: `float4 = 1.119 ms` at `(512, 128)`
 - `tensara_8`: `6144 x 4096`, `alpha=0.20`
-  - default best: `float4 = 1.129 ms`
-  - scale best: `float4 = 1.121 ms` at `(512, 128)`
+  - default best: `float4 = 1.135 ms`
+  - scale best: `float4 = 1.119 ms` at `(512, 128)`
 
 Default-launch `kernel_ms` by variant:
 
-- `tensara_1`: `basic 0.794`, `float4 0.756`
-- `tensara_2`: `basic 0.793`, `float4 0.753`
-- `tensara_3`: `basic 0.796`, `float4 0.753`
-- `tensara_4`: `basic 0.794`, `float4 0.753`
-- `tensara_5`: `basic 1.195`, `float4 1.125`
-- `tensara_6`: `basic 1.190`, `float4 1.125`
-- `tensara_7`: `basic 1.188`, `float4 1.126`
-- `tensara_8`: `basic 1.193`, `float4 1.129`
+- `tensara_1`: `basic 0.797`, `float4 0.752`
+- `tensara_2`: `basic 0.792`, `float4 0.752`
+- `tensara_3`: `basic 0.792`, `float4 0.755`
+- `tensara_4`: `basic 0.792`, `float4 0.754`
+- `tensara_5`: `basic 1.182`, `float4 1.126`
+- `tensara_6`: `basic 1.187`, `float4 1.128`
+- `tensara_7`: `basic 1.186`, `float4 1.125`
+- `tensara_8`: `basic 1.184`, `float4 1.135`
 
 ## Notes
 

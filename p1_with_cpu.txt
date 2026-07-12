@@ -1,235 +1,235 @@
 Timing samples: mode=median repeats=5 warmup=1 metric=kernel_ms
 
-group   name            kernel    N         K       block_x grid_x  cpu   gpu   total_ms    kernel_ms
+group   name            kernel    N         K       block_x grid_x  cpu   gpu   total_ms    kernel_ms   
 --------------------------------------------------------------------------------------------------------
-small   small_1         basic     4         3       256     32      PASS  PASS  6.613       0.006
-small   small_1         basic_c   4         3       256     32      PASS  PASS  0.596       0.005
-small   small_1         tiled     4         3       256     32      PASS  PASS  0.695       0.012
-small   small_1         tiled_c   4         3       256     32      PASS  PASS  0.653       0.005
-small   small_1         bstride   4         3       256     32      PASS  PASS  0.612       0.006
-small   small_1         bstride_c 4         3       256     32      PASS  PASS  0.920       0.034
-small   small_2         basic     3         3       256     32      PASS  PASS  0.620       0.006
-small   small_2         basic_c   3         3       256     32      PASS  PASS  0.551       0.005
-small   small_2         tiled     3         3       256     32      PASS  PASS  0.834       0.031
-small   small_2         tiled_c   3         3       256     32      PASS  PASS  0.973       0.047
-small   small_2         bstride   3         3       256     32      PASS  PASS  0.746       0.026
-small   small_2         bstride_c 3         3       256     32      PASS  PASS  1.048       0.047
-small   small_3         basic     3         3       256     32      PASS  PASS  0.777       0.026
-small   small_3         basic_c   3         3       256     32      PASS  PASS  0.528       0.005
-small   small_3         tiled     3         3       256     32      PASS  PASS  0.609       0.006
-small   small_3         tiled_c   3         3       256     32      PASS  PASS  0.575       0.005
-small   small_3         bstride   3         3       256     32      PASS  PASS  0.505       0.005
-small   small_3         bstride_c 3         3       256     32      PASS  PASS  0.538       0.006
-medium  medium_1        basic     4096      31      256     32      REF   PASS  0.537       0.006
-medium  medium_1        basic_c   4096      31      256     32      REF   PASS  0.586       0.006
-medium  medium_1        tiled     4096      31      256     32      REF   PASS  0.607       0.007
-medium  medium_1        tiled_c   4096      31      256     32      REF   PASS  0.553       0.006
-medium  medium_1        bstride   4096      31      256     32      REF   PASS  0.537       0.006
-medium  medium_1        bstride_c 4096      31      256     32      REF   PASS  0.529       0.006
-medium  medium_2        basic     4097      63      256     32      REF   PASS  1.051       0.010
-medium  medium_2        basic_c   4097      63      256     32      REF   PASS  0.568       0.007
-medium  medium_2        tiled     4097      63      256     32      REF   PASS  0.592       0.008
-medium  medium_2        tiled_c   4097      63      256     32      REF   PASS  0.626       0.007
-medium  medium_2        bstride   4097      63      256     32      REF   PASS  0.600       0.007
-medium  medium_2        bstride_c 4097      63      256     32      REF   PASS  0.535       0.006
-medium  medium_3        basic     8193      95      256     32      REF   PASS  0.682       0.011
-medium  medium_3        basic_c   8193      95      256     32      REF   PASS  0.626       0.011
-medium  medium_3        tiled     8193      95      256     32      REF   PASS  0.830       0.015
-medium  medium_3        tiled_c   8193      95      256     32      REF   PASS  1.030       0.011
-medium  medium_3        bstride   8193      95      256     32      REF   PASS  0.591       0.012
-medium  medium_3        bstride_c 8193      95      256     32      REF   PASS  0.556       0.009
-medium  medium_4        basic     16384     127     256     32      REF   PASS  0.654       0.018
-medium  medium_4        basic_c   16384     127     256     32      REF   PASS  0.625       0.017
-medium  medium_4        tiled     16384     127     256     32      REF   PASS  0.691       0.022
-medium  medium_4        tiled_c   16384     127     256     32      REF   PASS  0.831       0.031
-medium  medium_4        bstride   16384     127     256     32      REF   PASS  0.616       0.018
-medium  medium_4        bstride_c 16384     127     256     32      REF   PASS  0.679       0.011
-large   large_1         basic     32769     127     256     32      REF   PASS  1.472       0.037
-large   large_1         basic_c   32769     127     256     32      REF   PASS  1.087       0.034
-large   large_1         tiled     32769     127     256     32      REF   PASS  1.290       0.038
-large   large_1         tiled_c   32769     127     256     32      REF   PASS  13.131      0.027
-large   large_1         bstride   32769     127     256     32      REF   PASS  0.758       0.033
-large   large_1         bstride_c 32769     127     256     32      REF   PASS  0.820       0.019
-large   large_2         basic     65537     191     256     32      REF   PASS  1.673       0.081
-large   large_2         basic_c   65537     191     256     32      REF   PASS  1.109       0.072
-large   large_2         tiled     65537     191     256     32      REF   PASS  1.149       0.100
-large   large_2         tiled_c   65537     191     256     32      REF   PASS  1.108       0.067
-large   large_2         bstride   65537     191     256     32      REF   PASS  1.513       0.080
-large   large_2         bstride_c 65537     191     256     32      REF   PASS  0.943       0.045
-webvfy  webvfy_1        basic     8193      8191    256     32      REF   PASS  3.903       0.452
-webvfy  webvfy_1        basic_c   8193      8191    256     32      REF   PASS  3.517       0.426
-webvfy  webvfy_1        tiled     8193      8191    256     32      REF   PASS  4.295       0.598
-webvfy  webvfy_1        tiled_c   8193      8191    256     32      REF   PASS  3.359       0.410
-webvfy  webvfy_1        bstride   8193      8191    256     32      REF   PASS  3.966       0.542
-webvfy  webvfy_1        bstride_c 8193      8191    256     32      REF   PASS  2.220       0.275
-webvfy  webvfy_2        basic     16385     8191    256     32      REF   PASS  6.384       0.801
-webvfy  webvfy_2        basic_c   16385     8191    256     32      REF   PASS  5.583       0.738
-webvfy  webvfy_2        tiled     16385     8191    256     32      REF   PASS  6.646       0.978
-webvfy  webvfy_2        tiled_c   16385     8191    256     32      REF   PASS  4.734       0.663
-webvfy  webvfy_2        bstride   16385     8191    256     32      REF   PASS  6.125       0.903
-webvfy  webvfy_2        bstride_c 16385     8191    256     32      REF   PASS  3.711       0.456
-scale   scale_verify    basic     4097      383     64      8       REF   PASS  1.149       0.097
-scale   scale_verify    basic_c   4097      383     64      8       REF   PASS  1.158       0.105
-scale   scale_verify    tiled     4097      383     64      8       REF   PASS  1.103       0.101
-scale   scale_verify    tiled_c   4097      383     64      8       REF   PASS  1.006       0.088
-scale   scale_verify    bstride   4097      383     64      8       REF   PASS  1.097       0.052
-scale   scale_verify    bstride_c 4097      383     64      8       REF   PASS  0.768       0.043
-scale   scale_verify    basic     4097      383     64      16      REF   PASS  0.806       0.054
-scale   scale_verify    basic_c   4097      383     64      16      REF   PASS  1.690       0.058
-scale   scale_verify    tiled     4097      383     64      16      REF   PASS  0.963       0.058
-scale   scale_verify    tiled_c   4097      383     64      16      REF   PASS  0.948       0.050
-scale   scale_verify    bstride   4097      383     64      16      REF   PASS  0.759       0.030
-scale   scale_verify    bstride_c 4097      383     64      16      REF   PASS  0.775       0.026
-scale   scale_verify    basic     4097      383     64      32      REF   PASS  0.970       0.033
-scale   scale_verify    basic_c   4097      383     64      32      REF   PASS  0.817       0.035
-scale   scale_verify    tiled     4097      383     64      32      REF   PASS  0.822       0.038
-scale   scale_verify    tiled_c   4097      383     64      32      REF   PASS  0.775       0.032
-scale   scale_verify    bstride   4097      383     64      32      REF   PASS  0.730       0.024
-scale   scale_verify    bstride_c 4097      383     64      32      REF   PASS  0.797       0.042
-scale   scale_verify    basic     4097      383     64      64      REF   PASS  0.731       0.024
-scale   scale_verify    basic_c   4097      383     64      64      REF   PASS  0.730       0.024
-scale   scale_verify    tiled     4097      383     64      64      REF   PASS  1.479       0.028
-scale   scale_verify    tiled_c   4097      383     64      64      REF   PASS  0.657       0.038
-scale   scale_verify    bstride   4097      383     64      64      REF   PASS  0.825       0.042
-scale   scale_verify    bstride_c 4097      383     64      64      REF   PASS  0.842       0.014
-scale   scale_verify    basic     4097      383     64      128     REF   PASS  1.016       0.022
-scale   scale_verify    basic_c   4097      383     64      128     REF   PASS  0.930       0.019
-scale   scale_verify    tiled     4097      383     64      128     REF   PASS  0.732       0.020
-scale   scale_verify    tiled_c   4097      383     64      128     REF   PASS  0.582       0.017
-scale   scale_verify    bstride   4097      383     64      128     REF   PASS  0.584       0.014
-scale   scale_verify    bstride_c 4097      383     64      128     REF   PASS  0.524       0.010
-scale   scale_verify    basic     4097      383     128     8       REF   PASS  0.830       0.055
-scale   scale_verify    basic_c   4097      383     128     8       REF   PASS  0.868       0.058
-scale   scale_verify    tiled     4097      383     128     8       REF   PASS  0.869       0.062
-scale   scale_verify    tiled_c   4097      383     128     8       REF   PASS  0.984       0.051
-scale   scale_verify    bstride   4097      383     128     8       REF   PASS  0.721       0.035
-scale   scale_verify    bstride_c 4097      383     128     8       REF   PASS  0.756       0.028
-scale   scale_verify    basic     4097      383     128     16      REF   PASS  0.907       0.034
-scale   scale_verify    basic_c   4097      383     128     16      REF   PASS  0.887       0.035
-scale   scale_verify    tiled     4097      383     128     16      REF   PASS  0.930       0.039
-scale   scale_verify    tiled_c   4097      383     128     16      REF   PASS  0.759       0.032
-scale   scale_verify    bstride   4097      383     128     16      REF   PASS  1.006       0.025
-scale   scale_verify    bstride_c 4097      383     128     16      REF   PASS  0.828       0.041
-scale   scale_verify    basic     4097      383     128     32      REF   PASS  0.626       0.024
-scale   scale_verify    basic_c   4097      383     128     32      REF   PASS  0.709       0.024
-scale   scale_verify    tiled     4097      383     128     32      REF   PASS  1.204       0.028
-scale   scale_verify    tiled_c   4097      383     128     32      REF   PASS  0.788       0.024
-scale   scale_verify    bstride   4097      383     128     32      REF   PASS  0.584       0.018
-scale   scale_verify    bstride_c 4097      383     128     32      REF   PASS  0.789       0.039
-scale   scale_verify    basic     4097      383     128     64      REF   PASS  0.604       0.017
-scale   scale_verify    basic_c   4097      383     128     64      REF   PASS  0.779       0.018
-scale   scale_verify    tiled     4097      383     128     64      REF   PASS  0.788       0.024
-scale   scale_verify    tiled_c   4097      383     128     64      REF   PASS  0.840       0.040
-scale   scale_verify    bstride   4097      383     128     64      REF   PASS  0.579       0.014
-scale   scale_verify    bstride_c 4097      383     128     64      REF   PASS  0.730       0.025
-scale   scale_verify    basic     4097      383     128     128     REF   PASS  0.565       0.017
-scale   scale_verify    basic_c   4097      383     128     128     REF   PASS  0.821       0.040
-scale   scale_verify    tiled     4097      383     128     128     REF   PASS  0.619       0.019
-scale   scale_verify    tiled_c   4097      383     128     128     REF   PASS  0.793       0.039
-scale   scale_verify    bstride   4097      383     128     128     REF   PASS  0.591       0.014
-scale   scale_verify    bstride_c 4097      383     128     128     REF   PASS  0.554       0.010
-scale   scale_verify    basic     4097      383     256     8       REF   PASS  0.794       0.033
-scale   scale_verify    basic_c   4097      383     256     8       REF   PASS  0.697       0.033
-scale   scale_verify    tiled     4097      383     256     8       REF   PASS  0.840       0.043
-scale   scale_verify    tiled_c   4097      383     256     8       REF   PASS  0.671       0.035
-scale   scale_verify    bstride   4097      383     256     8       REF   PASS  0.768       0.032
-scale   scale_verify    bstride_c 4097      383     256     8       REF   PASS  0.766       0.023
-scale   scale_verify    basic     4097      383     256     16      REF   PASS  0.764       0.025
-scale   scale_verify    basic_c   4097      383     256     16      REF   PASS  0.657       0.024
-scale   scale_verify    tiled     4097      383     256     16      REF   PASS  0.776       0.029
-scale   scale_verify    tiled_c   4097      383     256     16      REF   PASS  0.712       0.023
-scale   scale_verify    bstride   4097      383     256     16      REF   PASS  0.605       0.023
-scale   scale_verify    bstride_c 4097      383     256     16      REF   PASS  0.803       0.039
-scale   scale_verify    basic     4097      383     256     32      REF   PASS  0.629       0.017
-scale   scale_verify    basic_c   4097      383     256     32      REF   PASS  0.819       0.041
-scale   scale_verify    tiled     4097      383     256     32      REF   PASS  0.661       0.020
-scale   scale_verify    tiled_c   4097      383     256     32      REF   PASS  0.579       0.016
-scale   scale_verify    bstride   4097      383     256     32      REF   PASS  0.545       0.014
-scale   scale_verify    bstride_c 4097      383     256     32      REF   PASS  0.552       0.010
-scale   scale_verify    basic     4097      383     256     64      REF   PASS  0.668       0.024
-scale   scale_verify    basic_c   4097      383     256     64      REF   PASS  0.758       0.024
-scale   scale_verify    tiled     4097      383     256     64      REF   PASS  0.922       0.028
-scale   scale_verify    tiled_c   4097      383     256     64      REF   PASS  0.765       0.018
-scale   scale_verify    bstride   4097      383     256     64      REF   PASS  0.774       0.024
-scale   scale_verify    bstride_c 4097      383     256     64      REF   PASS  0.875       0.014
-scale   scale_verify    basic     4097      383     256     128     REF   PASS  0.790       0.024
-scale   scale_verify    basic_c   4097      383     256     128     REF   PASS  0.817       0.023
-scale   scale_verify    tiled     4097      383     256     128     REF   PASS  0.803       0.028
-scale   scale_verify    tiled_c   4097      383     256     128     REF   PASS  0.820       0.018
-scale   scale_verify    bstride   4097      383     256     128     REF   PASS  0.811       0.023
-scale   scale_verify    bstride_c 4097      383     256     128     REF   PASS  0.662       0.014
-scale   scale_verify    basic     4097      383     512     8       REF   PASS  0.820       0.031
-scale   scale_verify    basic_c   4097      383     512     8       REF   PASS  0.782       0.029
-scale   scale_verify    tiled     4097      383     512     8       REF   PASS  0.873       0.037
-scale   scale_verify    tiled_c   4097      383     512     8       REF   PASS  0.800       0.027
-scale   scale_verify    bstride   4097      383     512     8       REF   PASS  0.891       0.039
-scale   scale_verify    bstride_c 4097      383     512     8       REF   PASS  0.773       0.023
-scale   scale_verify    basic     4097      383     512     16      REF   PASS  0.632       0.026
-scale   scale_verify    basic_c   4097      383     512     16      REF   PASS  0.595       0.022
-scale   scale_verify    tiled     4097      383     512     16      REF   PASS  0.617       0.028
-scale   scale_verify    tiled_c   4097      383     512     16      REF   PASS  0.795       0.020
-scale   scale_verify    bstride   4097      383     512     16      REF   PASS  0.822       0.023
-scale   scale_verify    bstride_c 4097      383     512     16      REF   PASS  0.692       0.014
-scale   scale_verify    basic     4097      383     512     32      REF   PASS  0.858       0.023
-scale   scale_verify    basic_c   4097      383     512     32      REF   PASS  0.903       0.049
-scale   scale_verify    tiled     4097      383     512     32      REF   PASS  1.124       0.053
-scale   scale_verify    tiled_c   4097      383     512     32      REF   PASS  0.836       0.020
-scale   scale_verify    bstride   4097      383     512     32      REF   PASS  0.935       0.024
-scale   scale_verify    bstride_c 4097      383     512     32      REF   PASS  0.890       0.040
-scale   scale_verify    basic     4097      383     512     64      REF   PASS  0.849       0.039
-scale   scale_verify    basic_c   4097      383     512     64      REF   PASS  0.841       0.034
-scale   scale_verify    tiled     4097      383     512     64      REF   PASS  1.144       0.044
-scale   scale_verify    tiled_c   4097      383     512     64      REF   PASS  0.762       0.027
-scale   scale_verify    bstride   4097      383     512     64      REF   PASS  0.864       0.039
-scale   scale_verify    bstride_c 4097      383     512     64      REF   PASS  0.714       0.024
-scale   scale_verify    basic     4097      383     512     128     REF   PASS  0.875       0.039
-scale   scale_verify    basic_c   4097      383     512     128     REF   PASS  0.804       0.050
-scale   scale_verify    tiled     4097      383     512     128     REF   PASS  0.952       0.044
-scale   scale_verify    tiled_c   4097      383     512     128     REF   PASS  0.885       0.028
-scale   scale_verify    bstride   4097      383     512     128     REF   PASS  1.209       0.040
-scale   scale_verify    bstride_c 4097      383     512     128     REF   PASS  0.959       0.024
+small   small_1         basic     4         3       256     32      PASS  PASS  4.551       0.005       
+small   small_1         basic_c   4         3       256     32      PASS  PASS  0.672       0.006       
+small   small_1         tiled     4         3       256     32      PASS  PASS  0.673       0.005       
+small   small_1         tiled_c   4         3       256     32      PASS  PASS  0.653       0.006       
+small   small_1         bstride   4         3       256     32      PASS  PASS  0.624       0.005       
+small   small_1         bstride_c 4         3       256     32      PASS  PASS  0.667       0.005       
+small   small_2         basic     3         3       256     32      PASS  PASS  0.560       0.005       
+small   small_2         basic_c   3         3       256     32      PASS  PASS  0.714       0.006       
+small   small_2         tiled     3         3       256     32      PASS  PASS  0.550       0.005       
+small   small_2         tiled_c   3         3       256     32      PASS  PASS  0.821       0.005       
+small   small_2         bstride   3         3       256     32      PASS  PASS  0.729       0.007       
+small   small_2         bstride_c 3         3       256     32      PASS  PASS  0.759       0.006       
+small   small_3         basic     3         3       256     32      PASS  PASS  0.794       0.031       
+small   small_3         basic_c   3         3       256     32      PASS  PASS  0.639       0.005       
+small   small_3         tiled     3         3       256     32      PASS  PASS  0.672       0.006       
+small   small_3         tiled_c   3         3       256     32      PASS  PASS  0.857       0.026       
+small   small_3         bstride   3         3       256     32      PASS  PASS  0.602       0.006       
+small   small_3         bstride_c 3         3       256     32      PASS  PASS  0.842       0.029       
+medium  medium_1        basic     4096      31      256     32      REF   PASS  0.767       0.025       
+medium  medium_1        basic_c   4096      31      256     32      REF   PASS  0.761       0.026       
+medium  medium_1        tiled     4096      31      256     32      REF   PASS  0.811       0.026       
+medium  medium_1        tiled_c   4096      31      256     32      REF   PASS  0.759       0.027       
+medium  medium_1        bstride   4096      31      256     32      REF   PASS  0.774       0.026       
+medium  medium_1        bstride_c 4096      31      256     32      REF   PASS  0.746       0.026       
+medium  medium_2        basic     4097      63      256     32      REF   PASS  0.771       0.026       
+medium  medium_2        basic_c   4097      63      256     32      REF   PASS  0.711       0.026       
+medium  medium_2        tiled     4097      63      256     32      REF   PASS  0.674       0.008       
+medium  medium_2        tiled_c   4097      63      256     32      REF   PASS  0.784       0.008       
+medium  medium_2        bstride   4097      63      256     32      REF   PASS  0.579       0.008       
+medium  medium_2        bstride_c 4097      63      256     32      REF   PASS  0.741       0.007       
+medium  medium_3        basic     8193      95      256     32      REF   PASS  0.801       0.012       
+medium  medium_3        basic_c   8193      95      256     32      REF   PASS  0.606       0.011       
+medium  medium_3        tiled     8193      95      256     32      REF   PASS  0.682       0.012       
+medium  medium_3        tiled_c   8193      95      256     32      REF   PASS  0.716       0.011       
+medium  medium_3        bstride   8193      95      256     32      REF   PASS  0.652       0.012       
+medium  medium_3        bstride_c 8193      95      256     32      REF   PASS  0.795       0.026       
+medium  medium_4        basic     16384     127     256     32      REF   PASS  1.055       0.018       
+medium  medium_4        basic_c   16384     127     256     32      REF   PASS  0.902       0.017       
+medium  medium_4        tiled     16384     127     256     32      REF   PASS  1.197       0.024       
+medium  medium_4        tiled_c   16384     127     256     32      REF   PASS  1.134       0.015       
+medium  medium_4        bstride   16384     127     256     32      REF   PASS  0.810       0.017       
+medium  medium_4        bstride_c 16384     127     256     32      REF   PASS  0.640       0.012       
+large   large_1         basic     32769     127     256     32      REF   PASS  1.836       0.033       
+large   large_1         basic_c   32769     127     256     32      REF   PASS  0.981       0.029       
+large   large_1         tiled     32769     127     256     32      REF   PASS  0.822       0.037       
+large   large_1         tiled_c   32769     127     256     32      REF   PASS  1.115       0.043       
+large   large_1         bstride   32769     127     256     32      REF   PASS  0.785       0.034       
+large   large_1         bstride_c 32769     127     256     32      REF   PASS  0.683       0.019       
+large   large_2         basic     65537     191     256     32      REF   PASS  1.414       0.080       
+large   large_2         basic_c   65537     191     256     32      REF   PASS  1.550       0.073       
+large   large_2         tiled     65537     191     256     32      REF   PASS  2.161       0.100       
+large   large_2         tiled_c   65537     191     256     32      REF   PASS  1.248       0.067       
+large   large_2         bstride   65537     191     256     32      REF   PASS  1.590       0.081       
+large   large_2         bstride_c 65537     191     256     32      REF   PASS  0.963       0.045       
+webvfy  webvfy_1        basic     8193      8191    256     32      REF   PASS  4.181       0.452       
+webvfy  webvfy_1        basic_c   8193      8191    256     32      REF   PASS  3.340       0.426       
+webvfy  webvfy_1        tiled     8193      8191    256     32      REF   PASS  4.484       0.599       
+webvfy  webvfy_1        tiled_c   8193      8191    256     32      REF   PASS  3.248       0.410       
+webvfy  webvfy_1        bstride   8193      8191    256     32      REF   PASS  4.254       0.542       
+webvfy  webvfy_1        bstride_c 8193      8191    256     32      REF   PASS  2.523       0.276       
+webvfy  webvfy_2        basic     16385     8191    256     32      REF   PASS  6.061       0.805       
+webvfy  webvfy_2        basic_c   16385     8191    256     32      REF   PASS  5.182       0.735       
+webvfy  webvfy_2        tiled     16385     8191    256     32      REF   PASS  6.709       0.979       
+webvfy  webvfy_2        tiled_c   16385     8191    256     32      REF   PASS  4.805       0.662       
+webvfy  webvfy_2        bstride   16385     8191    256     32      REF   PASS  6.452       0.905       
+webvfy  webvfy_2        bstride_c 16385     8191    256     32      REF   PASS  3.697       0.459       
+scale   scale_verify    basic     4097      383     64      8       REF   PASS  1.393       0.098       
+scale   scale_verify    basic_c   4097      383     64      8       REF   PASS  1.317       0.105       
+scale   scale_verify    tiled     4097      383     64      8       REF   PASS  1.246       0.101       
+scale   scale_verify    tiled_c   4097      383     64      8       REF   PASS  1.234       0.089       
+scale   scale_verify    bstride   4097      383     64      8       REF   PASS  0.986       0.057       
+scale   scale_verify    bstride_c 4097      383     64      8       REF   PASS  0.814       0.043       
+scale   scale_verify    basic     4097      383     64      16      REF   PASS  0.972       0.054       
+scale   scale_verify    basic_c   4097      383     64      16      REF   PASS  1.001       0.058       
+scale   scale_verify    tiled     4097      383     64      16      REF   PASS  0.879       0.058       
+scale   scale_verify    tiled_c   4097      383     64      16      REF   PASS  0.888       0.050       
+scale   scale_verify    bstride   4097      383     64      16      REF   PASS  0.815       0.031       
+scale   scale_verify    bstride_c 4097      383     64      16      REF   PASS  0.807       0.026       
+scale   scale_verify    basic     4097      383     64      32      REF   PASS  0.935       0.034       
+scale   scale_verify    basic_c   4097      383     64      32      REF   PASS  0.775       0.035       
+scale   scale_verify    tiled     4097      383     64      32      REF   PASS  0.886       0.039       
+scale   scale_verify    tiled_c   4097      383     64      32      REF   PASS  0.868       0.032       
+scale   scale_verify    bstride   4097      383     64      32      REF   PASS  0.702       0.023       
+scale   scale_verify    bstride_c 4097      383     64      32      REF   PASS  0.625       0.017       
+scale   scale_verify    basic     4097      383     64      64      REF   PASS  0.639       0.022       
+scale   scale_verify    basic_c   4097      383     64      64      REF   PASS  0.620       0.022       
+scale   scale_verify    tiled     4097      383     64      64      REF   PASS  0.728       0.026       
+scale   scale_verify    tiled_c   4097      383     64      64      REF   PASS  0.680       0.023       
+scale   scale_verify    bstride   4097      383     64      64      REF   PASS  0.636       0.018       
+scale   scale_verify    bstride_c 4097      383     64      64      REF   PASS  0.666       0.014       
+scale   scale_verify    basic     4097      383     64      128     REF   PASS  0.600       0.017       
+scale   scale_verify    basic_c   4097      383     64      128     REF   PASS  0.619       0.019       
+scale   scale_verify    tiled     4097      383     64      128     REF   PASS  1.180       0.019       
+scale   scale_verify    tiled_c   4097      383     64      128     REF   PASS  0.634       0.015       
+scale   scale_verify    bstride   4097      383     64      128     REF   PASS  0.647       0.015       
+scale   scale_verify    bstride_c 4097      383     64      128     REF   PASS  0.573       0.011       
+scale   scale_verify    basic     4097      383     128     8       REF   PASS  0.855       0.055       
+scale   scale_verify    basic_c   4097      383     128     8       REF   PASS  0.892       0.058       
+scale   scale_verify    tiled     4097      383     128     8       REF   PASS  0.905       0.063       
+scale   scale_verify    tiled_c   4097      383     128     8       REF   PASS  1.142       0.052       
+scale   scale_verify    bstride   4097      383     128     8       REF   PASS  0.726       0.037       
+scale   scale_verify    bstride_c 4097      383     128     8       REF   PASS  0.686       0.029       
+scale   scale_verify    basic     4097      383     128     16      REF   PASS  0.704       0.033       
+scale   scale_verify    basic_c   4097      383     128     16      REF   PASS  0.749       0.035       
+scale   scale_verify    tiled     4097      383     128     16      REF   PASS  0.788       0.039       
+scale   scale_verify    tiled_c   4097      383     128     16      REF   PASS  0.703       0.033       
+scale   scale_verify    bstride   4097      383     128     16      REF   PASS  0.683       0.025       
+scale   scale_verify    bstride_c 4097      383     128     16      REF   PASS  0.621       0.019       
+scale   scale_verify    basic     4097      383     128     32      REF   PASS  0.653       0.040       
+scale   scale_verify    basic_c   4097      383     128     32      REF   PASS  0.586       0.024       
+scale   scale_verify    tiled     4097      383     128     32      REF   PASS  0.795       0.029       
+scale   scale_verify    tiled_c   4097      383     128     32      REF   PASS  1.265       0.065       
+scale   scale_verify    bstride   4097      383     128     32      REF   PASS  0.861       0.018       
+scale   scale_verify    bstride_c 4097      383     128     32      REF   PASS  0.695       0.014       
+scale   scale_verify    basic     4097      383     128     64      REF   PASS  0.681       0.017       
+scale   scale_verify    basic_c   4097      383     128     64      REF   PASS  0.764       0.018       
+scale   scale_verify    tiled     4097      383     128     64      REF   PASS  0.798       0.020       
+scale   scale_verify    tiled_c   4097      383     128     64      REF   PASS  0.697       0.016       
+scale   scale_verify    bstride   4097      383     128     64      REF   PASS  0.663       0.014       
+scale   scale_verify    bstride_c 4097      383     128     64      REF   PASS  0.666       0.010       
+scale   scale_verify    basic     4097      383     128     128     REF   PASS  0.629       0.017       
+scale   scale_verify    basic_c   4097      383     128     128     REF   PASS  0.687       0.018       
+scale   scale_verify    tiled     4097      383     128     128     REF   PASS  0.688       0.019       
+scale   scale_verify    tiled_c   4097      383     128     128     REF   PASS  0.606       0.015       
+scale   scale_verify    bstride   4097      383     128     128     REF   PASS  0.629       0.014       
+scale   scale_verify    bstride_c 4097      383     128     128     REF   PASS  0.642       0.011       
+scale   scale_verify    basic     4097      383     256     8       REF   PASS  0.734       0.033       
+scale   scale_verify    basic_c   4097      383     256     8       REF   PASS  0.847       0.034       
+scale   scale_verify    tiled     4097      383     256     8       REF   PASS  0.946       0.044       
+scale   scale_verify    tiled_c   4097      383     256     8       REF   PASS  1.211       0.036       
+scale   scale_verify    bstride   4097      383     256     8       REF   PASS  1.119       0.036       
+scale   scale_verify    bstride_c 4097      383     256     8       REF   PASS  0.688       0.020       
+scale   scale_verify    basic     4097      383     256     16      REF   PASS  0.911       0.026       
+scale   scale_verify    basic_c   4097      383     256     16      REF   PASS  0.697       0.025       
+scale   scale_verify    tiled     4097      383     256     16      REF   PASS  0.723       0.029       
+scale   scale_verify    tiled_c   4097      383     256     16      REF   PASS  0.758       0.024       
+scale   scale_verify    bstride   4097      383     256     16      REF   PASS  0.780       0.038       
+scale   scale_verify    bstride_c 4097      383     256     16      REF   PASS  0.713       0.016       
+scale   scale_verify    basic     4097      383     256     32      REF   PASS  0.648       0.017       
+scale   scale_verify    basic_c   4097      383     256     32      REF   PASS  0.855       0.034       
+scale   scale_verify    tiled     4097      383     256     32      REF   PASS  0.641       0.020       
+scale   scale_verify    tiled_c   4097      383     256     32      REF   PASS  0.779       0.017       
+scale   scale_verify    bstride   4097      383     256     32      REF   PASS  0.708       0.015       
+scale   scale_verify    bstride_c 4097      383     256     32      REF   PASS  0.691       0.011       
+scale   scale_verify    basic     4097      383     256     64      REF   PASS  0.920       0.025       
+scale   scale_verify    basic_c   4097      383     256     64      REF   PASS  0.858       0.023       
+scale   scale_verify    tiled     4097      383     256     64      REF   PASS  0.773       0.027       
+scale   scale_verify    tiled_c   4097      383     256     64      REF   PASS  0.739       0.018       
+scale   scale_verify    bstride   4097      383     256     64      REF   PASS  0.665       0.023       
+scale   scale_verify    bstride_c 4097      383     256     64      REF   PASS  0.635       0.014       
+scale   scale_verify    basic     4097      383     256     128     REF   PASS  0.705       0.025       
+scale   scale_verify    basic_c   4097      383     256     128     REF   PASS  0.761       0.023       
+scale   scale_verify    tiled     4097      383     256     128     REF   PASS  0.697       0.027       
+scale   scale_verify    tiled_c   4097      383     256     128     REF   PASS  0.630       0.018       
+scale   scale_verify    bstride   4097      383     256     128     REF   PASS  0.649       0.023       
+scale   scale_verify    bstride_c 4097      383     256     128     REF   PASS  0.684       0.030       
+scale   scale_verify    basic     4097      383     512     8       REF   PASS  0.745       0.031       
+scale   scale_verify    basic_c   4097      383     512     8       REF   PASS  0.751       0.029       
+scale   scale_verify    tiled     4097      383     512     8       REF   PASS  0.784       0.036       
+scale   scale_verify    tiled_c   4097      383     512     8       REF   PASS  0.673       0.027       
+scale   scale_verify    bstride   4097      383     512     8       REF   PASS  0.743       0.039       
+scale   scale_verify    bstride_c 4097      383     512     8       REF   PASS  0.666       0.024       
+scale   scale_verify    basic     4097      383     512     16      REF   PASS  0.696       0.023       
+scale   scale_verify    basic_c   4097      383     512     16      REF   PASS  0.707       0.021       
+scale   scale_verify    tiled     4097      383     512     16      REF   PASS  0.705       0.029       
+scale   scale_verify    tiled_c   4097      383     512     16      REF   PASS  0.680       0.020       
+scale   scale_verify    bstride   4097      383     512     16      REF   PASS  0.726       0.023       
+scale   scale_verify    bstride_c 4097      383     512     16      REF   PASS  0.705       0.014       
+scale   scale_verify    basic     4097      383     512     32      REF   PASS  0.826       0.024       
+scale   scale_verify    basic_c   4097      383     512     32      REF   PASS  0.949       0.022       
+scale   scale_verify    tiled     4097      383     512     32      REF   PASS  0.753       0.030       
+scale   scale_verify    tiled_c   4097      383     512     32      REF   PASS  0.711       0.020       
+scale   scale_verify    bstride   4097      383     512     32      REF   PASS  0.701       0.023       
+scale   scale_verify    bstride_c 4097      383     512     32      REF   PASS  0.727       0.014       
+scale   scale_verify    basic     4097      383     512     64      REF   PASS  0.872       0.039       
+scale   scale_verify    basic_c   4097      383     512     64      REF   PASS  0.836       0.034       
+scale   scale_verify    tiled     4097      383     512     64      REF   PASS  0.894       0.043       
+scale   scale_verify    tiled_c   4097      383     512     64      REF   PASS  0.718       0.028       
+scale   scale_verify    bstride   4097      383     512     64      REF   PASS  0.893       0.040       
+scale   scale_verify    bstride_c 4097      383     512     64      REF   PASS  0.866       0.023       
+scale   scale_verify    basic     4097      383     512     128     REF   PASS  1.025       0.040       
+scale   scale_verify    basic_c   4097      383     512     128     REF   PASS  0.740       0.034       
+scale   scale_verify    tiled     4097      383     512     128     REF   PASS  0.848       0.044       
+scale   scale_verify    tiled_c   4097      383     512     128     REF   PASS  0.718       0.028       
+scale   scale_verify    bstride   4097      383     512     128     REF   PASS  0.779       0.039       
+scale   scale_verify    bstride_c 4097      383     512     128     REF   PASS  1.074       0.023       
 
 Scaling Heatmaps (kernel_ms, lower is better)
 ============================================================
 
-scale_verify / basic  best=(128,64) 0.017 ms
-block\grid8         16        32        64        128
-64        0.097     0.054     0.033     0.024     0.022
-128       0.055     0.034     0.024     0.017     0.017
-256       0.033     0.025     0.017     0.024     0.024
-512       0.031     0.026     0.023     0.039     0.039
+scale_verify / basic  best=(64,128) 0.017 ms
+block\grid8         16        32        64        128       
+64        0.098     0.054     0.034     0.022     0.017     
+128       0.055     0.033     0.040     0.017     0.017     
+256       0.033     0.026     0.017     0.025     0.025     
+512       0.031     0.023     0.024     0.039     0.040     
 
 scale_verify / basic_c  best=(128,64) 0.018 ms
-block\grid8         16        32        64        128
-64        0.105     0.058     0.035     0.024     0.019
-128       0.058     0.035     0.024     0.018     0.040
-256       0.033     0.024     0.041     0.024     0.023
-512       0.029     0.022     0.049     0.034     0.050
+block\grid8         16        32        64        128       
+64        0.105     0.058     0.035     0.022     0.019     
+128       0.058     0.035     0.024     0.018     0.018     
+256       0.034     0.025     0.034     0.023     0.023     
+512       0.029     0.021     0.022     0.034     0.034     
 
-scale_verify / tiled  best=(128,128) 0.019 ms
-block\grid8         16        32        64        128
-64        0.101     0.058     0.038     0.028     0.020
-128       0.062     0.039     0.028     0.024     0.019
-256       0.043     0.029     0.020     0.028     0.028
-512       0.037     0.028     0.053     0.044     0.044
+scale_verify / tiled  best=(64,128) 0.019 ms
+block\grid8         16        32        64        128       
+64        0.101     0.058     0.039     0.026     0.019     
+128       0.063     0.039     0.029     0.020     0.019     
+256       0.044     0.029     0.020     0.027     0.027     
+512       0.036     0.029     0.030     0.043     0.044     
 
-scale_verify / tiled_c  best=(256,32) 0.016 ms
-block\grid8         16        32        64        128
-64        0.088     0.050     0.032     0.038     0.017
-128       0.051     0.032     0.024     0.040     0.039
-256       0.035     0.023     0.016     0.018     0.018
-512       0.027     0.020     0.020     0.027     0.028
+scale_verify / tiled_c  best=(64,128) 0.015 ms
+block\grid8         16        32        64        128       
+64        0.089     0.050     0.032     0.023     0.015     
+128       0.052     0.033     0.065     0.016     0.015     
+256       0.036     0.024     0.017     0.018     0.018     
+512       0.027     0.020     0.020     0.028     0.028     
 
-scale_verify / bstride  best=(64,128) 0.014 ms
-block\grid8         16        32        64        128
-64        0.052     0.030     0.024     0.042     0.014
-128       0.035     0.025     0.018     0.014     0.014
-256       0.032     0.023     0.014     0.024     0.023
-512       0.039     0.023     0.024     0.039     0.040
+scale_verify / bstride  best=(128,64) 0.014 ms
+block\grid8         16        32        64        128       
+64        0.057     0.031     0.023     0.018     0.015     
+128       0.037     0.025     0.018     0.014     0.014     
+256       0.036     0.038     0.015     0.023     0.023     
+512       0.039     0.023     0.023     0.040     0.039     
 
-scale_verify / bstride_c  best=(64,128) 0.010 ms
-block\grid8         16        32        64        128
-64        0.043     0.026     0.042     0.014     0.010
-128       0.028     0.041     0.039     0.025     0.010
-256       0.023     0.039     0.010     0.014     0.014
-512       0.023     0.014     0.040     0.024     0.024
+scale_verify / bstride_c  best=(128,64) 0.010 ms
+block\grid8         16        32        64        128       
+64        0.043     0.026     0.017     0.014     0.011     
+128       0.029     0.019     0.014     0.010     0.011     
+256       0.020     0.016     0.011     0.014     0.030     
+512       0.024     0.014     0.014     0.023     0.023     

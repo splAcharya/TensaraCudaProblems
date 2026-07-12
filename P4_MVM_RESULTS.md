@@ -1,5 +1,18 @@
 # `P4_MVM.cu` Results
 
+## At a Glance
+
+- Recommendation: `warp_per_row`.
+- Correctness: all 186 current CPU-backed rows pass.
+- Performance: wins 49 of 56 comparable current benchmark table rows.
+- Status: current raw logs; benchmark rows remain unverified.
+
+Current skip-CPU evidence has 24 exact checked rows and 1,032 benchmark-only
+rows. `warp_per_row` wins all five published Tensara rows.
+
+Benchmark-only rows are timing evidence, not correctness evidence. See the
+[repository index](RESULTS_INDEX.md) for cross-problem status.
+
 Updated from regenerated local logs:
 
 - CPU-backed correctness run: [p4_with_cpu.txt](p4_with_cpu.txt)
@@ -44,11 +57,9 @@ From [p4_skip_cpu.txt](p4_skip_cpu.txt):
 
 From [p4_skip_cpu.txt](p4_skip_cpu.txt):
 
-- Across all comparable skip-CPU configurations, `warp_per_row` wins `132`
-  of `180`; `constant_b` wins `23`; `warp` wins `13`; `basic` wins `1`;
-  `11` are ties.
-- Across default-launch non-scale rows, `warp_per_row` wins `8` of `20`;
-  `warp` wins `6`; `6` are ties.
+- Across comparable table rows, `warp_per_row` wins `49` of `56`; `warp`
+  wins `3`; `constant_b` wins `2`; `2` are ties.
+- Across published Tensara rows, `warp_per_row` wins `5` of `5`.
 - `warp_per_row` is still the strongest overall direction, with `warp`
   close on the published `k=4096` rows.
 
@@ -57,38 +68,38 @@ From [p4_skip_cpu.txt](p4_skip_cpu.txt):
 Published-size benchmark rows:
 
 - `tensara_1`: `4096 x 4096`
-  - default best: `warp_per_row = 0.362 ms`
-  - scale best: `warp_per_row = 0.362 ms` at `(128, 128)`
+  - default best: `warp_per_row = 0.365 ms`
+  - scale best: `warp_per_row = 0.364 ms` at `(128, 128)`
 - `tensara_2`: `6144 x 4096`
-  - default best: `warp_per_row = 0.541 ms`
-  - scale best: `warp_per_row = 0.542 ms` at `(128, 128)`
+  - default best: `warp_per_row = 0.543 ms`
+  - scale best: `warp_per_row = 0.542 ms` at `(256, 64)`
 - `tensara_3`: `7168 x 4096`
   - default best: `warp_per_row = 0.634 ms`
-  - scale best: `warp_per_row = 0.632 ms` at `(256, 64)`
+  - scale best: `warp_per_row = 0.632 ms` at `(128, 128)`
 - `tensara_4`: `8192 x 4096`
   - default best: `warp_per_row = 0.722 ms`
-  - scale best: `warp_per_row = 0.721 ms` at `(128, 128)`
+  - scale best: `warp_per_row = 0.722 ms` at `(512, 32)`
 - `tensara_5`: `9216 x 4096`
-  - default best: `warp_per_row = 0.811 ms`
-  - scale best: `warp_per_row = 0.810 ms` at `(128, 128)`
+  - default best: `warp_per_row = 0.812 ms`
+  - scale best: `warp_per_row = 0.812 ms` at `(512, 32)`
 
 Default-launch `kernel_ms` by variant:
 
-- `tensara_1`: `basic 1.482`, `constant_b 1.089`,
-  `shared_ab 2.473`, `warp 0.366`, `warp_const_b 1.880`,
-  `warp_per_row 0.362`
-- `tensara_2`: `basic 1.535`, `constant_b 1.510`,
-  `shared_ab 3.680`, `warp 0.547`, `warp_const_b 2.828`,
-  `warp_per_row 0.541`
-- `tensara_3`: `basic 1.893`, `constant_b 1.730`,
-  `shared_ab 4.289`, `warp 0.637`, `warp_const_b 3.280`,
+- `tensara_1`: `basic 1.128`, `constant_b 1.090`,
+  `shared_ab 2.451`, `warp 0.393`, `warp_const_b 1.912`,
+  `warp_per_row 0.365`
+- `tensara_2`: `basic 1.533`, `constant_b 1.516`,
+  `shared_ab 3.674`, `warp 0.546`, `warp_const_b 2.822`,
+  `warp_per_row 0.543`
+- `tensara_3`: `basic 1.859`, `constant_b 1.733`,
+  `shared_ab 4.292`, `warp 0.636`, `warp_const_b 3.309`,
   `warp_per_row 0.634`
-- `tensara_4`: `basic 2.088`, `constant_b 1.979`,
-  `shared_ab 4.901`, `warp 0.726`, `warp_const_b 3.748`,
+- `tensara_4`: `basic 2.064`, `constant_b 1.960`,
+  `shared_ab 4.913`, `warp 0.726`, `warp_const_b 3.789`,
   `warp_per_row 0.722`
-- `tensara_5`: `basic 2.293`, `constant_b 2.212`,
-  `shared_ab 5.516`, `warp 0.815`, `warp_const_b 4.214`,
-  `warp_per_row 0.811`
+- `tensara_5`: `basic 2.269`, `constant_b 2.204`,
+  `shared_ab 5.512`, `warp 0.815`, `warp_const_b 4.229`,
+  `warp_per_row 0.812`
 
 ## Notes
 

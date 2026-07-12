@@ -1,5 +1,18 @@
 # `P8_SIGMOID.cu` Results
 
+## At a Glance
+
+- Recommendation: `float4`.
+- Correctness: all 16 current CPU-backed rows pass.
+- Performance: wins all 7 comparable current benchmark table rows.
+- Status: current raw logs; benchmark rows remain unverified.
+
+Current skip-CPU evidence has 4 exact checked rows and 10 benchmark-only rows.
+`float4` wins all five published Tensara rows.
+
+Benchmark-only rows are timing evidence, not correctness evidence. See the
+[repository index](RESULTS_INDEX.md) for cross-problem status.
+
 Updated from regenerated local logs:
 
 - CPU-backed correctness run: [p8_with_cpu.txt](p8_with_cpu.txt)
@@ -48,23 +61,23 @@ From [p8_skip_cpu.txt](p8_skip_cpu.txt):
 Published-size benchmark rows:
 
 - `tensara_1`: `4096 x 4096`
-  - default best: `float4 = 0.757 ms`
+  - default best: `float4 = 0.756 ms`
 - `tensara_2`: `6144 x 4096`
-  - default best: `float4 = 1.132 ms`
+  - default best: `float4 = 1.137 ms`
 - `tensara_3`: `4096 x 7168`
-  - default best: `float4 = 1.317 ms`
+  - default best: `float4 = 1.321 ms`
 - `tensara_4`: `4096 x 8192`
-  - default best: `float4 = 1.510 ms`
+  - default best: `float4 = 1.508 ms`
 - `tensara_5`: `8192 x 8192`
-  - default best: `float4 = 3.019 ms`
+  - default best: `float4 = 3.017 ms`
 
 Default-launch `kernel_ms` by variant:
 
-- `tensara_1`: `basic 0.806`, `float4 0.757`
-- `tensara_2`: `basic 1.210`, `float4 1.132`
-- `tensara_3`: `basic 1.405`, `float4 1.317`
-- `tensara_4`: `basic 1.604`, `float4 1.510`
-- `tensara_5`: `basic 3.230`, `float4 3.019`
+- `tensara_1`: `basic 0.807`, `float4 0.756`
+- `tensara_2`: `basic 1.199`, `float4 1.137`
+- `tensara_3`: `basic 1.405`, `float4 1.321`
+- `tensara_4`: `basic 1.597`, `float4 1.508`
+- `tensara_5`: `basic 3.229`, `float4 3.017`
 
 ## Notes
 
