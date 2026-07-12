@@ -316,9 +316,69 @@ __global__ void rms_norm_basic_kernel(
   }
 }
 
+// Float4 GPU kernel implementation.
+//
+// X: device pointer to row-major matrix with shape (B, N)
+// Y: device pointer to row-major matrix with shape (B, N)
+// B: batch size / row count
+// N: feature count / column count
+// Each thread computes one output and uses scalar prefix/tail elements
+// around aligned float4 loads when accumulating the row RMS.
 __global__ void rms_norm_float4_kernel(const float* X, float* Y,
-                                       size_t B, size_t N) {
-  
+                                       size_t B, size_t N)                                        
+{
+  size_t total = B * N;
+  size_t gix   = (blockIdx.x * blockDim.x) + threadIdx.x;
+  size_t total_threads = (blockDim.x * gridDim.x); //i.e grid stride
+
+  for (size_t gx = gix; gx < total; gx += total_threads)
+  {
+    //determine row idx
+    size_t row_pos = gx / N;
+    size_t col_pos = gx % N;
+
+    //determine scalar prefix
+    size_t pos_in_f4     = (row_pos * N) % 4;  
+    size_t prefix_count  = (4 - pos_in_f4) % 4;
+
+    //determine vector chunks
+    size_t vector_remain = N - prefix_count;
+    size_t vector_count  = vector_remain / 4;
+
+    //determine scalar tail
+    size_t tail_start = prefix_count + (vector_count * 4);
+
+    //process scalar prefix
+    float sum_sq = 0.0f;
+    for (size_t col = 0; col < prefix_count; ++col)
+    {
+      const float temp_x = X[row_pos * N + col];
+      sum_sq += (temp_x * temp_x);
+    }
+
+    //process float 4 chunks
+    const float4 *X4 = reinterpret_cast<const float4 *>(&(X[row_pos * N + prefix_count]));
+    for (size_t col = 0; col < vector_count; ++col)
+    {
+      const float4 temp_x = X4[col];
+      sum_sq += (temp_x.x * temp_x.x);
+      sum_sq += (temp_x.y * temp_x.y);
+      sum_sq += (temp_x.z * temp_x.z);
+      sum_sq += (temp_x.w * temp_x.w);
+    }
+
+    //process scalar tail
+    for (size_t col = tail_start; col < N; ++col)
+    {
+      const float temp_x  = X[row_pos * N + col];
+      sum_sq             += (temp_x * temp_x); 
+    }
+
+    //compute rms norm
+    float mean_sq    = sum_sq / N;
+    float rms        = std::sqrt(mean_sq + 1e-5f);
+    Y[gx]            = X[gx] / rms;
+  }
 }
 
 // Shared-memory GPU kernel implementation.
