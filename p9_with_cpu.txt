@@ -4,31 +4,52 @@ GPU kernel implemented: yes
 
 group   name              kernel      rows      cols      block_x grid_x  cpu   gpu   total_ms    kernel_ms   
 --------------------------------------------------------------------------------------------------------------
-small   sample_2x4        basic       2         4         256     64      PASS  PASS  9.386       0.054       
-small   tail_2x3          basic       2         3         256     64      PASS  PASS  0.776       0.006       
-medium  medium_1          basic       8         8         256     64      REF   PASS  0.585       0.005       
-medium  medium_rect       basic       17        33        256     64      REF   PASS  0.610       0.006       
-medium  medium_tail       basic       31        65        256     64      REF   PASS  0.603       0.007       
-large   large_1           basic       257       513       256     64      REF   PASS  2.237       0.205       
-large   large_2           basic       511       1025      256     64      REF   PASS  13.174      1.627       
-small   sample_2x4        float4      2         4         256     64      PASS  PASS  1.112       0.036       
-small   tail_2x3          float4      2         3         256     64      PASS  PASS  0.689       0.006       
-medium  medium_1          float4      8         8         256     64      REF   PASS  0.905       0.037       
-medium  medium_rect       float4      17        33        256     64      REF   PASS  0.713       0.006       
-medium  medium_tail       float4      31        65        256     64      REF   PASS  0.888       0.007       
-large   large_1           float4      257       513       256     64      REF   PASS  1.736       0.120       
-large   large_2           float4      511       1025      256     64      REF   PASS  7.263       0.843       
-small   sample_2x4        shared_mem  2         4         256     64      PASS  PASS  1.083       0.007       
-small   tail_2x3          shared_mem  2         3         256     64      PASS  PASS  1.351       0.061       
-medium  medium_1          shared_mem  8         8         256     64      REF   PASS  0.801       0.006       
-medium  medium_rect       shared_mem  17        33        256     64      REF   PASS  0.590       0.006       
-medium  medium_tail       shared_mem  31        65        256     64      REF   PASS  0.919       0.006       
-large   large_1           shared_mem  257       513       256     64      REF   PASS  1.016       0.015       
-large   large_2           shared_mem  511       1025      256     64      REF   PASS  2.737       0.054       
-small   sample_2x4        warp        2         4         256     64      PASS  PASS  1.352       0.047       
-small   tail_2x3          warp        2         3         256     64      PASS  PASS  1.083       0.048       
-medium  medium_1          warp        8         8         256     64      REF   PASS  0.816       0.006       
-medium  medium_rect       warp        17        33        256     64      REF   PASS  0.576       0.006       
-medium  medium_tail       warp        31        65        256     64      REF   PASS  0.573       0.006       
-large   large_1           warp        257       513       256     64      REF   PASS  0.744       0.010       
-large   large_2           warp        511       1025      256     64      REF   PASS  2.029       0.044       
+small   sample_2x4        basic       2         4         256     64      PASS  PASS  4.009       0.027       
+small   tail_2x3          basic       2         3         256     64      PASS  PASS  0.969       0.048       
+medium  medium_1          basic       8         8         256     64      REF   PASS  0.514       0.005       
+medium  medium_rect       basic       17        33        256     64      REF   PASS  1.015       0.006       
+medium  medium_tail       basic       31        65        256     64      REF   PASS  0.513       0.007       
+large   large_1           basic       257       513       256     64      REF   PASS  1.958       0.206       
+large   large_2           basic       511       1025      256     64      REF   PASS  11.682      1.652       
+small   sample_2x4        float4      2         4         256     64      PASS  PASS  1.410       0.005       
+small   tail_2x3          float4      2         3         256     64      PASS  PASS  0.696       0.006       
+medium  medium_1          float4      8         8         256     64      REF   PASS  0.643       0.005       
+medium  medium_rect       float4      17        33        256     64      REF   PASS  0.571       0.007       
+medium  medium_tail       float4      31        65        256     64      REF   PASS  0.626       0.007       
+large   large_1           float4      257       513       256     64      REF   PASS  1.481       0.120       
+large   large_2           float4      511       1025      256     64      REF   PASS  6.653       0.842       
+small   sample_2x4        float4_store2         4         256     64      PASS  PASS  0.950       0.005       
+small   tail_2x3          float4_store2         3         256     64      PASS  PASS  0.705       0.006       
+medium  medium_1          float4_store8         8         256     64      REF   PASS  0.552       0.006       
+medium  medium_rect       float4_store17        33        256     64      REF   PASS  0.516       0.006       
+medium  medium_tail       float4_store31        65        256     64      REF   PASS  0.534       0.007       
+large   large_1           float4_store257       513       256     64      REF   PASS  1.650       0.118       
+large   large_2           float4_store511       1025      256     64      REF   PASS  7.159       0.877       
+small   sample_2x4        shared_mem  2         4         256     64      PASS  PASS  1.013       0.026       
+small   tail_2x3          shared_mem  2         3         256     64      PASS  PASS  0.544       0.006       
+medium  medium_1          shared_mem  8         8         256     64      REF   PASS  0.706       0.026       
+medium  medium_rect       shared_mem  17        33        256     64      REF   PASS  0.462       0.007       
+medium  medium_tail       shared_mem  31        65        256     64      REF   PASS  0.528       0.007       
+large   large_1           shared_mem  257       513       256     64      REF   PASS  1.201       0.015       
+large   large_2           shared_mem  511       1025      256     64      REF   PASS  1.945       0.039       
+small   sample_2x4        shared_mem_float42         4         256     64      PASS  PASS  0.837       0.007       
+small   tail_2x3          shared_mem_float42         3         256     64      PASS  PASS  0.644       0.006       
+medium  medium_1          shared_mem_float48         8         256     64      REF   PASS  0.539       0.006       
+medium  medium_rect       shared_mem_float417        33        256     64      REF   PASS  0.939       0.048       
+medium  medium_tail       shared_mem_float431        65        256     64      REF   PASS  0.473       0.007       
+large   large_1           shared_mem_float4257       513       256     64      REF   PASS  0.870       0.015       
+large   large_2           shared_mem_float4511       1025      256     64      REF   PASS  2.064       0.033       
+small   sample_2x4        shared_mem_float4_store2         4         256     64      PASS  PASS  1.058       0.006       
+small   tail_2x3          shared_mem_float4_store2         3         256     64      PASS  PASS  0.607       0.006       
+medium  medium_1          shared_mem_float4_store8         8         256     64      REF   PASS  0.573       0.006       
+medium  medium_rect       shared_mem_float4_store17        33        256     64      REF   PASS  0.466       0.007       
+medium  medium_tail       shared_mem_float4_store31        65        256     64      REF   PASS  0.916       0.046       
+large   large_1           shared_mem_float4_store257       513       256     64      REF   PASS  0.923       0.013       
+large   large_2           shared_mem_float4_store511       1025      256     64      REF   PASS  1.861       0.032       
+small   sample_2x4        warp        2         4         256     64      PASS  PASS  1.703       0.050       
+small   tail_2x3          warp        2         3         256     64      PASS  PASS  0.596       0.005       
+medium  medium_1          warp        8         8         256     64      REF   PASS  0.566       0.006       
+medium  medium_rect       warp        17        33        256     64      REF   PASS  0.530       0.006       
+medium  medium_tail       warp        31        65        256     64      REF   PASS  0.498       0.006       
+large   large_1           warp        257       513       256     64      REF   PASS  0.944       0.010       
+large   large_2           warp        511       1025      256     64      REF   PASS  2.277       0.043       

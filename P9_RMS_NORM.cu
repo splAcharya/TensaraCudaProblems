@@ -69,7 +69,10 @@ struct LaunchConfig {
 enum class KernelVariant {
   kBasic,
   kFloat4,
+  kFloat4Store,
   kSharedMem,
+  kSharedMemFloat4,
+  kSharedMemFloat4Store,
   kWarp,
 };
 
@@ -91,8 +94,14 @@ static const char* current_kernel_name() {
       return "basic";
     case KernelVariant::kFloat4:
       return "float4";
+    case KernelVariant::kFloat4Store:
+      return "float4_store";
     case KernelVariant::kSharedMem:
       return "shared_mem";
+    case KernelVariant::kSharedMemFloat4:
+      return "shared_mem_float4";
+    case KernelVariant::kSharedMemFloat4Store:
+      return "shared_mem_float4_store";
     case KernelVariant::kWarp:
       return "warp";
   }
@@ -138,8 +147,23 @@ static bool parse_kernel_arg(const std::string& arg) {
     g_kernel_arg_set = true;
     return true;
   }
+  if (value == "float4_store") {
+    g_kernel_variant = KernelVariant::kFloat4Store;
+    g_kernel_arg_set = true;
+    return true;
+  }
   if (value == "shared_mem") {
     g_kernel_variant = KernelVariant::kSharedMem;
+    g_kernel_arg_set = true;
+    return true;
+  }
+  if (value == "shared_mem_float4") {
+    g_kernel_variant = KernelVariant::kSharedMemFloat4;
+    g_kernel_arg_set = true;
+    return true;
+  }
+  if (value == "shared_mem_float4_store") {
+    g_kernel_variant = KernelVariant::kSharedMemFloat4Store;
     g_kernel_arg_set = true;
     return true;
   }
@@ -151,7 +175,9 @@ static bool parse_kernel_arg(const std::string& arg) {
 
   std::cerr << "Unknown kernel: " << value
             << " (use --kernel=basic, --kernel=float4, "
-            << "--kernel=shared_mem, or --kernel=warp)\n";
+            << "--kernel=float4_store, --kernel=shared_mem, "
+            << "--kernel=shared_mem_float4, "
+            << "--kernel=shared_mem_float4_store, or --kernel=warp)\n";
   return false;
 }
 
@@ -311,7 +337,7 @@ __global__ void rms_norm_basic_kernel(
     }
 
     float mean_sq = sum_sq / N;
-    float rms = std::sqrt(mean_sq + 1e-5f);
+    float rms = sqrt(mean_sq + 1e-5f);
     Y[row * N + col] = X[row * N + col] / rms;
   }
 }
@@ -376,8 +402,92 @@ __global__ void rms_norm_float4_kernel(const float* X, float* Y,
 
     //compute rms norm
     float mean_sq    = sum_sq / N;
-    float rms        = std::sqrt(mean_sq + 1e-5f);
+    float rms        = sqrt(mean_sq + 1e-5f);
     Y[gx]            = X[gx] / rms;
+  }
+}
+
+// Float4 load/store GPU kernel stub.
+//
+// X: device pointer to row-major matrix with shape (B, N)
+// Y: device pointer to row-major matrix with shape (B, N)
+// B: batch size / row count
+// N: feature count / column count
+__global__ void rms_norm_float4_store_kernel(const float* X, float* Y,
+                                             size_t B, size_t N) {
+
+  size_t gix = (blockDim.x * blockIdx.x) + threadIdx.x;
+  size_t total  = B * N;
+  size_t total_threads = (blockDim.x * gridDim.x);
+
+  for (size_t gx = gix; gx < total; gx+= total_threads)
+  {
+    size_t row_pos = gx / N;
+    size_t col_pos = gx % N;
+    
+    //scalar prefix
+    size_t pos_in_f4    = (row_pos * N) % 4;
+    size_t prefix_count = (4 - pos_in_f4) % 4; 
+    float sum_sq        = 0.0f;
+    for (size_t col = 0; col < prefix_count; ++col)
+    {
+      const float temp_x = X[row_pos * N + col];
+      sum_sq             += (temp_x * temp_x); 
+    }
+
+    //float4 chunks
+    size_t remaining    = N - prefix_count;
+    size_t vector_count = remaining / 4;
+    size_t vector_sc = prefix_count;
+    size_t vector_ec = prefix_count + (vector_count * 4);
+    const float4 *X4 = reinterpret_cast<const float4 *>(&(X[row_pos * N + prefix_count]));
+    for (size_t col  = 0; col < vector_count; ++col)
+    {
+      const float4 temp_x = X4[col];
+      sum_sq              += (temp_x.x * temp_x.x);
+      sum_sq              += (temp_x.y * temp_x.y);
+      sum_sq              += (temp_x.z * temp_x.z);
+      sum_sq              += (temp_x.w * temp_x.w);
+    }
+
+    //process scalar tail
+    size_t tail_start = prefix_count + (vector_count * 4);
+    for (size_t col = tail_start; col < N; ++col)
+    {
+      const float temp_x = X[row_pos * N + col];
+      sum_sq             += (temp_x * temp_x);
+    }
+
+    //compute inverse rms norm
+    float mean_sq  = sum_sq / N;
+    float inv_rms  = 1.00f / sqrt(mean_sq + 1e-5f);
+
+    //compute results for self portion of output,
+    //thread position is already 1-1 to output,
+    //the thing is each thread will only update 
+    bool in_vector_range = (vector_sc <= col_pos) && (col_pos < vector_ec);
+    bool is_f4_leader    = (in_vector_range) && (((col_pos - prefix_count) % 4) == 0);
+    
+    //scalar prefix
+    if (col_pos < prefix_count)
+    {
+      Y[gx] = X[gx] * inv_rms;
+    }
+    //vector chunks
+    else if (is_f4_leader)
+    {
+      const float4 *X4 = reinterpret_cast<const float4 *>(&(X[row_pos * N + col_pos]));
+      float4 *Y4 = reinterpret_cast<float4 *>(&(Y[row_pos * N + col_pos]));
+      Y4[0].x = X4[0].x * inv_rms;
+      Y4[0].y = X4[0].y * inv_rms;
+      Y4[0].z = X4[0].z * inv_rms;
+      Y4[0].w = X4[0].w * inv_rms;
+    }
+    //scalar tail
+    else if (col_pos >= vector_ec)
+    {
+      Y[gx] = X[gx] * inv_rms;
+    }
   }
 }
 
@@ -428,7 +538,7 @@ __global__ void rms_norm_shared_mem_kernel(const float* X, float* Y,
     {
       float sum_sq = smem_tile[0];
       float mean_sq = sum_sq / N;
-      float inv_rms = 1.00f / std::sqrt(mean_sq + 1e-5f);
+      float inv_rms = 1.00f / sqrt(mean_sq + 1e-5f);
       smem_tile[0] = inv_rms;
     }
     __syncthreads();
@@ -439,9 +549,233 @@ __global__ void rms_norm_shared_mem_kernel(const float* X, float* Y,
       size_t flat_idx = bx * N + lx;
       Y[flat_idx] = X[flat_idx] * smem_tile[0];
     }
+
+    //wait to read all the smem_ar[0] results
+    __syncthreads();
   }
 }
 
+// Shared-memory float4 GPU kernel implementation.
+//
+// X: device pointer to row-major matrix with shape (B, N)
+// Y: device pointer to row-major matrix with shape (B, N)
+// B: batch size / row count
+// N: feature count / column count
+__global__ void rms_norm_shared_mem_float4_kernel(const float* X, float* Y,
+                                                  size_t B, size_t N) {
+
+  extern __shared__ float smem_ar[];
+  //each output block owns a row of output  
+  for (size_t bx = blockIdx.x; bx < B; bx += gridDim.x)
+  {
+    //clear memory
+    //if (threadIdx.x == 0)
+    //  memset(smem_ar, 0, blockDim.x * sizeof(float));
+    //instead have all thread clear 1 postiion of memory, 
+    //give shared memory size = blockdim.x
+    smem_ar[threadIdx.x] = 0.0f;
+    
+    //wait for memset to complete
+    __syncthreads();
+
+    //cooperatively load scalar prefix
+    size_t row_pos   = bx;
+    size_t pos_in_f4 = (row_pos * N) % 4;
+    size_t prefix_count = (4 - pos_in_f4) % 4;
+    for (size_t lx = threadIdx.x; lx < prefix_count; lx += blockDim.x)
+    {
+      //preifx start from 0 so no need to offset lx by anything
+      const float temp_x = X[row_pos * N + lx];
+      smem_ar[threadIdx.x] += (temp_x * temp_x);
+    }
+
+    //potentially skip syncthreads as, some of the first half 
+    //of the threads will participate in scalar loading,
+    //others are free to do their portion of float4 loading
+
+    //cooperatively load float4/vector portion;
+    size_t remaining = N - prefix_count;
+    size_t vector_count = remaining / 4;
+    const float4 *X4 = reinterpret_cast<const float4 *>(&(X[row_pos * N + prefix_count]));
+    for (size_t lx = threadIdx.x; lx < vector_count; lx += blockDim.x)
+    {
+      //agaqin, we reinterpret cast from specific location
+      //so no need to offset lx
+      float4 temp_x = X4[lx];
+      temp_x.x = (temp_x.x * temp_x.x);
+      temp_x.y = (temp_x.y * temp_x.y);
+      temp_x.z = (temp_x.z * temp_x.z);
+      temp_x.w = (temp_x.w * temp_x.w);
+      smem_ar[threadIdx.x] += (temp_x.x + temp_x.y + temp_x.z + temp_x.w);
+    }
+
+    //cooperatively load scalar tail
+    size_t tail_start = prefix_count + (vector_count * 4);
+    size_t load_start = tail_start + threadIdx.x;
+    for (size_t lx = load_start; lx < N; lx += blockDim.x)
+    {
+      const float temp_x = X[row_pos * N + lx];
+      smem_ar[threadIdx.x] += (temp_x * temp_x);
+    }
+
+    //now wait for all coperative loads to complete smem writes
+    __syncthreads();
+
+    //reduce sum across the block
+    for (size_t offset = blockDim.x / 2; offset > 0; offset /= 2)
+    {
+      //each time reduce block participants by half
+      if (threadIdx.x < offset)
+        smem_ar[threadIdx.x] += smem_ar[threadIdx.x + offset];
+
+      //wait for current batch of smem reads and writes to complete
+      __syncthreads();
+    }
+
+    //compaute inverse rms only on the thread that is holding the
+    //result of reduction
+    if (threadIdx.x == 0)
+    {
+      float sum_sq  = smem_ar[0];
+      float mean_sq = sum_sq / N;
+      float inv_rms = 1.00f / sqrt(mean_sq + 1e-5f);
+      smem_ar[0] = inv_rms;
+    }
+
+    //wait for smem reduction to complete inclduing inverser rms
+    __syncthreads();
+   
+    //compte final rms norm
+    for (size_t lx = threadIdx.x; lx < N; lx += blockDim.x)
+    {
+      size_t flat_idx = row_pos * N + lx;
+      Y[flat_idx] = X[flat_idx] * smem_ar[0];
+    }
+
+    //wait to read all the smem_ar[0] results
+    __syncthreads();
+  }
+}
+
+// Shared-memory float4 load/store GPU kernel stub.
+//
+// X: device pointer to row-major matrix with shape (B, N)
+// Y: device pointer to row-major matrix with shape (B, N)
+// B: batch size / row count
+// N: feature count / column count
+__global__ void rms_norm_shared_mem_float4_store_kernel(const float* X,
+                                                        float* Y, size_t B,
+                                                        size_t N) {
+
+  extern __shared__ float smem_ar[];
+
+  for (size_t bx = blockIdx.x; bx < B; bx += gridDim.x)
+  {
+    //clear shared memory, design will be 
+    //shared memory size = blockDIm.x so thread can clear theri portion of memory
+    smem_ar[threadIdx.x] = 0.0f;
+
+    //wait for all threads to clear smem
+    __syncthreads();
+
+    //cooperatively load the scalar prefix
+    size_t row_pos = bx;
+    size_t row_start = bx * N;
+    size_t pos_in_f4 = row_start % 4;
+    size_t prefix_count = (4 - pos_in_f4) % 4;
+    size_t prefix_start = 0 + threadIdx.x;
+    size_t prefix_end   = 0 + prefix_count;
+    for (size_t lx = prefix_start; lx < prefix_end; lx += blockDim.x)
+    {
+      const float temp_x = X[row_start + lx];
+      smem_ar[threadIdx.x] += (temp_x * temp_x);
+    } 
+
+    //cooperatively load vector chunks
+    size_t remain       = N - prefix_count;
+    size_t vector_count = remain / 4;
+    size_t vector_start = prefix_end;
+    size_t vector_end   = vector_start + (vector_count * 4);
+    const float4 *X4 = reinterpret_cast<const float4 *>(&(X[row_start + vector_start]));
+    //start from exact vector bound so can start from 0
+    for (size_t lx = threadIdx.x; lx < vector_count; lx += blockDim.x)
+    {
+      float4 temp_x = X4[lx];
+      temp_x.x = (temp_x.x * temp_x.x);
+      temp_x.y = (temp_x.y * temp_x.y);
+      temp_x.z = (temp_x.z * temp_x.z);
+      temp_x.w = (temp_x.w * temp_x.w);
+      smem_ar[threadIdx.x] += (temp_x.x + temp_x.y + temp_x.z + temp_x.w);
+    }
+
+    //coperatively load scalar prefix
+    size_t tail_start = vector_end + threadIdx.x;
+    size_t tail_end   = N;
+    for (size_t lx = tail_start; lx < tail_end; lx += blockDim.x)
+    {
+      const float temp_x = X[row_start + lx];
+      smem_ar[threadIdx.x] += (temp_x * temp_x);
+    }
+
+    //wait for smem writes to complete
+    __syncthreads();
+
+    //reduce sum
+    for (size_t offset = blockDim.x / 2; offset > 0; offset /= 2)
+    {
+      if (threadIdx.x < offset)
+        smem_ar[threadIdx.x] += smem_ar[threadIdx.x + offset];
+
+      __syncthreads();
+    }
+
+    //final reducxtiom will be store in smem[0]
+    if (threadIdx.x == 0)
+    {
+      float sum_sq  = smem_ar[0];
+      float mean_sq = sum_sq / N;
+      float inv_rms = 1.00f / sqrt(mean_sq + 1e-5f);
+      smem_ar[0] = inv_rms;
+    }
+
+    //wait for all smem reads and writes to complete
+    __syncthreads();
+
+    //at this point smem_ar[0] contains inv_rms
+    float inv_rms = smem_ar[0]; //do one read of inv_rms fetch from smem to local reg
+
+    //wait for all threads to fetch inv_rms from smem_ar[0]
+    __syncthreads();
+
+    //updating scalar prefix
+    for (size_t lx = prefix_start; lx < prefix_end; lx += blockDim.x)
+      Y[row_start + lx] = X[row_start + lx] * inv_rms;
+
+    //update vector/float4 chunks
+    //const float4 *X4 = reinterpret_cast<const float4 *>(&(X[row_start + vector_start]));
+    float4 *Y4 = reinterpret_cast<float4 *>(&(Y[row_start + vector_start]));
+    //okay to start at 0, since we cast from float4 start boundary
+    for (size_t lx = threadIdx.x; lx < vector_count; lx += blockDim.x)
+    {
+      Y4[lx].x = X4[lx].x * inv_rms;
+      Y4[lx].y = X4[lx].y * inv_rms;
+      Y4[lx].z = X4[lx].z * inv_rms;
+      Y4[lx].w = X4[lx].w * inv_rms;
+    }
+
+    //update scalar prefix
+    for (size_t lx = tail_start; lx < tail_end; lx += blockDim.x)
+      Y[row_start + lx] = X[row_start + lx] * inv_rms;
+  }
+}
+
+// Warp-level GPU kernel implementation.
+//
+// X: device pointer to row-major matrix with shape (B, N)
+// Y: device pointer to row-major matrix with shape (B, N)
+// B: batch size / row count
+// N: feature count / column count
+// Each warp processes one row and uses warp shuffles for the row reduction.
 __global__ void rms_norm_warp_kernel(const float* X, float* Y,
                                      size_t B, size_t N) {
 
@@ -477,7 +811,7 @@ __global__ void rms_norm_warp_kernel(const float* X, float* Y,
     {
       float sum_sq = lane_sum_sq;
       float mean_sq = sum_sq / N;
-      float inv_rms = 1.00f / std::sqrt(mean_sq + 1e-5f);
+      float inv_rms = 1.00f / sqrt(mean_sq + 1e-5f);
       send_inv_rms = inv_rms;
     }
     
@@ -510,10 +844,25 @@ extern "C" void solution(const float* X, float* Y, size_t B, size_t N) {
     case KernelVariant::kFloat4:
       rms_norm_float4_kernel<<<grid_shape, block_shape>>>(X, Y, B, N);
       break;
+    case KernelVariant::kFloat4Store:
+      rms_norm_float4_store_kernel<<<grid_shape, block_shape>>>(X, Y, B, N);
+      break;
     case KernelVariant::kSharedMem: {
       size_t smem_bytes = block_shape.x * sizeof(float);
       rms_norm_shared_mem_kernel<<<grid_shape, block_shape, smem_bytes>>>(
           X, Y, B, N);
+      break;
+    }
+    case KernelVariant::kSharedMemFloat4: {
+      size_t smem_bytes = block_shape.x * sizeof(float);
+      rms_norm_shared_mem_float4_kernel<<<grid_shape, block_shape,
+                                          smem_bytes>>>(X, Y, B, N);
+      break;
+    }
+    case KernelVariant::kSharedMemFloat4Store: {
+      size_t smem_bytes = block_shape.x * sizeof(float);
+      rms_norm_shared_mem_float4_store_kernel<<<grid_shape, block_shape,
+                                                smem_bytes>>>(X, Y, B, N);
       break;
     }
     case KernelVariant::kWarp:
@@ -891,7 +1240,10 @@ static int run_tests(bool skip_cpu_verify) {
   const KernelVariant kernel_variants[] = {
       KernelVariant::kBasic,
       KernelVariant::kFloat4,
+      KernelVariant::kFloat4Store,
       KernelVariant::kSharedMem,
+      KernelVariant::kSharedMemFloat4,
+      KernelVariant::kSharedMemFloat4Store,
       KernelVariant::kWarp,
   };
 
@@ -1029,7 +1381,8 @@ int main(int argc, char** argv) {
                 << " [--list-kernels]\n";
       return 0;
     } else if (arg == "--list-kernels") {
-      std::cout << "basic\nfloat4\nshared_mem\nwarp\n";
+      std::cout << "basic\nfloat4\nfloat4_store\nshared_mem\n"
+                   "shared_mem_float4\nshared_mem_float4_store\nwarp\n";
       return 0;
     } else if (arg == "--profile") {
       profile_mode = true;
