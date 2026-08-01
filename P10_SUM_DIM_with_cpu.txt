@@ -1,0 +1,140 @@
+Timing samples: mode=median repeats=5 warmup=1 metric=kernel_ms
+CPU reference implemented: yes
+GPU kernel implemented: yes
+
+group     name                  kernel        ndim   dim    input_elems   output_elems  block_x grid_x  cpu     gpu     total_ms    kernel_ms   
+------------------------------------------------------------------------------------------------------------------------------------
+small     small_axis_0          basic  3      0      24            12            256     64      PASS    PASS    0.005       0.005       
+small     small_axis_1          basic  3      1      24            8             256     64      PASS    PASS    0.006       0.006       
+small     small_axis_2          basic  3      2      24            6             256     64      PASS    PASS    0.005       0.005       
+small     small_4d_axis_2       basic  4      2      24            12            256     64      PASS    PASS    0.007       0.007       
+medium    medium_axis_0         basic  3      0      1683          561           256     64      REF     PASS    0.006       0.006       
+medium    medium_axis_1         basic  3      1      16120         520           256     64      REF     PASS    0.007       0.007       
+medium    medium_axis_2         basic  3      2      32896         128           256     64      REF     PASS    0.018       0.018       
+medium    medium_4d             basic  4      2      1632          204           256     64      REF     PASS    0.006       0.006       
+large     large_axis_0          basic  3      0      70720         4160          256     64      REF     PASS    0.007       0.007       
+large     large_axis_1          basic  3      1      1054728       4104          256     64      REF     PASS    0.037       0.037       
+large     large_4d              basic  4      1      270336        8448          256     64      REF     PASS    0.010       0.010       
+tensara   tensara_1             basic  3      1      524288        4096          256     64      REF     PASS    0.012       0.012       
+tensara   tensara_2             basic  3      0      8388608       262144        256     64      REF     PASS    0.194       0.194       
+tensara   tensara_3             basic  3      2      8388608       8192          256     64      REF     PASS    0.498       0.498       
+tensara   tensara_4             basic  4      2      134217728     1048576       256     64      REF     PASS    2.909       2.909       
+tensara   tensara_5             basic  4      1      67108864      262144        256     64      REF     PASS    1.451       1.451       
+tensara   tensara_6             basic  4      3      33554432      524288        256     64      REF     PASS    1.425       1.425       
+shape     shape_3d_axis_0       basic  3      0      315           63            256     64      REF     PASS    0.006       0.006       
+shape     shape_3d_axis_2       basic  3      2      315           35            256     64      REF     PASS    0.006       0.006       
+shape     shape_4d_axis_1       basic  4      1      945           189           256     64      REF     PASS    0.005       0.005       
+shape     shape_4d_axis_3       basic  4      3      945           105           256     64      REF     PASS    0.006       0.006       
+tail      tail_3d               basic  3      1      15015         455           256     64      REF     PASS    0.007       0.007       
+tail      tail_4d               basic  4      2      102765        3315          256     64      REF     PASS    0.007       0.007       
+tail      tail_axis_0           basic  3      0      2805          85            256     64      REF     PASS    0.007       0.007       
+scale     scale_tail_3d         basic  3      1      659205        2565          64      8       REF     PASS    0.141       0.141       
+scale     scale_tail_3d         basic  3      1      659205        2565          64      16      REF     PASS    0.080       0.080       
+scale     scale_tail_3d         basic  3      1      659205        2565          64      32      REF     PASS    0.056       0.056       
+scale     scale_tail_3d         basic  3      1      659205        2565          64      64      REF     PASS    0.033       0.033       
+scale     scale_tail_3d         basic  3      1      659205        2565          64      128     REF     PASS    0.033       0.033       
+scale     scale_tail_3d         basic  3      1      659205        2565          128     8       REF     PASS    0.079       0.079       
+scale     scale_tail_3d         basic  3      1      659205        2565          128     16      REF     PASS    0.056       0.056       
+scale     scale_tail_3d         basic  3      1      659205        2565          128     32      REF     PASS    0.040       0.040       
+scale     scale_tail_3d         basic  3      1      659205        2565          128     64      REF     PASS    0.033       0.033       
+scale     scale_tail_3d         basic  3      1      659205        2565          128     128     REF     PASS    0.034       0.034       
+scale     scale_tail_3d         basic  3      1      659205        2565          256     8       REF     PASS    0.057       0.057       
+scale     scale_tail_3d         basic  3      1      659205        2565          256     16      REF     PASS    0.033       0.033       
+scale     scale_tail_3d         basic  3      1      659205        2565          256     32      REF     PASS    0.034       0.034       
+scale     scale_tail_3d         basic  3      1      659205        2565          256     64      REF     PASS    0.034       0.034       
+scale     scale_tail_3d         basic  3      1      659205        2565          256     128     REF     PASS    0.033       0.033       
+scale     scale_tail_3d         basic  3      1      659205        2565          512     8       REF     PASS    0.035       0.035       
+scale     scale_tail_3d         basic  3      1      659205        2565          512     16      REF     PASS    0.033       0.033       
+scale     scale_tail_3d         basic  3      1      659205        2565          512     32      REF     PASS    0.034       0.034       
+scale     scale_tail_3d         basic  3      1      659205        2565          512     64      REF     PASS    0.035       0.035       
+scale     scale_tail_3d         basic  3      1      659205        2565          512     128     REF     PASS    0.035       0.035       
+scale     scale_tail_4d         basic  4      2      427635        6579          64      8       REF     PASS    0.044       0.044       
+scale     scale_tail_4d         basic  4      2      427635        6579          64      16      REF     PASS    0.027       0.027       
+scale     scale_tail_4d         basic  4      2      427635        6579          64      32      REF     PASS    0.018       0.018       
+scale     scale_tail_4d         basic  4      2      427635        6579          64      64      REF     PASS    0.014       0.014       
+scale     scale_tail_4d         basic  4      2      427635        6579          64      128     REF     PASS    0.009       0.009       
+scale     scale_tail_4d         basic  4      2      427635        6579          128     8       REF     PASS    0.027       0.027       
+scale     scale_tail_4d         basic  4      2      427635        6579          128     16      REF     PASS    0.019       0.019       
+scale     scale_tail_4d         basic  4      2      427635        6579          128     32      REF     PASS    0.013       0.013       
+scale     scale_tail_4d         basic  4      2      427635        6579          128     64      REF     PASS    0.009       0.009       
+scale     scale_tail_4d         basic  4      2      427635        6579          128     128     REF     PASS    0.009       0.009       
+scale     scale_tail_4d         basic  4      2      427635        6579          256     8       REF     PASS    0.019       0.019       
+scale     scale_tail_4d         basic  4      2      427635        6579          256     16      REF     PASS    0.012       0.012       
+scale     scale_tail_4d         basic  4      2      427635        6579          256     32      REF     PASS    0.009       0.009       
+scale     scale_tail_4d         basic  4      2      427635        6579          256     64      REF     PASS    0.010       0.010       
+scale     scale_tail_4d         basic  4      2      427635        6579          256     128     REF     PASS    0.010       0.010       
+scale     scale_tail_4d         basic  4      2      427635        6579          512     8       REF     PASS    0.013       0.013       
+scale     scale_tail_4d         basic  4      2      427635        6579          512     16      REF     PASS    0.010       0.010       
+scale     scale_tail_4d         basic  4      2      427635        6579          512     32      REF     PASS    0.009       0.009       
+scale     scale_tail_4d         basic  4      2      427635        6579          512     64      REF     PASS    0.011       0.011       
+scale     scale_tail_4d         basic  4      2      427635        6579          512     128     REF     PASS    0.011       0.011       
+small     small_axis_0          basic_block3      0      24            12            256     64      PASS    PASS    0.006       0.006       
+small     small_axis_1          basic_block3      1      24            8             256     64      PASS    PASS    0.006       0.006       
+small     small_axis_2          basic_block3      2      24            6             256     64      PASS    PASS    0.007       0.007       
+small     small_4d_axis_2       basic_block4      2      24            12            256     64      PASS    PASS    0.006       0.006       
+medium    medium_axis_0         basic_block3      0      1683          561           256     64      REF     PASS    0.006       0.006       
+medium    medium_axis_1         basic_block3      1      16120         520           256     64      REF     PASS    0.006       0.006       
+medium    medium_axis_2         basic_block3      2      32896         128           256     64      REF     PASS    0.013       0.013       
+medium    medium_4d             basic_block4      2      1632          204           256     64      REF     PASS    0.006       0.006       
+large     large_axis_0          basic_block3      0      70720         4160          256     64      REF     PASS    0.017       0.017       
+large     large_axis_1          basic_block3      1      1054728       4104          256     64      REF     PASS    0.040       0.040       
+large     large_4d              basic_block4      1      270336        8448          256     64      REF     PASS    0.018       0.018       
+tensara   tensara_1             basic_block3      1      524288        4096          256     64      REF     PASS    0.013       0.013       
+tensara   tensara_2             basic_block3      0      8388608       262144        256     64      REF     PASS    1.152       1.152       
+tensara   tensara_3             basic_block3      2      8388608       8192          256     64      REF     PASS    3.537       3.537       
+tensara   tensara_4             basic_block4      2      134217728     1048576       256     64      REF     PASS    2.909       2.909       
+tensara   tensara_5             basic_block4      1      67108864      262144        256     64      REF     PASS    2.576       2.576       
+tensara   tensara_6             basic_block4      3      33554432      524288        256     64      REF     PASS    15.760      15.760      
+shape     shape_3d_axis_0       basic_block3      0      315           63            256     64      REF     PASS    0.005       0.005       
+shape     shape_3d_axis_2       basic_block3      2      315           35            256     64      REF     PASS    0.008       0.008       
+shape     shape_4d_axis_1       basic_block4      1      945           189           256     64      REF     PASS    0.006       0.006       
+shape     shape_4d_axis_3       basic_block4      3      945           105           256     64      REF     PASS    0.007       0.007       
+tail      tail_3d               basic_block3      1      15015         455           256     64      REF     PASS    0.007       0.007       
+tail      tail_4d               basic_block4      2      102765        3315          256     64      REF     PASS    0.007       0.007       
+tail      tail_axis_0           basic_block3      0      2805          85            256     64      REF     PASS    0.005       0.005       
+scale     scale_tail_3d         basic_block3      1      659205        2565          64      8       REF     PASS    0.078       0.078       
+scale     scale_tail_3d         basic_block3      1      659205        2565          64      16      REF     PASS    0.077       0.077       
+scale     scale_tail_3d         basic_block3      1      659205        2565          64      32      REF     PASS    0.078       0.078       
+scale     scale_tail_3d         basic_block3      1      659205        2565          64      64      REF     PASS    0.081       0.081       
+scale     scale_tail_3d         basic_block3      1      659205        2565          64      128     REF     PASS    0.082       0.082       
+scale     scale_tail_3d         basic_block3      1      659205        2565          128     8       REF     PASS    0.048       0.048       
+scale     scale_tail_3d         basic_block3      1      659205        2565          128     16      REF     PASS    0.049       0.049       
+scale     scale_tail_3d         basic_block3      1      659205        2565          128     32      REF     PASS    0.047       0.047       
+scale     scale_tail_3d         basic_block3      1      659205        2565          128     64      REF     PASS    0.050       0.050       
+scale     scale_tail_3d         basic_block3      1      659205        2565          128     128     REF     PASS    0.050       0.050       
+scale     scale_tail_3d         basic_block3      1      659205        2565          256     8       REF     PASS    0.032       0.032       
+scale     scale_tail_3d         basic_block3      1      659205        2565          256     16      REF     PASS    0.033       0.033       
+scale     scale_tail_3d         basic_block3      1      659205        2565          256     32      REF     PASS    0.032       0.032       
+scale     scale_tail_3d         basic_block3      1      659205        2565          256     64      REF     PASS    0.037       0.037       
+scale     scale_tail_3d         basic_block3      1      659205        2565          256     128     REF     PASS    0.038       0.038       
+scale     scale_tail_3d         basic_block3      1      659205        2565          512     8       REF     PASS    0.027       0.027       
+scale     scale_tail_3d         basic_block3      1      659205        2565          512     16      REF     PASS    0.026       0.026       
+scale     scale_tail_3d         basic_block3      1      659205        2565          512     32      REF     PASS    0.025       0.025       
+scale     scale_tail_3d         basic_block3      1      659205        2565          512     64      REF     PASS    0.034       0.034       
+scale     scale_tail_3d         basic_block3      1      659205        2565          512     128     REF     PASS    0.035       0.035       
+scale     scale_tail_4d         basic_block4      2      427635        6579          64      8       REF     PASS    0.032       0.032       
+scale     scale_tail_4d         basic_block4      2      427635        6579          64      16      REF     PASS    0.020       0.020       
+scale     scale_tail_4d         basic_block4      2      427635        6579          64      32      REF     PASS    0.014       0.014       
+scale     scale_tail_4d         basic_block4      2      427635        6579          64      64      REF     PASS    0.012       0.012       
+scale     scale_tail_4d         basic_block4      2      427635        6579          64      128     REF     PASS    0.010       0.010       
+scale     scale_tail_4d         basic_block4      2      427635        6579          128     8       REF     PASS    0.025       0.025       
+scale     scale_tail_4d         basic_block4      2      427635        6579          128     16      REF     PASS    0.016       0.016       
+scale     scale_tail_4d         basic_block4      2      427635        6579          128     32      REF     PASS    0.010       0.010       
+scale     scale_tail_4d         basic_block4      2      427635        6579          128     64      REF     PASS    0.008       0.008       
+scale     scale_tail_4d         basic_block4      2      427635        6579          128     128     REF     PASS    0.015       0.015       
+scale     scale_tail_4d         basic_block4      2      427635        6579          256     8       REF     PASS    0.015       0.015       
+scale     scale_tail_4d         basic_block4      2      427635        6579          256     16      REF     PASS    0.012       0.012       
+scale     scale_tail_4d         basic_block4      2      427635        6579          256     32      REF     PASS    0.009       0.009       
+scale     scale_tail_4d         basic_block4      2      427635        6579          256     64      REF     PASS    0.010       0.010       
+scale     scale_tail_4d         basic_block4      2      427635        6579          256     128     REF     PASS    0.010       0.010       
+scale     scale_tail_4d         basic_block4      2      427635        6579          512     8       REF     PASS    0.016       0.016       
+scale     scale_tail_4d         basic_block4      2      427635        6579          512     16      REF     PASS    0.011       0.011       
+scale     scale_tail_4d         basic_block4      2      427635        6579          512     32      REF     PASS    0.009       0.009       
+scale     scale_tail_4d         basic_block4      2      427635        6579          512     64      REF     PASS    0.011       0.011       
+scale     scale_tail_4d         basic_block4      2      427635        6579          512     128     REF     PASS    0.008       0.008       
+
+Scaling summary (median kernel_ms, lower is better)
+  basic / scale_tail_3d: 0.033 ms at (64, 64)
+  basic / scale_tail_4d: 0.009 ms at (128, 128)
+  basic_block / scale_tail_3d: 0.025 ms at (512, 32)
+  basic_block / scale_tail_4d: 0.008 ms at (128, 64)
