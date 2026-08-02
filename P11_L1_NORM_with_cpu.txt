@@ -1,0 +1,62 @@
+Timing samples: mode=median repeats=5 warmup=1 metric=kernel_ms
+CPU reference implemented: yes
+GPU kernel implemented: yes
+
+group     name                    kernel        rows    cols    elements      block_x grid_x  cpu     gpu     total_ms    kernel_ms   
+------------------------------------------------------------------------------------------------------------------------------------------
+small     small_2x3               basic         2       3       6             256     64      REF     PASS    0.007       0.007       
+small     small_2x4               basic         2       4       8             256     64      REF     PASS    0.020       0.020       
+small     single_element          basic         1       1       1             256     64      REF     PASS    0.007       0.007       
+medium    medium_3x17             basic         3       17      51            256     64      REF     PASS    0.006       0.006       
+medium    medium_7x65             basic         7       65      455           256     64      REF     PASS    0.007       0.007       
+medium    medium_31x257           basic         31      257     7967          256     64      REF     PASS    0.013       0.013       
+large     large_64x1024           basic         64      1024    65536         256     64      REF     PASS    0.211       0.211       
+large     large_257x4097          basic         257     4097    1052929       256     64      REF     PASS    35.509      35.509      
+shape     shape_3x33              basic         3       33      99            256     64      REF     PASS    0.005       0.005       
+shape     shape_65x129            basic         65      129     8385          256     64      REF     PASS    0.009       0.009       
+shape     shape_127x513           basic         127     513     65151         256     64      REF     PASS    0.091       0.091       
+tail      tail_5x257              basic         5       257     1285          256     64      REF     PASS    0.012       0.012       
+tail      tail_17x1025            basic         17      1025    17425         256     64      REF     PASS    0.070       0.070       
+tail      tail_33x4099            basic         33      4099    135267        256     64      REF     PASS    1.490       1.490       
+small     small_2x3               float4        2       3       6             256     64      REF     PASS    0.006       0.006       
+small     small_2x4               float4        2       4       8             256     64      REF     PASS    0.007       0.007       
+small     single_element          float4        1       1       1             256     64      REF     PASS    0.006       0.006       
+medium    medium_3x17             float4        3       17      51            256     64      REF     PASS    0.007       0.007       
+medium    medium_7x65             float4        7       65      455           256     64      REF     PASS    0.008       0.008       
+medium    medium_31x257           float4        31      257     7967          256     64      REF     PASS    0.012       0.012       
+large     large_64x1024           float4        64      1024    65536         256     64      REF     PASS    0.084       0.084       
+large     large_257x4097          float4        257     4097    1052929       256     64      REF     PASS    15.037      15.037      
+shape     shape_3x33              float4        3       33      99            256     64      REF     PASS    0.006       0.006       
+shape     shape_65x129            float4        65      129     8385          256     64      REF     PASS    0.010       0.010       
+shape     shape_127x513           float4        127     513     65151         256     64      REF     PASS    0.048       0.048       
+tail      tail_5x257              float4        5       257     1285          256     64      REF     PASS    0.012       0.012       
+tail      tail_17x1025            float4        17      1025    17425         256     64      REF     PASS    0.050       0.050       
+tail      tail_33x4099            float4        33      4099    135267        256     64      REF     PASS    1.427       1.427       
+small     small_2x3               shared        2       3       6             256     64      REF     PASS    0.006       0.006       
+small     small_2x4               shared        2       4       8             256     64      REF     PASS    0.006       0.006       
+small     single_element          shared        1       1       1             256     64      REF     PASS    0.006       0.006       
+medium    medium_3x17             shared        3       17      51            256     64      REF     PASS    0.006       0.006       
+medium    medium_7x65             shared        7       65      455           256     64      REF     PASS    0.006       0.006       
+medium    medium_31x257           shared        31      257     7967          256     64      REF     PASS    0.007       0.007       
+large     large_64x1024           shared        64      1024    65536         256     64      REF     PASS    0.009       0.009       
+large     large_257x4097          shared        257     4097    1052929       256     64      REF     PASS    0.075       0.075       
+shape     shape_3x33              shared        3       33      99            256     64      REF     PASS    0.006       0.006       
+shape     shape_65x129            shared        65      129     8385          256     64      REF     PASS    0.008       0.008       
+shape     shape_127x513           shared        127     513     65151         256     64      REF     PASS    0.010       0.010       
+tail      tail_5x257              shared        5       257     1285          256     64      REF     PASS    0.006       0.006       
+tail      tail_17x1025            shared        17      1025    17425         256     64      REF     PASS    0.008       0.008       
+tail      tail_33x4099            shared        33      4099    135267        256     64      REF     PASS    0.015       0.015       
+small     small_2x3               shared_float4 2       3       6             256     64      REF     PASS    0.007       0.007       
+small     small_2x4               shared_float4 2       4       8             256     64      REF     PASS    0.006       0.006       
+small     single_element          shared_float4 1       1       1             256     64      REF     PASS    0.005       0.005       
+medium    medium_3x17             shared_float4 3       17      51            256     64      REF     PASS    0.006       0.006       
+medium    medium_7x65             shared_float4 7       65      455           256     64      REF     PASS    0.007       0.007       
+medium    medium_31x257           shared_float4 31      257     7967          256     64      REF     PASS    0.005       0.005       
+large     large_64x1024           shared_float4 64      1024    65536         256     64      REF     PASS    0.008       0.008       
+large     large_257x4097          shared_float4 257     4097    1052929       256     64      REF     PASS    0.060       0.060       
+shape     shape_3x33              shared_float4 3       33      99            256     64      REF     PASS    0.007       0.007       
+shape     shape_65x129            shared_float4 65      129     8385          256     64      REF     PASS    0.010       0.010       
+shape     shape_127x513           shared_float4 127     513     65151         256     64      REF     PASS    0.008       0.008       
+tail      tail_5x257              shared_float4 5       257     1285          256     64      REF     PASS    0.007       0.007       
+tail      tail_17x1025            shared_float4 17      1025    17425         256     64      REF     PASS    0.007       0.007       
+tail      tail_33x4099            shared_float4 33      4099    135267        256     64      REF     PASS    0.011       0.011       

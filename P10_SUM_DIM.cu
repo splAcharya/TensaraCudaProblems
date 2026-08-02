@@ -224,7 +224,6 @@ __global__ void sum_dim_basic_block_kernel(
   
   for (size_t bx = blockIdx.x; bx < total_blocks; bx += gridDim.x)
   {
-
     //block base
     //from input pespective , how many elemtns ot skip over ?
     size_t block_base = bx * reduce_dim * inner_stride;
