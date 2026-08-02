@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
+#include <random>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -40,14 +41,10 @@ extern "C" void solution(const float* input, float* output, size_t B,
 static constexpr bool kCpuReferenceImplemented = true;
 static constexpr bool kGpuKernelImplemented = true;
 static constexpr int kDefaultTimingRepeats = 5;
-static constexpr int kTimingWarmupIterations = 1;
+static constexpr int kTimingWarmupRounds = 5;
 static constexpr int kProfileWarmupIterations = 5;
 static constexpr int kProfileIterations = 50;
-
-struct Timing {
-  float total_ms = 0.0f;
-  float kernel_ms = 0.0f;
-};
+static constexpr unsigned kTimingShuffleSeed = 0x5EED11u;
 
 struct LaunchConfig {
   int block_x = 256;
@@ -59,6 +56,8 @@ enum class KernelVariant {
   kFloat4,
   kShared,
   kSharedFloat4,
+  kWarp,
+  kWarpFloat4,
 };
 
 enum class TimingMode {
@@ -71,10 +70,9 @@ static KernelVariant g_kernel_variant = KernelVariant::kBasic;
 static TimingMode g_timing_mode = TimingMode::kMedian;
 static int g_timing_repeats = kDefaultTimingRepeats;
 static bool g_kernel_arg_set = false;
-static Timing g_last_timing;
 
-static const char* current_kernel_name() {
-  switch (g_kernel_variant) {
+static const char* kernel_name(KernelVariant variant) {
+  switch (variant) {
     case KernelVariant::kBasic:
       return "basic";
     case KernelVariant::kFloat4:
@@ -83,8 +81,16 @@ static const char* current_kernel_name() {
       return "shared";
     case KernelVariant::kSharedFloat4:
       return "shared_float4";
+    case KernelVariant::kWarp:
+      return "warp";
+    case KernelVariant::kWarpFloat4:
+      return "warp_float4";
   }
   return "unknown";
+}
+
+static const char* current_kernel_name() {
+  return kernel_name(g_kernel_variant);
 }
 
 static bool kernel_enabled(KernelVariant variant) {
@@ -136,10 +142,21 @@ static bool parse_kernel_arg(const std::string& arg) {
     g_kernel_arg_set = true;
     return true;
   }
+  if (value == "warp") {
+    g_kernel_variant = KernelVariant::kWarp;
+    g_kernel_arg_set = true;
+    return true;
+  }
+  if (value == "warp_float4") {
+    g_kernel_variant = KernelVariant::kWarpFloat4;
+    g_kernel_arg_set = true;
+    return true;
+  }
 
   std::cerr << "Unknown kernel: " << value
             << " (use --kernel=basic, --kernel=float4, or "
-            << "--kernel=shared, or --kernel=shared_float4)\n";
+            << "--kernel=shared, --kernel=shared_float4, or "
+            << "--kernel=warp, or --kernel=warp_float4)\n";
   return false;
 }
 
@@ -399,14 +416,20 @@ __global__ void l1_norm_shared_kernel(const float* input, float* output,
       __syncthreads();
     }
 
+    //cmpute inv abs sum
+    if (threadIdx.x == 0)
+      smem_ar[0] = 1.00f / smem_ar[0];
+
+    __syncthreads();
+
     // 1st index in smem_ar holds the final reduction, 
     //load it into local reg for fast access,
     //should also result in broadcast as well
-    const float abs_sum = smem_ar[0]; 
+    const float inv_abs_sum = smem_ar[0]; 
 
     //coperatively update entire output column
     for (size_t lx = threadIdx.x; lx < cols; lx += blockDim.x)
-      output[bx * cols + lx] = input[bx * cols + lx] / abs_sum;
+      output[bx * cols + lx] = input[bx * cols + lx] * inv_abs_sum;
   }
 }
 
@@ -466,36 +489,151 @@ __global__ void l1_norm_shared_float4_kernel(const float* input,
       __syncthreads();
     }
 
-    //load reduceiotnj result into local reg
-    float abs_sum = smem_ar[0];
+    if (threadIdx.x == 0)
+      smem_ar[0] = 1.00f / smem_ar[0];
 
+    __syncthreads();
+
+    //load reduction result into local reg
+    float abs_sum = smem_ar[0];
+    
     //update output
     //cooperatively update scalar prefix cols
     for (size_t lx = threadIdx.x; lx < prefix_count; lx += blockDim.x)
-      output[bx * cols + lx] = input[bx * cols + lx] / abs_sum;
+      output[bx * cols + lx] = input[bx * cols + lx] * abs_sum;
 
     //cooperatively update float4 chunks
     float4 *output4 = reinterpret_cast<float4 *>(&(output[f4_start]));
     for (size_t lx = threadIdx.x; lx < f4_count; lx += blockDim.x)
     {
       float4 temp4 = input4[lx];
-      temp4.x = temp4.x / abs_sum;
-      temp4.y = temp4.y / abs_sum;
-      temp4.z = temp4.z / abs_sum;
-      temp4.w = temp4.w / abs_sum;
+      temp4.x = temp4.x * abs_sum;
+      temp4.y = temp4.y * abs_sum;
+      temp4.z = temp4.z * abs_sum;
+      temp4.w = temp4.w * abs_sum;
       output4[lx] = temp4;
     }
 
     //coperatively update scalar tail
     for (size_t lx = threadIdx.x + tail_start; lx < cols; lx +=  blockDim.x)
-      output[bx * cols + lx] = input[bx * cols + lx] / abs_sum;
+      output[bx * cols + lx] = input[bx * cols + lx] * abs_sum;
   }
 }
 
+// Each warp owns a row.
 __global__ void l1_norm_warp_kernel(const float* input, float* output,
-                                    size_t rows, size_t cols) 
-{
+                                    size_t rows, size_t cols) {
+  const size_t total_warps = rows;
+  const size_t warps_per_block = blockDim.x / warpSize;
+  const size_t warps_per_grid = gridDim.x * warps_per_block;
+  const size_t warp_lid = threadIdx.x / warpSize;
+  const size_t warp_gid = blockIdx.x * warps_per_block + warp_lid;
+  const size_t lane_id = threadIdx.x % warpSize;
 
+  for (size_t wx = warp_gid; wx < total_warps; wx += warps_per_grid) {
+    const size_t row_base = wx * cols;
+    float partial_sum = 0.0f;
+
+    for (size_t lax = lane_id; lax < cols; lax += warpSize)
+      partial_sum += std::fabs(input[row_base + lax]);
+
+    const unsigned mask = __activemask();
+    for (int offset = warpSize / 2; offset > 0; offset /= 2) {
+      const float other = __shfl_down_sync(mask, partial_sum, offset);
+      if (lane_id < static_cast<size_t>(offset))
+        partial_sum += other;
+    }
+
+    float inv_partial_sum = 0.0f;
+    if (lane_id == 0)
+      inv_partial_sum = 1.00f / partial_sum;
+
+    const float inv_abs_sum = __shfl_sync(mask,  inv_partial_sum , 0);
+
+    for (size_t lax = lane_id; lax < cols; lax += warpSize)
+      output[row_base + lax] = input[row_base + lax] * inv_abs_sum;
+  }
+}
+
+// Empty warp-float4 kernel stub.
+__global__ void l1_norm_warp_float4_kernel(const float* input, float* output,
+                                           size_t rows, size_t cols) 
+{
+  size_t total_warps = rows;
+  size_t warps_per_block = blockDim.x / warpSize;
+  size_t warps_per_grid  = gridDim.x * warps_per_block;
+  size_t warp_lid = threadIdx.x / warpSize;
+  size_t warp_gid = (blockIdx.x * warps_per_block) + warp_lid;
+  size_t lane_id  = threadIdx.x % warpSize;
+
+  for (size_t wx = warp_gid; wx < total_warps; wx += warps_per_grid)
+  {
+    size_t row_base = wx * cols;
+
+    //scalar prefix
+    size_t pos_in_f4 = (row_base % 4);
+    size_t prefix_count = (4 - pos_in_f4) % 4;
+    
+    //cooperatively load scalar prefixes
+    float partial_sum = 0.0f;
+    for (size_t lax = lane_id; lax < prefix_count; lax += warpSize)
+      partial_sum += std::fabs(input[row_base + lax]);
+
+    //cooperatively load float4 chunks
+    size_t remain = cols - prefix_count;
+    size_t f4_count = remain / 4;
+    size_t f4_start = row_base + prefix_count;
+    const float4 *input4 = reinterpret_cast<const float4 *>(&(input[f4_start]));
+    for (size_t lax = lane_id; lax < f4_count; lax += warpSize)
+    {
+      const float4 temp = input4[lax];
+      partial_sum += std::abs(temp.x);
+      partial_sum += std::abs(temp.y);
+      partial_sum += std::abs(temp.z);
+      partial_sum += std::abs(temp.w);
+    }
+
+    //coperatively load scalar tail
+    size_t tail_start = prefix_count + (f4_count * 4);
+    for (size_t lax = lane_id + tail_start; lax < cols; lax += warpSize)
+      partial_sum += std::fabs(input[row_base + lax]);
+
+    //reduce partial sum
+    int mask = 0xffffffff;
+    for (size_t offset = warpSize / 2; offset > 0; offset  /= 2)
+    {
+      float shuffled_val = __shfl_down_sync(mask, partial_sum, offset);
+      if (lane_id < offset)
+        partial_sum += shuffled_val;
+    }
+
+    //broad-cast reduced value to all alens in the warp
+    float inv_partial_sum = 0.0f;
+    if (lane_id == 0)
+      inv_partial_sum = 1.00f / partial_sum;
+
+    const float inv_abs_sum = __shfl_sync(mask,  inv_partial_sum , 0);
+
+    //update output cooperatively as well
+    for (size_t lax = lane_id; lax < prefix_count; lax += warpSize)
+      output[row_base + lax] = input[row_base + lax] * inv_abs_sum;
+
+    //update float4 chunks
+    float4 *output4 = reinterpret_cast<float4 *>(&(output[f4_start]));
+    for (size_t lax = lane_id; lax < f4_count; lax += warpSize)
+    {
+      float4 temp = input4[lax];
+      temp.x  = temp.x * inv_abs_sum;
+      temp.y  = temp.y * inv_abs_sum;
+      temp.z  = temp.z * inv_abs_sum;
+      temp.w  = temp.w * inv_abs_sum;
+      output4[lax] = temp;
+    }
+
+    //update scalar tail
+    for (size_t lax = lane_id + tail_start; lax < cols; lax += warpSize)
+      output[row_base + lax] = input[row_base + lax] * inv_abs_sum;
+  }
 }
 
 extern "C" void solution(const float* input, float* output, size_t B,
@@ -525,6 +663,13 @@ extern "C" void solution(const float* input, float* output, size_t B,
           input, output, B, D);
       break;
     }
+    case KernelVariant::kWarp:
+      l1_norm_warp_kernel<<<grid_shape, block_shape>>>(input, output, B, D);
+      break;
+    case KernelVariant::kWarpFloat4:
+      l1_norm_warp_float4_kernel<<<grid_shape, block_shape>>>(input, output, B,
+                                                               D);
+      break;
   }
   CUDA_CHECK(cudaGetLastError());
 }
@@ -585,53 +730,6 @@ static bool verify_close(const std::vector<float>& got,
   return ok;
 }
 
-static std::vector<float> run_gpu_case(const TestCase& test) {
-  float* device_input = nullptr;
-  float* device_output = nullptr;
-  const size_t elements = test.rows * test.cols;
-  const size_t bytes = elements * sizeof(float);
-  std::vector<float> output(elements, 0.0f);
-
-  CUDA_CHECK(cudaMalloc(&device_input, bytes));
-  CUDA_CHECK(cudaMalloc(&device_output, bytes));
-  CUDA_CHECK(cudaMemcpy(device_input, test.input.data(), bytes,
-                        cudaMemcpyHostToDevice));
-
-  for (int i = 0; i < kTimingWarmupIterations; ++i) {
-    solution(device_input, device_output, test.rows, test.cols);
-  }
-  CUDA_CHECK(cudaDeviceSynchronize());
-
-  cudaEvent_t start = nullptr;
-  cudaEvent_t stop = nullptr;
-  CUDA_CHECK(cudaEventCreate(&start));
-  CUDA_CHECK(cudaEventCreate(&stop));
-  std::vector<float> total_samples;
-  std::vector<float> kernel_samples;
-
-  for (int repeat = 0; repeat < g_timing_repeats; ++repeat) {
-    CUDA_CHECK(cudaEventRecord(start));
-    solution(device_input, device_output, test.rows, test.cols);
-    CUDA_CHECK(cudaEventRecord(stop));
-    CUDA_CHECK(cudaEventSynchronize(stop));
-
-    float elapsed_ms = 0.0f;
-    CUDA_CHECK(cudaEventElapsedTime(&elapsed_ms, start, stop));
-    total_samples.push_back(elapsed_ms);
-    kernel_samples.push_back(elapsed_ms);
-  }
-
-  g_last_timing.total_ms = select_timing_sample(total_samples);
-  g_last_timing.kernel_ms = select_timing_sample(kernel_samples);
-  CUDA_CHECK(cudaMemcpy(output.data(), device_output, bytes,
-                        cudaMemcpyDeviceToHost));
-  CUDA_CHECK(cudaEventDestroy(start));
-  CUDA_CHECK(cudaEventDestroy(stop));
-  CUDA_CHECK(cudaFree(device_input));
-  CUDA_CHECK(cudaFree(device_output));
-  return output;
-}
-
 struct TestResult {
   std::string group;
   std::string name;
@@ -646,6 +744,103 @@ struct TestResult {
   float total_ms = 0.0f;
   float kernel_ms = 0.0f;
 };
+
+struct GpuJob {
+  KernelVariant variant;
+  LaunchConfig launch_config;
+  size_t result_index = 0;
+  std::vector<float> samples;
+};
+
+static unsigned timing_seed(const TestCase& test, size_t job_count) {
+  const unsigned rows = static_cast<unsigned>(test.rows);
+  const unsigned cols = static_cast<unsigned>(test.cols);
+  return kTimingShuffleSeed ^ (rows * 0x9E3779B9u) ^
+         (cols * 0x85EBCA6Bu) ^ static_cast<unsigned>(job_count);
+}
+
+static void launch_gpu_job(const GpuJob& job, const float* device_input,
+                           float* device_output, const TestCase& test) {
+  g_kernel_variant = job.variant;
+  g_launch_config = job.launch_config;
+  solution(device_input, device_output, test.rows, test.cols);
+}
+
+static bool run_gpu_jobs(const TestCase& test,
+                         const std::vector<float>& input,
+                         std::vector<GpuJob>& jobs,
+                         std::vector<TestResult>& results,
+                         const std::vector<float>* expected,
+                         const std::vector<float>* reference) {
+  float* device_input = nullptr;
+  float* device_output = nullptr;
+  const size_t bytes = input.size() * sizeof(float);
+  std::vector<size_t> order;
+  order.reserve(jobs.size());
+  for (size_t i = 0; i < jobs.size(); ++i) {
+    order.push_back(i);
+  }
+
+  CUDA_CHECK(cudaMalloc(&device_input, bytes));
+  CUDA_CHECK(cudaMalloc(&device_output, bytes));
+  CUDA_CHECK(cudaMemcpy(device_input, input.data(), bytes,
+                        cudaMemcpyHostToDevice));
+
+  std::mt19937 random(timing_seed(test, jobs.size()));
+  for (int round = 0; round < kTimingWarmupRounds; ++round) {
+    std::shuffle(order.begin(), order.end(), random);
+    for (size_t index : order) {
+      launch_gpu_job(jobs[index], device_input, device_output, test);
+    }
+  }
+  CUDA_CHECK(cudaDeviceSynchronize());
+
+  cudaEvent_t start = nullptr;
+  cudaEvent_t stop = nullptr;
+  CUDA_CHECK(cudaEventCreate(&start));
+  CUDA_CHECK(cudaEventCreate(&stop));
+  for (int round = 0; round < g_timing_repeats; ++round) {
+    std::shuffle(order.begin(), order.end(), random);
+    for (size_t index : order) {
+      CUDA_CHECK(cudaEventRecord(start));
+      launch_gpu_job(jobs[index], device_input, device_output, test);
+      CUDA_CHECK(cudaEventRecord(stop));
+      CUDA_CHECK(cudaEventSynchronize(stop));
+
+      float elapsed_ms = 0.0f;
+      CUDA_CHECK(cudaEventElapsedTime(&elapsed_ms, start, stop));
+      jobs[index].samples.push_back(elapsed_ms);
+    }
+  }
+  CUDA_CHECK(cudaEventDestroy(start));
+  CUDA_CHECK(cudaEventDestroy(stop));
+
+  for (const GpuJob& job : jobs) {
+    TestResult& result = results[job.result_index];
+    result.total_ms = select_timing_sample(job.samples);
+    result.kernel_ms = result.total_ms;
+  }
+
+  bool all_ok = true;
+  const std::vector<float>* target =
+      expected != nullptr ? expected : reference;
+  if (target != nullptr) {
+    std::vector<float> output(input.size(), 0.0f);
+    for (const GpuJob& job : jobs) {
+      launch_gpu_job(job, device_input, device_output, test);
+      CUDA_CHECK(cudaMemcpy(output.data(), device_output, bytes,
+                            cudaMemcpyDeviceToHost));
+      const bool ok = verify_close(output, *target, 1e-5f, 1e-5f,
+                                   test.name, true);
+      results[job.result_index].gpu = ok ? "PASS" : "FAIL";
+      all_ok &= ok;
+    }
+  }
+
+  CUDA_CHECK(cudaFree(device_input));
+  CUDA_CHECK(cudaFree(device_output));
+  return all_ok;
+}
 
 static void print_results_table(const std::vector<TestResult>& results) {
   std::cout << std::left << std::setw(10) << "group" << std::setw(24)
@@ -757,7 +952,8 @@ static int run_tests(bool skip_cpu_verify) {
 
   std::cout << "Timing samples: mode=" << timing_mode_name()
             << " repeats=" << g_timing_repeats
-            << " warmup=" << kTimingWarmupIterations
+            << " warmup_rounds=" << kTimingWarmupRounds
+            << " shuffle_seed=" << kTimingShuffleSeed
             << " metric=kernel_ms\n";
   std::cout << "CPU reference implemented: "
             << (kCpuReferenceImplemented ? "yes" : "no") << '\n';
@@ -801,109 +997,115 @@ static int run_tests(bool skip_cpu_verify) {
       {"tail_17x1025", 17, 1025, {}, {}},
       {"tail_33x4099", 33, 4099, {}, {}},
   };
+  const std::vector<TestCase> narrow_tests = {
+      {"narrow_1024x32", 1024, 32, {}, {}},
+      {"narrow_2048x64", 2048, 64, {}, {}},
+      {"narrow_4096x128", 4096, 128, {}, {}},
+      {"narrow_8192x256", 8192, 256, {}, {}},
+      {"narrow_1024x128", 1024, 128, {}, {}},
+  };
   const int scale_block_sizes[] = {64, 128, 256, 512};
   const int scale_grid_sizes[] = {8, 16, 32, 64, 128};
   const KernelVariant kernel_variants[] = {KernelVariant::kBasic,
                                            KernelVariant::kFloat4,
                                            KernelVariant::kShared,
-                                           KernelVariant::kSharedFloat4};
+                                           KernelVariant::kSharedFloat4,
+                                           KernelVariant::kWarp,
+                                           KernelVariant::kWarpFloat4};
 
   std::vector<TestResult> results;
+  std::vector<KernelVariant> enabled_variants;
+  for (KernelVariant variant : kernel_variants) {
+    if (kernel_enabled(variant)) {
+      enabled_variants.push_back(variant);
+    }
+  }
+
+  const std::vector<LaunchConfig> default_configs = {default_launch};
+  std::vector<LaunchConfig> scale_configs;
+  for (int block_x : scale_block_sizes) {
+    for (int grid_x : scale_grid_sizes) {
+      scale_configs.push_back({block_x, grid_x});
+    }
+  }
+
   bool all_ok = true;
 
-  auto run_case = [&](const char* group, const TestCase& test,
-                      const std::vector<float>& input,
-                      const std::vector<float>* expected) {
-    TestResult result;
-    result.group = group;
-    result.name = test.name;
-    result.kernel = current_kernel_name();
-    result.rows = test.rows;
-    result.cols = test.cols;
-    result.elements = input.size();
-    result.block_x = g_launch_config.block_x;
-    result.grid_x = g_launch_config.grid_x;
-    result.cpu = "SKIP";
-    result.gpu = "SKIP";
-    g_last_timing = {};
-
+  auto run_group = [&](const char* group, const TestCase& test,
+                       const std::vector<float>& input,
+                       const std::vector<float>* expected,
+                       const std::vector<LaunchConfig>& configs) {
     std::vector<float> reference;
     if (!skip_cpu_verify && kCpuReferenceImplemented) {
       reference.assign(input.size(), 0.0f);
       cpu_l1_norm_reference(input, reference, test.rows, test.cols);
-      result.cpu = "REF";
     }
 
+    std::vector<GpuJob> jobs;
+    for (KernelVariant variant : enabled_variants) {
+      for (const LaunchConfig& config : configs) {
+        TestResult result;
+        result.group = group;
+        result.name = test.name;
+        result.kernel = kernel_name(variant);
+        result.rows = test.rows;
+        result.cols = test.cols;
+        result.elements = input.size();
+        result.block_x = config.block_x;
+        result.grid_x = config.grid_x;
+        result.cpu = reference.empty() ? "SKIP" : "REF";
+        result.gpu = "SKIP";
+        results.push_back(result);
+        jobs.push_back({variant, config, results.size() - 1, {}});
+      }
+    }
     if (kGpuKernelImplemented) {
-      TestCase gpu_test = test;
-      gpu_test.input = input;
-      const std::vector<float> output = run_gpu_case(gpu_test);
-      if (expected != nullptr) {
-        const bool ok = verify_close(output, *expected, 1e-5f, 1e-5f,
-                                     test.name, true);
-        result.gpu = ok ? "PASS" : "FAIL";
-        all_ok &= ok;
-      } else if (!skip_cpu_verify && kCpuReferenceImplemented) {
-        const bool ok = verify_close(output, reference, 1e-5f, 1e-5f,
-                                     test.name, true);
-        result.gpu = ok ? "PASS" : "FAIL";
-        all_ok &= ok;
-      }
+      const std::vector<float>* target =
+          reference.empty() ? nullptr : &reference;
+      all_ok &= run_gpu_jobs(test, input, jobs, results, expected, target);
     }
-
-    result.total_ms = g_last_timing.total_ms;
-    result.kernel_ms = g_last_timing.kernel_ms;
-    results.push_back(result);
   };
 
-  auto run_sized = [&](const char* group, const TestCase& test) {
-    g_launch_config = default_launch;
-    run_case(group, test, make_l1_input(test.rows, test.cols), nullptr);
-  };
+  for (const auto& test : exact_tests) {
+    run_group("small", test, test.input, &test.expected, default_configs);
+  }
 
-  auto run_scale = [&](const TestCase& test) {
+  for (const auto& test : narrow_tests) {
     const std::vector<float> input = make_l1_input(test.rows, test.cols);
-    for (int block_x : scale_block_sizes) {
-      for (int grid_x : scale_grid_sizes) {
-        g_launch_config = {block_x, grid_x};
-        run_case("scale", test, input, nullptr);
-      }
-    }
-  };
+    run_group("narrow", test, input, nullptr, default_configs);
+  }
 
-  for (KernelVariant kernel_variant : kernel_variants) {
-    if (!kernel_enabled(kernel_variant)) {
-      continue;
+  if (!skip_cpu_verify && kCpuReferenceImplemented) {
+    for (const auto& test : medium_tests) {
+      const std::vector<float> input = make_l1_input(test.rows, test.cols);
+      run_group("medium", test, input, nullptr, default_configs);
     }
-    g_kernel_variant = kernel_variant;
-
-    for (const auto& test : exact_tests) {
-      g_launch_config = default_launch;
-      run_case("small", test, test.input, &test.expected);
+    for (const auto& test : large_tests) {
+      const std::vector<float> input = make_l1_input(test.rows, test.cols);
+      run_group("large", test, input, nullptr, default_configs);
     }
-
-    if (!skip_cpu_verify && kCpuReferenceImplemented) {
-      for (const auto& test : medium_tests) {
-        run_sized("medium", test);
-      }
-      for (const auto& test : large_tests) {
-        run_sized("large", test);
-      }
-      for (const auto& test : shape_tests) {
-        run_sized("shape", test);
-      }
-      for (const auto& test : tail_tests) {
-        run_sized("tail", test);
-      }
+    for (const auto& test : shape_tests) {
+      const std::vector<float> input = make_l1_input(test.rows, test.cols);
+      run_group("shape", test, input, nullptr, default_configs);
     }
+    for (const auto& test : tail_tests) {
+      const std::vector<float> input = make_l1_input(test.rows, test.cols);
+      run_group("tail", test, input, nullptr, default_configs);
+    }
+  }
 
-    if (skip_cpu_verify) {
-      for (const auto& test : published_tests) {
-        run_sized("tensara", test);
-      }
-      for (const auto& test : published_tests) {
-        run_scale(test);
-      }
+  if (skip_cpu_verify) {
+    for (const auto& test : published_tests) {
+      const std::vector<float> input = make_l1_input(test.rows, test.cols);
+      run_group("tensara", test, input, nullptr, default_configs);
+    }
+    for (const auto& test : published_tests) {
+      const std::vector<float> input = make_l1_input(test.rows, test.cols);
+      run_group("scale", test, input, nullptr, scale_configs);
+    }
+    for (const auto& test : narrow_tests) {
+      const std::vector<float> input = make_l1_input(test.rows, test.cols);
+      run_group("scale", test, input, nullptr, scale_configs);
     }
   }
 
@@ -929,7 +1131,8 @@ int main(int argc, char** argv) {
                 << " [--list-kernels]\n";
       return 0;
     } else if (arg == "--list-kernels") {
-      std::cout << "basic\nfloat4\nshared\nshared_float4\n";
+      std::cout << "basic\nfloat4\nshared\nshared_float4\nwarp\n"
+                   "warp_float4\n";
       return 0;
     } else if (arg == "--profile") {
       profile_mode = true;
