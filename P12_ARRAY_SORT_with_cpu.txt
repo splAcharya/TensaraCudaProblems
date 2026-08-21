@@ -1,0 +1,10 @@
+Timing samples: mode=median repeats=5 warmup_rounds=5 shuffle_seed=6221074 metric=kernel_ms
+CPU reference implemented: yes
+GPU kernel implemented: yes
+
+group     name                    size        block_x grid_x  cpu     gpu     total_ms    kernel_ms   
+--------------------------------------------------------------------------------------------------------------
+exact     small_8                 8           256     64      REF     PASS    0.024       0.024       
+exact     small_17                17          256     64      REF     PASS    0.024       0.024       
+
+Sweep summary (median kernel_ms, lower is better)

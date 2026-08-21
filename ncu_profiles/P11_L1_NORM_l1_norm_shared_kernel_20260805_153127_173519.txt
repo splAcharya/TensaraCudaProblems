@@ -1,0 +1,82 @@
+Command: ncu --section LaunchStats --section Occupancy --section SpeedOfLight --section MemoryWorkloadAnalysis --launch-skip 5 --launch-count 1 --kernel-name l1_norm_shared_kernel /tmp/P11_L1_NORM_ncu_all_8ev985zj/P11_L1_NORM --profile --kernel=shared
+
+==PROF== Connected to process 91613 (/tmp/P11_L1_NORM_ncu_all_8ev985zj/P11_L1_NORM)
+==PROF== Profiling "l1_norm_shared_kernel": 0%....50%....100% - 7 passes
+profile scope=kernel-only verify=off kernel=shared rows=128 cols=4096 block_x=256 grid_x=64 warmup=5 repeats=1 avg_kernel_ms=496.566
+==PROF== Disconnected from process 91613
+[91613] P11_L1_NORM@127.0.0.1
+  l1_norm_shared_kernel(const float *, float *, unsigned long, unsigned long) (64, 1, 1)x(256, 1, 1), Context 1, Stream 7, Device 0, CC 8.6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- ------------
+    Metric Name             Metric Unit Metric Value
+    ----------------------- ----------- ------------
+    DRAM Frequency                  Ghz         5.97
+    SM Frequency                    Ghz         1.21
+    Elapsed Cycles                cycle        40233
+    Memory Throughput                 %        63.89
+    DRAM Throughput                   %        63.89
+    Duration                         us        33.12
+    L1/TEX Cache Throughput           %        25.01
+    L2 Cache Throughput               %        24.10
+    SM Active Cycles              cycle        31018
+    Compute (SM) Throughput           %        21.65
+    ----------------------- ----------- ------------
+
+    OPT   Memory is more heavily utilized than Compute: Look at the Memory Workload Analysis section to identify the    
+          DRAM bottleneck. Check memory replay (coalescing) metrics to make sure you're efficiently utilizing the       
+          bytes transferred. Also consider whether it is possible to do more work per memory access (kernel fusion) or  
+          whether there are values you can (re)compute.                                                                 
+
+    Section: Memory Workload Analysis
+    --------------------------- ----------- ------------
+    Metric Name                 Metric Unit Metric Value
+    --------------------------- ----------- ------------
+    Memory Throughput               Gbyte/s       122.01
+    Mem Busy                              %        24.10
+    Max Bandwidth                         %        63.89
+    L1/TEX Hit Rate                       %        26.09
+    L2 Compression Success Rate           %            0
+    L2 Compression Ratio                               0
+    L2 Hit Rate                           %        53.26
+    Mem Pipes Busy                        %        20.84
+    --------------------------- ----------- ------------
+
+    Section: Launch Statistics
+    -------------------------------- --------------- ---------------
+    Metric Name                          Metric Unit    Metric Value
+    -------------------------------- --------------- ---------------
+    Block Size                                                   256
+    Function Cache Configuration                     CachePreferNone
+    Grid Size                                                     64
+    Registers Per Thread             register/thread              18
+    Shared Memory Configuration Size           Kbyte           16.38
+    Driver Shared Memory Per Block       Kbyte/block            1.02
+    Dynamic Shared Memory Per Block      Kbyte/block            1.02
+    Static Shared Memory Per Block        byte/block               0
+    # SMs                                         SM              20
+    Threads                                   thread           16384
+    Uses Green Context                                             0
+    Waves Per SM                                                0.53
+    -------------------------------- --------------- ---------------
+
+    Section: Occupancy
+    ------------------------------- ----------- ------------
+    Metric Name                     Metric Unit Metric Value
+    ------------------------------- ----------- ------------
+    Block Limit SM                        block           16
+    Block Limit Registers                 block           10
+    Block Limit Shared Mem                block            8
+    Block Limit Warps                     block            6
+    Theoretical Active Warps per SM        warp           48
+    Theoretical Occupancy                     %          100
+    Achieved Occupancy                        %        48.55
+    Achieved Active Warps Per SM           warp        23.30
+    ------------------------------- ----------- ------------
+
+    OPT   Est. Local Speedup: 51.45%                                                                                    
+          The difference between calculated theoretical (100.0%) and measured achieved occupancy (48.5%) can be the     
+          result of warp scheduling overheads or workload imbalances during the kernel execution. Load imbalances can   
+          occur between warps within a block as well as across blocks of the same kernel. See the CUDA Best Practices   
+          Guide (https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html#occupancy) for more details on     
+          optimizing occupancy.                                                                                         
+

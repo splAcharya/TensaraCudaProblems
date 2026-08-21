@@ -1,0 +1,15 @@
+Timing samples: mode=median repeats=5 warmup_rounds=5 shuffle_seed=6221075 metric=kernel_ms
+CPU reference implemented: yes
+GPU kernel implemented: yes
+
+group     name                          kernel              height  width   bins      block_x grid_x  cpu     gpu     total_ms    kernel_ms   
+------------------------------------------------------------------------------------------------------------------------
+exact     small_4x4_b4                  basic               4       4       4         256     64      REF     PASS    0.008       0.008       
+exact     small_4x4_b4                  shared              4       4       4         256     64      REF     PASS    0.007       0.007       
+exact     small_4x4_b4                  persistent_shared   4       4       4         256     64      REF     PASS    0.007       0.007       
+exact     small_3x5_b8                  basic               3       5       8         256     64      REF     PASS    0.009       0.009       
+exact     small_3x5_b8                  shared              3       5       8         256     64      REF     PASS    0.007       0.007       
+exact     small_3x5_b8                  persistent_shared   3       5       8         256     64      REF     PASS    0.008       0.008       
+medium    medium_257x263_b17            basic               257     263     17        256     64      REF     PASS    0.020       0.020       
+medium    medium_257x263_b17            shared              257     263     17        256     64      REF     PASS    0.010       0.010       
+medium    medium_257x263_b17            persistent_shared   257     263     17        256     64      REF     PASS    0.009       0.009       

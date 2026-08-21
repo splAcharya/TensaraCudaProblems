@@ -9,6 +9,7 @@
     {"id":"P6","name":"Average Pool 1D","source":"P6_AVG_POOL_1D.cu","report":"P6_AVG_POOL_1D_RESULTS.md","log_prefix":"p6","cpu":["cpu_avg_pool_1d_cannonical","cpu_avg_pool_1d_sliding_window"],"kernels":["avg_pool_1d_basic_kernel","avg_pool_1d_basic_ldg_kernel","avg_pool_1d_coop_shared_kernel"],"helpers":[],"constants":[]},
     {"id":"P7","name":"GELU","source":"P7_GELU.cu","report":"P7_GELU_RESULTS.md","log_prefix":"p7","cpu":["cpu_gelu_reference"],"kernels":["gelu_basic_kernel","gelu_float4_kernel"],"helpers":["gelu_single"],"constants":[]},
     {"id":"P8","name":"Sigmoid","source":"P8_SIGMOID.cu","report":"P8_SIGMOID_RESULTS.md","log_prefix":"p8","cpu":["cpu_sigmoid_reference"],"kernels":["sigmoid_basic_kernel","sigmoid_float4_kernel"],"helpers":["sigmoid_int"],"constants":[]},
-    {"id":"P9","name":"RMS Norm","source":"P9_RMS_NORM.cu","report":"P9_RMS_NORM_RESULTS.md","log_prefix":"p9","cpu":["cpu_rms_norm_reference"],"kernels":["rms_norm_basic_kernel","rms_norm_float4_kernel","rms_norm_shared_mem_kernel","rms_norm_warp_kernel"],"helpers":[],"constants":[]}
+    {"id":"P9","name":"RMS Norm","source":"P9_RMS_NORM.cu","report":"P9_RMS_NORM_RESULTS.md","log_prefix":"p9","cpu":["cpu_rms_norm_reference"],"kernels":["rms_norm_basic_kernel","rms_norm_float4_kernel","rms_norm_shared_mem_kernel","rms_norm_warp_kernel"],"helpers":[],"constants":[]},
+    {"id":"P12","name":"Array Sorting","source":"P12_ARRAY_SORT.cu","report":"P12_ARRAY_SORT_RESULTS.md","log_prefix":"p12","cpu":["cpu_array_sort_reference"],"kernels":["array_sort_basic_kernel"],"helpers":[],"constants":[]}
   ]
 }

@@ -1,0 +1,113 @@
+Timing samples: mode=median repeats=5 warmup_rounds=5 shuffle_seed=6221074 metric=kernel_ms
+CPU reference implemented: yes
+GPU kernel implemented: yes
+
+group     name                    size        block_x grid_x  cpu     gpu     total_ms    kernel_ms   
+--------------------------------------------------------------------------------------------------------------
+sweep     tensara_1               16384       64      8       SKIP    SKIP    1.891       1.891       
+sweep     tensara_1               16384       64      16      SKIP    SKIP    1.864       1.864       
+sweep     tensara_1               16384       64      32      SKIP    SKIP    1.860       1.860       
+sweep     tensara_1               16384       64      64      SKIP    SKIP    1.872       1.872       
+sweep     tensara_1               16384       64      128     SKIP    SKIP    1.880       1.880       
+sweep     tensara_1               16384       128     8       SKIP    SKIP    1.879       1.879       
+sweep     tensara_1               16384       128     16      SKIP    SKIP    1.881       1.881       
+sweep     tensara_1               16384       128     32      SKIP    SKIP    1.878       1.878       
+sweep     tensara_1               16384       128     64      SKIP    SKIP    1.904       1.904       
+sweep     tensara_1               16384       128     128     SKIP    SKIP    1.894       1.894       
+sweep     tensara_1               16384       256     8       SKIP    SKIP    1.913       1.913       
+sweep     tensara_1               16384       256     16      SKIP    SKIP    1.913       1.913       
+sweep     tensara_1               16384       256     32      SKIP    SKIP    1.912       1.912       
+sweep     tensara_1               16384       256     64      SKIP    SKIP    1.926       1.926       
+sweep     tensara_1               16384       256     128     SKIP    SKIP    1.923       1.923       
+sweep     tensara_1               16384       512     8       SKIP    SKIP    1.920       1.920       
+sweep     tensara_1               16384       512     16      SKIP    SKIP    1.924       1.924       
+sweep     tensara_1               16384       512     32      SKIP    SKIP    1.918       1.918       
+sweep     tensara_1               16384       512     64      SKIP    SKIP    1.940       1.940       
+sweep     tensara_1               16384       512     128     SKIP    SKIP    1.931       1.931       
+sweep     tensara_2               32768       64      8       SKIP    SKIP    3.978       3.978       
+sweep     tensara_2               32768       64      16      SKIP    SKIP    3.967       3.967       
+sweep     tensara_2               32768       64      32      SKIP    SKIP    3.956       3.956       
+sweep     tensara_2               32768       64      64      SKIP    SKIP    3.993       3.993       
+sweep     tensara_2               32768       64      128     SKIP    SKIP    3.989       3.989       
+sweep     tensara_2               32768       128     8       SKIP    SKIP    3.999       3.999       
+sweep     tensara_2               32768       128     16      SKIP    SKIP    3.999       3.999       
+sweep     tensara_2               32768       128     32      SKIP    SKIP    3.988       3.988       
+sweep     tensara_2               32768       128     64      SKIP    SKIP    4.035       4.035       
+sweep     tensara_2               32768       128     128     SKIP    SKIP    4.039       4.039       
+sweep     tensara_2               32768       256     8       SKIP    SKIP    4.056       4.056       
+sweep     tensara_2               32768       256     16      SKIP    SKIP    4.035       4.035       
+sweep     tensara_2               32768       256     32      SKIP    SKIP    4.072       4.072       
+sweep     tensara_2               32768       256     64      SKIP    SKIP    4.105       4.105       
+sweep     tensara_2               32768       256     128     SKIP    SKIP    4.099       4.099       
+sweep     tensara_2               32768       512     8       SKIP    SKIP    4.086       4.086       
+sweep     tensara_2               32768       512     16      SKIP    SKIP    4.093       4.093       
+sweep     tensara_2               32768       512     32      SKIP    SKIP    4.093       4.093       
+sweep     tensara_2               32768       512     64      SKIP    SKIP    4.137       4.137       
+sweep     tensara_2               32768       512     128     SKIP    SKIP    4.135       4.135       
+sweep     tensara_3               65536       64      8       SKIP    SKIP    7.429       7.429       
+sweep     tensara_3               65536       64      16      SKIP    SKIP    7.388       7.388       
+sweep     tensara_3               65536       64      32      SKIP    SKIP    7.371       7.371       
+sweep     tensara_3               65536       64      64      SKIP    SKIP    7.416       7.416       
+sweep     tensara_3               65536       64      128     SKIP    SKIP    7.433       7.433       
+sweep     tensara_3               65536       128     8       SKIP    SKIP    7.420       7.420       
+sweep     tensara_3               65536       128     16      SKIP    SKIP    7.455       7.455       
+sweep     tensara_3               65536       128     32      SKIP    SKIP    7.410       7.410       
+sweep     tensara_3               65536       128     64      SKIP    SKIP    7.509       7.509       
+sweep     tensara_3               65536       128     128     SKIP    SKIP    7.512       7.512       
+sweep     tensara_3               65536       256     8       SKIP    SKIP    7.527       7.527       
+sweep     tensara_3               65536       256     16      SKIP    SKIP    7.512       7.512       
+sweep     tensara_3               65536       256     32      SKIP    SKIP    7.563       7.563       
+sweep     tensara_3               65536       256     64      SKIP    SKIP    7.630       7.630       
+sweep     tensara_3               65536       256     128     SKIP    SKIP    7.618       7.618       
+sweep     tensara_3               65536       512     8       SKIP    SKIP    7.641       7.641       
+sweep     tensara_3               65536       512     16      SKIP    SKIP    7.681       7.681       
+sweep     tensara_3               65536       512     32      SKIP    SKIP    7.635       7.635       
+sweep     tensara_3               65536       512     64      SKIP    SKIP    7.760       7.760       
+sweep     tensara_3               65536       512     128     SKIP    SKIP    7.763       7.763       
+sweep     tensara_4               131072      64      8       SKIP    SKIP    15.842      15.842      
+sweep     tensara_4               131072      64      16      SKIP    SKIP    15.768      15.768      
+sweep     tensara_4               131072      64      32      SKIP    SKIP    15.745      15.745      
+sweep     tensara_4               131072      64      64      SKIP    SKIP    15.904      15.904      
+sweep     tensara_4               131072      64      128     SKIP    SKIP    15.875      15.875      
+sweep     tensara_4               131072      128     8       SKIP    SKIP    15.918      15.918      
+sweep     tensara_4               131072      128     16      SKIP    SKIP    15.893      15.893      
+sweep     tensara_4               131072      128     32      SKIP    SKIP    15.884      15.884      
+sweep     tensara_4               131072      128     64      SKIP    SKIP    16.120      16.120      
+sweep     tensara_4               131072      128     128     SKIP    SKIP    16.089      16.089      
+sweep     tensara_4               131072      256     8       SKIP    SKIP    16.100      16.100      
+sweep     tensara_4               131072      256     16      SKIP    SKIP    16.091      16.091      
+sweep     tensara_4               131072      256     32      SKIP    SKIP    16.074      16.074      
+sweep     tensara_4               131072      256     64      SKIP    SKIP    16.310      16.310      
+sweep     tensara_4               131072      256     128     SKIP    SKIP    16.357      16.357      
+sweep     tensara_4               131072      512     8       SKIP    SKIP    16.342      16.342      
+sweep     tensara_4               131072      512     16      SKIP    SKIP    16.325      16.325      
+sweep     tensara_4               131072      512     32      SKIP    SKIP    16.323      16.323      
+sweep     tensara_4               131072      512     64      SKIP    SKIP    16.536      16.536      
+sweep     tensara_4               131072      512     128     SKIP    SKIP    16.581      16.581      
+sweep     tensara_5               262144      64      8       SKIP    SKIP    30.974      30.974      
+sweep     tensara_5               262144      64      16      SKIP    SKIP    31.719      31.719      
+sweep     tensara_5               262144      64      32      SKIP    SKIP    32.056      32.056      
+sweep     tensara_5               262144      64      64      SKIP    SKIP    30.868      30.868      
+sweep     tensara_5               262144      64      128     SKIP    SKIP    30.568      30.568      
+sweep     tensara_5               262144      128     8       SKIP    SKIP    30.744      30.744      
+sweep     tensara_5               262144      128     16      SKIP    SKIP    30.607      30.607      
+sweep     tensara_5               262144      128     32      SKIP    SKIP    30.821      30.821      
+sweep     tensara_5               262144      128     64      SKIP    SKIP    31.174      31.174      
+sweep     tensara_5               262144      128     128     SKIP    SKIP    31.149      31.149      
+sweep     tensara_5               262144      256     8       SKIP    SKIP    31.409      31.409      
+sweep     tensara_5               262144      256     16      SKIP    SKIP    31.056      31.056      
+sweep     tensara_5               262144      256     32      SKIP    SKIP    31.355      31.355      
+sweep     tensara_5               262144      256     64      SKIP    SKIP    31.803      31.803      
+sweep     tensara_5               262144      256     128     SKIP    SKIP    31.656      31.656      
+sweep     tensara_5               262144      512     8       SKIP    SKIP    32.015      32.015      
+sweep     tensara_5               262144      512     16      SKIP    SKIP    31.681      31.681      
+sweep     tensara_5               262144      512     32      SKIP    SKIP    31.773      31.773      
+sweep     tensara_5               262144      512     64      SKIP    SKIP    31.999      31.999      
+sweep     tensara_5               262144      512     128     SKIP    SKIP    32.268      32.268      
+
+Sweep summary (median kernel_ms, lower is better)
+  tensara_1: 1.926 ms at (256, 64)
+  tensara_2: 4.105 ms at (256, 64)
+  tensara_3: 7.630 ms at (256, 64)
+  tensara_4: 16.310 ms at (256, 64)
+  tensara_5: 31.803 ms at (256, 64)

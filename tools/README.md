@@ -27,3 +27,48 @@ to the owner's implementations.
 `capture-run` creates a unique immutable-style run directory containing a
 manifest plus captured stdout and stderr. It never selects or overwrites an
 approved historical result.
+
+## Nsight Compute profiling
+
+`profile_ncu.py` builds a self-contained CUDA problem with `-O3 -lineinfo`,
+discovers its `__global__` kernel symbols, prompts for one, and runs Nsight
+Compute with `--kernel-name`. When a source file also contains a recognizable
+harness dispatch, the script derives the executable's kernel alias and passes
+it to `--profile --kernel=...`. It prints the report to the terminal and saves
+the same output as a timestamped text file under
+`/tmp/ncu_profiles`:
+
+```text
+python3 tools/profile_ncu.py P11_L1_NORM.cu
+```
+
+For a non-interactive run or a persistent output directory:
+
+```text
+python3 tools/profile_ncu.py P11_L1_NORM.cu \
+  --kernel=warp_float4 --output-dir ./ncu_profiles
+```
+
+By default it skips the five harness warmup launches and profiles one launch.
+Use `--launch-skip=0` for a standalone program that does not perform warmups.
+
+The batch profiler scans the source for `__global__` definitions and uses
+Nsight Compute's `--kernel-name` filter. It does not depend on
+`--list-kernels`. To profile every discovered kernel and create individual
+logs plus combined `.txt` and comparison `.md` reports, run:
+
+```text
+python3 tools/profile_ncu_all.py <problem>.cu \
+  --output-dir ./ncu_profiles
+```
+
+The batch command compiles once, profiles each kernel, sorts the Markdown
+comparison by profiled duration, and returns a failure status if any
+individual profile fails. Use `--extra-arg` for arguments needed by a
+standalone CUDA program.
+
+The Markdown report contains an overview plus separate cross-kernel tables for
+GPU Speed of Light, Memory Workload Analysis, Launch Statistics, and
+Occupancy. NCU durations reported in microseconds are normalized to
+milliseconds, and raw-log links are intentionally omitted from the Markdown
+summary.

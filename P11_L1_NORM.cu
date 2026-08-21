@@ -43,7 +43,7 @@ static constexpr bool kGpuKernelImplemented = true;
 static constexpr int kDefaultTimingRepeats = 5;
 static constexpr int kTimingWarmupRounds = 5;
 static constexpr int kProfileWarmupIterations = 5;
-static constexpr int kProfileIterations = 50;
+static constexpr int kProfileIterations = 1;
 static constexpr unsigned kTimingShuffleSeed = 0x5EED11u;
 
 struct LaunchConfig {
