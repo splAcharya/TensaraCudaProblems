@@ -1,0 +1,12 @@
+Timing samples: mode=median repeats=5 warmup_rounds=5 shuffle_seed=6221076 metric=kernel_ms
+CPU reference implemented: yes
+GPU kernel implemented: yes
+
+group     name                        kernel    H           H_out       K       stride  pad     dil     block   grid    cpu     gpu     total_ms    kernel_ms   
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+exact     small_no_padding            basic     8           4           2       2       0       1       256     64      REF     PASS    0.007       0.007       
+exact     small_no_padding            shared    8           4           2       2       0       1       256     64      REF     PASS    0.007       0.007       
+exact     small_padding               basic     5           5           3       1       1       1       256     64      REF     PASS    0.022       0.022       
+exact     small_padding               shared    5           5           3       1       1       1       256     64      REF     PASS    0.007       0.007       
+exact     small_dilation              basic     7           7           3       1       2       2       256     64      REF     PASS    0.006       0.006       
+exact     small_dilation              shared    7           7           3       1       2       2       256     64      REF     PASS    0.006       0.006       

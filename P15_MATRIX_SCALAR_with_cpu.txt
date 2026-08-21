@@ -1,0 +1,10 @@
+Timing samples: mode=median repeats=5 warmup_rounds=5
+CPU reference implemented: yes
+GPU kernel implemented: yes
+
+group     name                        kernel    N       scalar    block   grid    cpu     gpu     kernel_ms   
+----------------------------------------------------------------------------------------------------
+exact     sample_8x8                  basic     8       -0.500    256     64      REF     PASS    0.005       
+exact     sample_8x8                  float4    8       -0.500    256     64      REF     PASS    0.007       
+exact     small_3x3                   basic     3       2.000     256     64      REF     PASS    0.005       
+exact     small_3x3                   float4    3       2.000     256     64      REF     PASS    0.005       
